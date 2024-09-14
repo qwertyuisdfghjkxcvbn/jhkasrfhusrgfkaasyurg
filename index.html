@@ -7,7 +7,7 @@
     <link rel="manifest" href="manifest.json">
     <style>
         html, body {
-            overflow: hidden;
+            overflow: hidden; /* Disable scrolling */
             height: 100%;
             margin: 0;
             font-family: Helvetica, Sans-Serif;
@@ -44,12 +44,18 @@
             width: 100%;
             max-width: 600px;
         }
+        .examples {
+            margin-top: 20px;
+            font-size: 16px;
+            color: gray;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <input type="text" id="wordInput" placeholder="Enter a word">
         <div id="definition" class="definition"></div>
+        <div id="examples" class="examples"></div>
     </div>
 
     <script>
@@ -63,7 +69,9 @@
         async function fetchDefinition() {
             const word = document.getElementById('wordInput').value.trim();
             const definitionDiv = document.getElementById('definition');
+            const examplesDiv = document.getElementById('examples');
             definitionDiv.textContent = 'Searching...';
+            examplesDiv.textContent = '';
 
             if (word) {
                 try {
@@ -73,14 +81,20 @@
                     if (data[0] && data[0].meanings) {
                         const meanings = data[0].meanings.map(meaning => meaning.definitions[0].definition).join(', ');
                         definitionDiv.textContent = `${meanings}`;
+
+                        const examples = data[0].meanings.flatMap(meaning => meaning.definitions.flatMap(def => def.example ? [`"${def.example}"`] : [])).join(', ');
+                        examplesDiv.textContent = examples ? `Examples: ${examples}` : 'No examples available.';
                     } else {
                         definitionDiv.textContent = 'No definitions found.';
+                        examplesDiv.textContent = '';
                     }
                 } catch (error) {
                     definitionDiv.textContent = 'Error retrieving word definition.';
+                    examplesDiv.textContent = '';
                 }
             } else {
                 definitionDiv.textContent = 'Please enter a word.';
+                examplesDiv.textContent = '';
             }
         }
 
