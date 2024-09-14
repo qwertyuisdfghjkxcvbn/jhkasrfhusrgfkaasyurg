@@ -2,11 +2,9 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="theme-color" content="#000000">
-    <title>Adiasta</title>
-    <link rel="manifest" href="manifest.json">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#000">
+    <title>Adiasta Chat</title>
     <style>
         * {
             margin: 0;
@@ -15,124 +13,151 @@
         }
         html, body {
             height: 100%;
-            font-family: Arial, Sans-Serif;
-            background-color: #ffffff;
-            color: #000000;
-            overflow: hidden;
+            font-family: Helvetica, sans-serif;
+            background-color: #000;
+            color: #fff;
         }
         body {
             display: flex;
             flex-direction: column;
+            justify-content: space-between;
         }
         .header {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            padding: 10px;
-            background-color: #ffffff;
-            display: flex;
-            align-items: center;
-            border-bottom: 1px solid #e0e0e0;
-        }
-        .header h1 {
-            font-size: 18px;
-            color: #000;
+            background-color: #000;
+            color: white;
             text-align: center;
-            flex: 1;
+            padding: 15px;
+            font-size: 20px;
+            border-bottom: 1px solid #333;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
         }
         .chat-container {
-            flex: 1;
-            padding: 70px 10px 110px; /* Adjusted for footer height */
+            padding: 80px 15px 80px;
             overflow-y: auto;
-            background-color: #ffffff;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
         }
-        /* Style for the messages */
         .message {
-            margin-bottom: 10px;
-            padding: 10px;
-            border-radius: 15px;
+            padding: 10px 15px;
+            border-radius: 12px;
+            max-width: 75%;
+            font-size: 14px;
+            line-height: 1.4;
             word-wrap: break-word;
+            box-shadow: 0 2px 5px rgba(255, 255, 255, 0.1);
         }
-        /* Bot messages aligned to the left */
-        .message.bot {
-            color: #000000;
-            border-bottom-left-radius: 0;
-            align-self: flex-start;
-            max-width: 95%;
-        }
-        /* User messages aligned to the right */
         .message.user {
-            background-color: lightgrey;
-            color: black;
+            background-color: #fff;
+            color: #000;
+            align-self: flex-end;
             border-bottom-right-radius: 0;
-            text-align: right;
-            max-width: 100%;
+        }
+        .message.bot {
+            background-color: #333;
+            color: #fff;
+            align-self: flex-start;
+            border-bottom-left-radius: 0;
         }
         .input-container {
-            position: fixed;
-            bottom: 0;
-            width: 100%;
+            background-color: #000;
             display: flex;
-            justify-content: center;
             align-items: center;
-            padding: 25px; /* Higher footer padding */
-            background-color: #ffffff;
-            border-top: 1px solid #e0e0e0;
+            justify-content: center;
+            padding: 15px;
+            border-top: 1px solid #333;
+            position: fixed;
+            width: 100%;
+            bottom: 0;
+            z-index: 1000;
         }
         input[type="text"] {
-            padding: 12px;
-            font-size: 16px;
-            border: 1px solid #e0e0e0;
-            border-radius: 20px;
-            flex: 1;
-            background-color: #f9f9f9;
-            color: #000;
+            width: 100%;
+            max-width: 600px;
+            padding: 10px 15px;
+            font-size: 14px;
+            border-radius: 25px;
+            border: 1px solid #333;
+            background-color: #111;
+            color: #fff;
+            outline: none;
+        }
+        input[type="text"]::placeholder {
+            color: #777;
         }
         .send-btn {
-            background-color: #000000;
+            background-color: #fff;
             border-radius: 50%;
             width: 40px;
             height: 40px;
-            margin-left: 10px;
             display: flex;
             justify-content: center;
             align-items: center;
             cursor: pointer;
+            margin-left: 10px;
         }
-        .send-btn i {
-            color: #ffffff;
-            font-size: 18px;
+        .send-btn span {
+            color: #000;
+            font-size: 15px;
+            font-weight: bold;
+        }
+        .bot-typing {
+            display: flex;
+            gap: 5px;
+            align-items: center;
+        }
+        .bot-typing div {
+            width: 8px;
+            height: 8px;
+            background-color: #fff;
+            border-radius: 50%;
+            animation: typing 1.2s infinite;
+        }
+        .bot-typing div:nth-child(1) {
+            animation-delay: 0s;
+        }
+        .bot-typing div:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+        .bot-typing div:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+        @keyframes typing {
+            0% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.5);
+            }
+            100% {
+                transform: scale(1);
+            }
         }
     </style>
 </head>
 <body>
-    <div class="header">
-        <h1>Adiasta</h1>
-    </div>
+
+    <div class="header">Adiasta Chat</div>
 
     <div class="chat-container" id="chatContainer">
-        <div class="message bot">Send me any word.</div>
-        <div class="message user">hello</div>
+        <div class="message bot">Hello! Send me a word to get its definition.</div>
     </div>
 
     <div class="input-container">
-        <input type="text" id="wordInput" placeholder="Type your message..." aria-label="Chat Input">
+        <input type="text" id="wordInput" placeholder="Type a word..." aria-label="Chat Input">
         <div class="send-btn" id="sendBtn">
-            <i class="fas fa-paper-plane"></i>
+            <span>&gt;</span>
         </div>
     </div>
 
     <script>
-        document.getElementById('sendBtn').addEventListener('click', function() {
-            sendMessage();
-        });
-
+        document.getElementById('sendBtn').addEventListener('click', sendMessage);
         document.getElementById('wordInput').addEventListener('keypress', function(event) {
-            if (event.key === 'Enter') {
-                event.preventDefault();
-                sendMessage();
-            }
+            if (event.key === 'Enter') sendMessage();
         });
 
         function sendMessage() {
@@ -140,49 +165,61 @@
             const message = input.value.trim();
             if (message) {
                 addMessage(message, 'user');
+                showBotTyping();
                 fetchDefinition(message);
                 input.value = '';
-                scrollToBottom();
             }
+        }
+
+        function showBotTyping() {
+            const chatContainer = document.getElementById('chatContainer');
+            const botTyping = document.createElement('div');
+            botTyping.className = 'bot-typing';
+            botTyping.innerHTML = '<div></div><div></div><div></div>';
+            chatContainer.appendChild(botTyping);
+            scrollToBottom();
         }
 
         async function fetchDefinition(word) {
             const chatContainer = document.getElementById('chatContainer');
-            const botMessage = document.createElement('div');
-            botMessage.className = 'message bot';
-            botMessage.textContent = 'Searching...';
-            chatContainer.appendChild(botMessage);
-            scrollToBottom();
-
             try {
                 const response = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${word}`);
                 const data = await response.json();
-
-                chatContainer.removeChild(botMessage);
-
-                const definitionDiv = document.createElement('div');
-                definitionDiv.className = 'message bot';
+                removeBotTyping();
 
                 if (data[0] && data[0].meanings) {
-                    const meanings = data[0].meanings.map(meaning => meaning.definitions[0].definition).join('<br><br>');
-                    definitionDiv.innerHTML = `<strong>Definition:</strong><br>${meanings}`;
+                    const definitions = data[0].meanings.map(m => m.definitions[0].definition).join('<br>');
+                    const botMessage = createBotMessage(`<strong>Definition:</strong><br>${definitions}`);
+                    chatContainer.appendChild(botMessage);
 
-                    const examples = data[0].meanings.flatMap(meaning => meaning.definitions.flatMap(def => def.example ? [`${def.example}`] : [])).join('<br><br>');
+                    const examples = data[0].meanings.flatMap(m => m.definitions.flatMap(d => d.example ? [`${d.example}`] : [])).join('<br>');
                     if (examples) {
-                        const examplesDiv = document.createElement('div');
-                        examplesDiv.className = 'message bot';
-                        examplesDiv.innerHTML = `<strong>Examples:</strong><br>${examples}`;
-                        chatContainer.appendChild(examplesDiv);
+                        const exampleMessage = createBotMessage(`<strong>Examples:</strong><br>${examples}`);
+                        chatContainer.appendChild(exampleMessage);
                     }
                 } else {
-                    definitionDiv.textContent = 'No definitions found.';
+                    const botMessage = createBotMessage('No definitions found.');
+                    chatContainer.appendChild(botMessage);
                 }
-
-                chatContainer.appendChild(definitionDiv);
                 scrollToBottom();
             } catch (error) {
-                botMessage.textContent = 'Error retrieving word definition.';
+                removeBotTyping();
+                const botMessage = createBotMessage('Error retrieving word definition.');
+                chatContainer.appendChild(botMessage);
             }
+        }
+
+        function createBotMessage(content) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'message bot';
+            messageDiv.innerHTML = content;
+            return messageDiv;
+        }
+
+        function removeBotTyping() {
+            const chatContainer = document.getElementById('chatContainer');
+            const botTyping = chatContainer.querySelector('.bot-typing');
+            if (botTyping) botTyping.remove();
         }
 
         function addMessage(message, sender) {
@@ -199,5 +236,6 @@
             chatContainer.scrollTop = chatContainer.scrollHeight;
         }
     </script>
+
 </body>
 </html>
