@@ -6,6 +6,8 @@
     <meta name="theme-color" content="#000000">
     <title>Minimal Chat</title>
     <link rel="manifest" href="manifest.json">
+    <!-- Import Font Awesome for free paper plane icon -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
     <style>
         * {
             margin: 0;
@@ -67,7 +69,7 @@
         }
         .input-container {
             position: fixed;
-            bottom: 20px;
+            bottom: 30px; /* 30px above the bottom */
             width: 100%;
             display: flex;
             justify-content: center;
@@ -97,10 +99,9 @@
             align-items: center;
             cursor: pointer;
         }
-        .send-btn img {
-            width: 20px;
-            height: 20px;
-            filter: invert(1);
+        .send-btn i {
+            color: #ffffff;
+            font-size: 18px;
         }
     </style>
 </head>
@@ -114,7 +115,7 @@
     <div class="input-container">
         <input type="text" id="wordInput" placeholder="Type your message..." aria-label="Chat Input">
         <div class="send-btn" id="sendBtn">
-            <img src="paper-plane-icon.png" alt="Send">
+            <i class="fas fa-paper-plane"></i> <!-- Free paper plane icon -->
         </div>
     </div>
 
