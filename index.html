@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="theme-color" content="#F2F2F2">
-    <title>Chat Interface</title>
+    <meta name="theme-color" content="#000000">
+    <title>Minimal Chat</title>
     <link rel="manifest" href="manifest.json">
     <style>
         * {
@@ -14,10 +14,10 @@
         }
         html, body {
             height: 100%;
-            font-family: Helvetica, Sans-Serif;
+            font-family: Arial, Sans-Serif;
+            background-color: #ffffff;
+            color: #000000;
             overflow: hidden;
-            background-color: white;
-            color: black;
         }
         body {
             display: flex;
@@ -29,83 +29,100 @@
             left: 0;
             width: 100%;
             padding: 10px;
-            background-color: #F2F2F2;
+            background-color: #ffffff;
             display: flex;
             align-items: center;
-            border-bottom: 1px solid grey;
-            z-index: 1000;
+            border-bottom: 1px solid #e0e0e0;
         }
-        .logo img {
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            object-fit: cover;
-            display: block;
+        .header h1 {
+            font-size: 18px;
+            color: #000;
+            text-align: center;
+            flex: 1;
         }
         .chat-container {
             flex: 1;
-            padding: 80px 10px 70px;
+            padding: 70px 10px 90px;
             overflow-y: auto;
-            background-color: white;
+            background-color: #ffffff;
         }
         .message {
             margin-bottom: 10px;
             padding: 10px;
+            max-width: 80%;
             border-radius: 8px;
-            background-color: white;
-            color: black;
             word-wrap: break-word;
         }
         .message.user {
-            background-color: #F2F2F2;
+            background-color: #000000;
+            color: #ffffff;
             align-self: flex-end;
+            border-bottom-right-radius: 0;
         }
         .message.bot {
+            background-color: #f2f2f2;
+            color: #000000;
             align-self: flex-start;
+            border-bottom-left-radius: 0;
         }
         .input-container {
             position: fixed;
+            bottom: 20px;
             width: 100%;
             display: flex;
             justify-content: center;
+            align-items: center;
             padding: 10px;
-            background-color: #F2F2F2;
+            background-color: #ffffff;
+            border-top: 1px solid #e0e0e0;
         }
         input[type="text"] {
             padding: 10px;
-            font-size: 18px;
-            border: 1px solid grey;
+            font-size: 16px;
+            border: 1px solid #e0e0e0;
             border-radius: 20px;
-            width: 100%;
-            max-width: 550px;
+            flex: 1;
             box-sizing: border-box;
-            background-color: white;
-            color: black;
+            background-color: #f9f9f9;
+            color: #000;
         }
-        @media (max-width: 600px) {
-            .header h1 {
-                font-size: 16px;
-            }
-            input[type="text"] {
-                font-size: 16px;
-            }
+        .send-btn {
+            background-color: #000000;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            margin-left: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+        }
+        .send-btn img {
+            width: 20px;
+            height: 20px;
+            filter: invert(1);
         }
     </style>
 </head>
 <body>
     <div class="header">
-        <div class="logo">
-            <img src="icon-512x512.png" alt="Logo" loading="lazy">
-        </div>
+        <h1>Adiasta</h1>
     </div>
 
     <div class="chat-container" id="chatContainer"></div>
 
     <div class="input-container">
         <input type="text" id="wordInput" placeholder="Type your message..." aria-label="Chat Input">
+        <div class="send-btn" id="sendBtn">
+            <img src="paper-plane-icon.png" alt="Send">
+        </div>
     </div>
 
     <script>
+        document.getElementById('sendBtn').addEventListener('click', function() {
+            sendMessage();
+        });
+
         document.getElementById('wordInput').addEventListener('keypress', function(event) {
             if (event.key === 'Enter') {
                 event.preventDefault();
