@@ -6,7 +6,7 @@
     <meta name="theme-color" content="#000000">
     <title>Minimal Chat</title>
     <link rel="manifest" href="manifest.json">
-    <!-- Import Font Awesome for free paper plane icon -->
+    <!-- Simplified and centered icon with Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
     <style>
         * {
@@ -60,6 +60,7 @@
             color: #ffffff;
             align-self: flex-end;
             border-bottom-right-radius: 0;
+            text-align: right;
         }
         .message.bot {
             background-color: #f2f2f2;
@@ -69,7 +70,7 @@
         }
         .input-container {
             position: fixed;
-            bottom: 30px; /* 30px above the bottom */
+            bottom: 0; /* Fixed to bottom */
             width: 100%;
             display: flex;
             justify-content: center;
@@ -115,7 +116,7 @@
     <div class="input-container">
         <input type="text" id="wordInput" placeholder="Type your message..." aria-label="Chat Input">
         <div class="send-btn" id="sendBtn">
-            <i class="fas fa-paper-plane"></i> <!-- Free paper plane icon -->
+            <i class="fas fa-paper-plane"></i> <!-- Simplified paper plane icon -->
         </div>
     </div>
 
