@@ -3,22 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Word Definition Finder</title>
+    <title>Adiasta</title>
     <link rel="manifest" href="manifest.json">
     <style>
         html, body {
-            overflow: hidden; /* Disable scrolling */
             height: 100%;
             margin: 0;
             font-family: Helvetica, Sans-Serif;
-            background-color: white;
-            color: black;
+            overflow: hidden;
         }
         body {
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
+            transition: background-color 0.3s, color 0.3s;
         }
         .container {
             text-align: center;
@@ -29,9 +28,10 @@
         input[type="text"] {
             padding: 10px;
             font-size: 18px;
-            border: 1px solid black;
+            border: 1px solid;
             border-radius: 4px;
-            color: black;
+            color: inherit;
+            background-color: inherit;
         }
         .definition {
             margin-top: 20px;
@@ -39,7 +39,6 @@
             max-width: 100%;
             overflow-wrap: break-word;
             word-break: break-word;
-            color: black;
             text-align: center;
             width: 100%;
             max-width: 600px;
@@ -47,7 +46,15 @@
         .examples {
             margin-top: 20px;
             font-size: 16px;
-            color: gray;
+            color: inherit;
+        }
+        .light-mode {
+            background-color: white;
+            color: black;
+        }
+        .dark-mode {
+            background-color: #333;
+            color: white;
         }
     </style>
 </head>
@@ -97,6 +104,26 @@
                 examplesDiv.textContent = '';
             }
         }
+
+        const body = document.body;
+
+        function applyTheme(theme) {
+            body.classList.remove('light-mode', 'dark-mode');
+            body.classList.add(theme);
+            localStorage.setItem('theme', theme);
+        }
+
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme) {
+            applyTheme(savedTheme);
+        } else {
+            const prefersDarkScheme = window.matchMedia("(prefers-color-scheme: dark)");
+            applyTheme(prefersDarkScheme.matches ? 'dark-mode' : 'light-mode');
+        }
+
+        window.matchMedia("(prefers-color-scheme: dark)").addEventListener('change', (e) => {
+            applyTheme(e.matches ? 'dark-mode' : 'light-mode');
+        });
 
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
