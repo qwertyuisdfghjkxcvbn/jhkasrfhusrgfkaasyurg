@@ -44,43 +44,48 @@
         }
         .chat-container {
             flex: 1;
-            padding: 70px 10px 90px;
+            padding: 70px 10px 110px; /* Adjusted for footer height */
             overflow-y: auto;
             background-color: #ffffff;
         }
+        /* Style for the messages */
         .message {
             margin-bottom: 10px;
             padding: 10px;
-            max-width: 80%;
-            border-radius: 8px;
+            max-width: 70%; /* Limit width for both bot and user messages */
+            border-radius: 15px;
             word-wrap: break-word;
+            display: inline-block;
         }
+        /* Bot messages aligned to the left */
+        .message.bot {
+            background-color: #f2f2f2;
+            color: #000000;
+            border-bottom-left-radius: 0;
+            align-self: flex-start;
+        }
+        /* User messages aligned to the right */
         .message.user {
             background-color: #000000;
             color: #ffffff;
             align-self: flex-end;
             border-bottom-right-radius: 0;
             text-align: right;
-        }
-        .message.bot {
-            background-color: #f2f2f2;
-            color: #000000;
-            align-self: flex-start;
-            border-bottom-left-radius: 0;
+            margin-left: auto; /* Align user messages to the right */
         }
         .input-container {
             position: fixed;
-            bottom: 0; /* Fixed to bottom */
+            bottom: 0;
             width: 100%;
             display: flex;
             justify-content: center;
             align-items: center;
-            padding: 10px;
+            padding: 15px; /* Higher footer padding */
             background-color: #ffffff;
             border-top: 1px solid #e0e0e0;
         }
         input[type="text"] {
-            padding: 10px;
+            padding: 12px;
             font-size: 16px;
             border: 1px solid #e0e0e0;
             border-radius: 20px;
@@ -111,7 +116,12 @@
         <h1>Adiasta</h1>
     </div>
 
-    <div class="chat-container" id="chatContainer"></div>
+    <div class="chat-container" id="chatContainer">
+        <!-- Example bot message -->
+        <div class="message bot">Hello, how can I help you today?</div>
+        <!-- Example user message -->
+        <div class="message user">I need a definition for "cool."</div>
+    </div>
 
     <div class="input-container">
         <input type="text" id="wordInput" placeholder="Type your message..." aria-label="Chat Input">
