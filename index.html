@@ -2,7 +2,8 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#F2F2F2">
     <title>Chat Interface</title>
     <style>
         html, body {
@@ -10,12 +11,12 @@
             margin: 0;
             font-family: Helvetica, Sans-Serif;
             overflow: hidden;
+            background-color: white;
+            color: black;
         }
         body {
             display: flex;
             flex-direction: column;
-            background-color: white;
-            color: black;
         }
         .header {
             position: fixed;
@@ -30,28 +31,27 @@
             border-bottom: 1px solid grey;
             box-sizing: border-box;
             z-index: 1000;
-                       text-align: center;
-        }b
-        .logo {
-            width: 40px;
-            height: 40px;
+            text-align: center;
+        }
+        .logo img {
+            width: 50px;
+            height: 50px;
             border-radius: 50%;
-            margin-right: 10px;
+            object-fit: cover;
         }
         .header h1 {
             margin: 0;
             font-size: 18px;
             color: grey;
+            flex: 1;
         }
         .chat-container {
             flex: 1;
             display: flex;
             flex-direction: column;
             overflow: auto;
-            padding: 60px 10px 10px;
-            margin-top: 5px;
+            padding: 70px 10px 10px;
             box-sizing: border-box;
-            background-color: white;
         }
         .message {
             margin-bottom: 10px;
@@ -68,11 +68,14 @@
             align-self: flex-start;
         }
         .input-container {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
             display: flex;
             justify-content: center;
             padding: 10px;
+            background-color: #F2F2F2;
             border-top: 1px solid grey;
-            background-color: white;
         }
         input[type="text"] {
             padding: 10px;
@@ -85,17 +88,26 @@
             background-color: white;
             color: black;
         }
+        @media (max-width: 600px) {
+            .header h1 {
+                font-size: 16px;
+            }
+            input[type="text"] {
+                font-size: 16px;
+            }
+        }
     </style>
 </head>
 <body>
     <div class="header">
-      <div class="logo">
-  <img src="icon-512x512.png" alt="Logo">
-</div>
+        <div class="logo">
+            <img src="icon-512x512.png" alt="Logo">
+        </div>
         <h1>Adiasta</h1>
     </div>
-    <div class="chat-container" id="chatContainer">
-    </div>
+
+    <div class="chat-container" id="chatContainer"></div>
+
     <div class="input-container">
         <input type="text" id="wordInput" placeholder="Type your message...">
     </div>
