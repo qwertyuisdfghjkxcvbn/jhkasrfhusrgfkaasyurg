@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Adiasta</title>
-    <link rel="manifest" href="manifest.json">
+    <title>Chat Interface</title>
     <style>
         html, body {
             height: 100%;
@@ -14,127 +13,160 @@
         }
         body {
             display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            transition: background-color 0.3s, color 0.3s;
+            flex-direction: column;
+            background-color: white;
+            color: black;
         }
-        .container {
-            text-align: center;
-            padding: 20px;
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
             width: 100%;
-            max-width: 600px;
+            padding: 10px;
+            background-color: #F2F2F2;
+            backdrop-filter: blur(10px);
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid grey;
+            box-sizing: border-box;
+            z-index: 1000;
+                       text-align: center;
+        }b
+        .logo {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: url('icon-512x512.png') no-repeat center/cover;
+            margin-right: 10px;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 18px;
+            color: grey;
+        }
+        .chat-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: auto;
+            padding: 60px 10px 10px;
+            margin-top: 5px;
+            box-sizing: border-box;
+            background-color: white;
+        }
+        .message {
+            margin-bottom: 10px;
+            padding: 10px;
+            border-radius: 8px;
+            background-color: white;
+            color: black;
+        }
+        .message.user {
+            background-color: #F2F2F2;
+            align-self: flex-end;
+        }
+        .message.bot {
+            align-self: flex-start;
+        }
+        .input-container {
+            display: flex;
+            justify-content: center;
+            padding: 10px;
+            border-top: 1px solid grey;
+            background-color: white;
         }
         input[type="text"] {
             padding: 10px;
             font-size: 18px;
-            border: 1px solid;
+            border: 1px solid grey;
             border-radius: 4px;
-            color: inherit;
-            background-color: inherit;
-        }
-        .definition {
-            margin-top: 20px;
-            font-size: 18px;
-            max-width: 100%;
-            overflow-wrap: break-word;
-            word-break: break-word;
-            text-align: center;
             width: 100%;
             max-width: 600px;
-        }
-        .examples {
-            margin-top: 20px;
-            font-size: 16px;
-            color: inherit;
-        }
-        .light-mode {
+            box-sizing: border-box;
             background-color: white;
             color: black;
-        }
-        .dark-mode {
-            background-color: #333;
-            color: white;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <input type="text" id="wordInput" placeholder="Enter a word">
-        <div id="definition" class="definition"></div>
-        <div id="examples" class="examples"></div>
+    <div class="header">
+        <div class="logo"></div>
+        <h1>Adiasta</h1>
+    </div>
+    <div class="chat-container" id="chatContainer">
+    </div>
+    <div class="input-container">
+        <input type="text" id="wordInput" placeholder="Type your message...">
     </div>
 
     <script>
         document.getElementById('wordInput').addEventListener('keypress', function(event) {
             if (event.key === 'Enter') {
                 event.preventDefault();
-                fetchDefinition();
+                sendMessage();
             }
         });
 
-        async function fetchDefinition() {
-            const word = document.getElementById('wordInput').value.trim();
-            const definitionDiv = document.getElementById('definition');
-            const examplesDiv = document.getElementById('examples');
-            definitionDiv.textContent = 'Searching...';
-            examplesDiv.textContent = '';
+        function sendMessage() {
+            const input = document.getElementById('wordInput');
+            const message = input.value.trim();
+            if (message) {
+                addMessage(message, 'user');
+                fetchDefinition(message);
+                input.value = '';
+                scrollToBottom();
+            }
+        }
 
-            if (word) {
-                try {
-                    const response = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${word}`);
-                    const data = await response.json();
+        async function fetchDefinition(word) {
+            const chatContainer = document.getElementById('chatContainer');
+            chatContainer.innerHTML += `<div class="message bot">Searching...</div>`;
+            scrollToBottom();
 
-                    if (data[0] && data[0].meanings) {
-                        const meanings = data[0].meanings.map(meaning => meaning.definitions[0].definition).join(', ');
-                        definitionDiv.textContent = `${meanings}`;
+            try {
+                const response = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${word}`);
+                const data = await response.json();
 
-                        const examples = data[0].meanings.flatMap(meaning => meaning.definitions.flatMap(def => def.example ? [`"${def.example}"`] : [])).join(', ');
-                        examplesDiv.textContent = examples ? `Examples: ${examples}` : 'No examples available.';
-                    } else {
-                        definitionDiv.textContent = 'No definitions found.';
-                        examplesDiv.textContent = '';
-                    }
-                } catch (error) {
-                    definitionDiv.textContent = 'Error retrieving word definition.';
-                    examplesDiv.textContent = '';
+                const definitionDiv = document.createElement('div');
+                const examplesDiv = document.createElement('div');
+                definitionDiv.className = 'message bot';
+                examplesDiv.className = 'message bot';
+
+                if (data[0] && data[0].meanings) {
+                    const meanings = data[0].meanings.map(meaning => meaning.definitions[0].definition).join('<br><br>');
+                    definitionDiv.innerHTML = `<strong>Definition:</strong><br>${meanings}`;
+
+                    const examples = data[0].meanings.flatMap(meaning => meaning.definitions.flatMap(def => def.example ? [`${def.example}`] : [])).join('<br><br>');
+                    examplesDiv.innerHTML = examples ? `<strong>Examples:</strong><br>${examples}` : 'No examples available.';
+                } else {
+                    definitionDiv.innerHTML = 'No definitions found.';
                 }
-            } else {
-                definitionDiv.textContent = 'Please enter a word.';
-                examplesDiv.textContent = '';
+
+                chatContainer.appendChild(definitionDiv);
+                if (examplesDiv.innerHTML.trim()) {
+                    chatContainer.appendChild(examplesDiv);
+                }
+                scrollToBottom();
+            } catch (error) {
+                const errorDiv = document.createElement('div');
+                errorDiv.className = 'message bot';
+                errorDiv.innerHTML = 'Error retrieving word definition.';
+                chatContainer.appendChild(errorDiv);
+                scrollToBottom();
             }
         }
 
-        const body = document.body;
-
-        function applyTheme(theme) {
-            body.classList.remove('light-mode', 'dark-mode');
-            body.classList.add(theme);
-            localStorage.setItem('theme', theme);
+        function addMessage(message, sender) {
+            const chatContainer = document.getElementById('chatContainer');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${sender}`;
+            messageDiv.innerHTML = message;
+            chatContainer.appendChild(messageDiv);
         }
 
-        const savedTheme = localStorage.getItem('theme');
-        if (savedTheme) {
-            applyTheme(savedTheme);
-        } else {
-            const prefersDarkScheme = window.matchMedia("(prefers-color-scheme: dark)");
-            applyTheme(prefersDarkScheme.matches ? 'dark-mode' : 'light-mode');
-        }
-
-        window.matchMedia("(prefers-color-scheme: dark)").addEventListener('change', (e) => {
-            applyTheme(e.matches ? 'dark-mode' : 'light-mode');
-        });
-
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/service-worker.js')
-                    .then((registration) => {
-                        console.log('ServiceWorker registered with scope:', registration.scope);
-                    })
-                    .catch((error) => {
-                        console.log('ServiceWorker registration failed:', error);
-                    });
-            });
+        function scrollToBottom() {
+            const chatContainer = document.getElementById('chatContainer');
+            chatContainer.scrollTop = chatContainer.scrollHeight;
         }
     </script>
 </body>
