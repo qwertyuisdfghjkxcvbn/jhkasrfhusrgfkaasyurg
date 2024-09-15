@@ -33,7 +33,7 @@
             top: 0;
             z-index: 1000;
             display: flex;
-            justify-content: space-between;
+            justify-content: center;
             align-items: center;
         }
         .chat-container {
@@ -174,13 +174,10 @@
         }
     </style>
 </head>
-<body class="light-mode">
+<body>
 
     <div class="header">
         <div>ADIASTA</div>
-        <div>
-            <button id="themeSwitcher" style="border: none; background: none; cursor: pointer; font-size: 16px;">DARK</button>
-        </div>
     </div>
     <div class="chat-container" id="chatContainer">
         <div class="message bot">Hello! Send me a word to get its definition.</div>
@@ -194,21 +191,12 @@
     </div>
 
     <script>
+        const userPrefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+        document.body.classList.add(userPrefersDark ? 'dark-mode' : 'light-mode');
+
         document.getElementById('sendBtn').addEventListener('click', sendMessage);
         document.getElementById('wordInput').addEventListener('keypress', function(event) {
             if (event.key === 'Enter') sendMessage();
-        });
-
-        document.getElementById('themeSwitcher').addEventListener('click', function() {
-            const body = document.body;
-            const isDarkMode = body.classList.contains('dark-mode');
-            if (isDarkMode) {
-                body.classList.replace('dark-mode', 'light-mode');
-                this.textContent = 'DARK';
-            } else {
-                body.classList.replace('light-mode', 'dark-mode');
-                this.textContent = 'LIGHT';
-            }
         });
 
         function sendMessage() {
@@ -286,16 +274,17 @@
             const chatContainer = document.getElementById('chatContainer');
             chatContainer.scrollTop = chatContainer.scrollHeight;
         }
-    if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-            navigator.serviceWorker.register('/service-worker.js')
-                .then((registration) => {
-                    console.log('ServiceWorker registration successful with scope: ', registration.scope);
-                }, (error) => {
-                    console.log('ServiceWorker registration failed: ', error);
-                });
-        });
-    }
-</script>
+
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/service-worker.js')
+                    .then((registration) => {
+                        console.log('ServiceWorker registration successful with scope: ', registration.scope);
+                    }, (error) => {
+                        console.log('ServiceWorker registration failed: ', error);
+                    });
+            });
+        }
+    </script>
 </body>
 </html>
