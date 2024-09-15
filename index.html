@@ -21,13 +21,9 @@
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            margin: 0;
-        }
-        .header, .input-container {
-            backdrop-filter: blur(10px); /* Adjust blur level as needed */
-            background-color: rgba(0, 0, 0, 0.5); /* 50% transparency */
         }
         .header {
+            background-color: var(--header-bg);
             color: var(--header-text);
             text-align: center;
             padding: 15px;
@@ -71,6 +67,7 @@
             border-bottom-left-radius: 0;
         }
         .input-container {
+            background-color: var(--input-bg);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -155,36 +152,25 @@
             --input-bg: #1e1e1e;
             --input-text: #fff;
             --input-border: #444;
+            --send-btn-bg: #1e1e1e;
             --send-btn-text: #fff;
             --typing-dot: #777;
         }
         body.light-mode {
-            --header-bg: white;
-            --header-text: black;
+            --header-bg: #fff;
+            --header-text: #000;
             --chat-bg: white;
             --chat-text: #000;
             --user-bg: #1f1f1f;
-            --user-text: black;
+            --user-text: #fff;
             --bot-bg: white;
-            --bot-text: white;
-            --input-text: #1f1f1f;
-            --input-bg: white;
+            --bot-text: #000;
+            --input-bg: #fff;
+            --input-text: #000;
             --input-border: #333;
+            --send-btn-bg: #fff;
             --send-btn-text: #000;
             --typing-dot: #ccc;
-        }
-        @media (max-width: 600px) {
-            .header, .input-container {
-                font-size: 16px;
-            }
-            .send-btn {
-                width: 30px;
-                height: 30px;
-                margin-left: 5px;
-            }
-            input[type="text"] {
-                font-size: 14px;
-            }
         }
     </style>
 </head>
@@ -300,16 +286,16 @@
             const chatContainer = document.getElementById('chatContainer');
             chatContainer.scrollTop = chatContainer.scrollHeight;
         }
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/service-worker.js')
-                    .then((registration) => {
-                        console.log('ServiceWorker registration successful with scope: ', registration.scope);
-                    }, (error) => {
-                        console.log('ServiceWorker registration failed: ', error);
-                    });
-            });
-        }
-    </script>
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('/service-worker.js')
+                .then((registration) => {
+                    console.log('ServiceWorker registration successful with scope: ', registration.scope);
+                }, (error) => {
+                    console.log('ServiceWorker registration failed: ', error);
+                });
+        });
+    }
+</script>
 </body>
 </html>
