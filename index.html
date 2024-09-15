@@ -22,22 +22,23 @@
             flex-direction: column;
             justify-content: space-between;
         }
-        .header {
-            background-color: var(--header-bg);
-            color: var(--header-text);
-            text-align: center;
-            padding: 15px;
-            font-size: 20px;
-            position: fixed;
-            width: 100%;
-            top: 0;
-            z-index: 1000;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            backdrop-filter: blur(20px);
-            opacity: 0.95;
-        }
+       .header {
+    background-color: rgba(255, 255, 255, 0.7);
+    color: var(--header-text);
+    text-align: center;
+    padding: 15px;
+    font-size: 20px;
+    position: fixed;
+    width: 100%;
+    top: 0;
+    z-index: 1000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    opacity: 0.95;
+}
         .header .new-chat {
             position: absolute;
             right: 20px;
@@ -86,8 +87,9 @@
             width: 100%;
             bottom: 0;
             z-index: 1000;
-            backdrop-filter: blur(20px);
-            opacity: 0.95;
+                backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    opacity: 0.95;
         }
         input[type="text"] {
             width: 100%;
