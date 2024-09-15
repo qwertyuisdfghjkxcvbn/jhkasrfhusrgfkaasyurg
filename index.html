@@ -191,8 +191,15 @@
     </div>
 
     <script>
-        const userPrefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-        document.body.classList.add(userPrefersDark ? 'dark-mode' : 'light-mode');
+        const updateTheme = (e) => {
+            const isDarkMode = e.matches;
+            document.body.classList.remove('dark-mode', 'light-mode');
+            document.body.classList.add(isDarkMode ? 'dark-mode' : 'light-mode');
+        };
+
+        const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+        mediaQuery.addEventListener('change', updateTheme);
+        updateTheme(mediaQuery);
 
         document.getElementById('sendBtn').addEventListener('click', sendMessage);
         document.getElementById('wordInput').addEventListener('keypress', function(event) {
