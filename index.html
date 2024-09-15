@@ -38,6 +38,7 @@
             backdrop-filter: blur(50px);
              -webkit-backdrop-filter: blur(8px); 
             opacity: 0.98;
+            transition: background-color 0.3s ease, color 0.3s ease;
         }
         .header .new-chat {
             position: absolute;
@@ -62,6 +63,7 @@
             font-size: 16px;
             line-height: 1.4;
             word-wrap: break-word;
+            transition: opacity 0.3s ease;
         }
         .message.user {
             background-color: var(--user-bg);
@@ -74,6 +76,10 @@
             color: var(--bot-text);
             align-self: flex-start;
             border-bottom-left-radius: 0;
+        }
+        .message.error {
+            background-color: #ffdddd;
+            color: #d8000c;
         }
         .input-container {
             background-color: var(--input-bg);
@@ -90,6 +96,7 @@
             backdrop-filter: blur(50px);
              -webkit-backdrop-filter: blur(8px); 
             opacity: 0.98;
+            transition: background-color 0.3s ease;
         }
         input[type="text"] {
             width: 100%;
@@ -152,6 +159,19 @@
                 transform: scale(1);
             }
         }
+        .loading-spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #3498db;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            animation: spin 1s linear infinite;
+            margin: auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
         body.dark-mode {
             --header-bg: rgba(51, 51, 51, 0.8);
             --header-text: #fff;
@@ -203,11 +223,14 @@
         </div>
     </div>
 
+    <div class="loading-spinner" id="loadingSpinner" style="display: none;"></div>
+
     <script>
         const newChatBtn = document.getElementById('newChatBtn');
         const chatContainer = document.getElementById('chatContainer');
         const sendBtn = document.getElementById('sendBtn');
         const wordInput = document.getElementById('wordInput');
+        const loadingSpinner = document.getElementById('loadingSpinner');
 
         function checkSystemTheme() {
             const isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
@@ -246,8 +269,10 @@
 
         async function fetchDefinition(word) {
             try {
+                loadingSpinner.style.display = 'block';
                 const response = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${word}`);
                 const data = await response.json();
+                loadingSpinner.style.display = 'none';
                 removeBotTyping();
 
                 if (data[0] && data[0].meanings) {
@@ -266,8 +291,10 @@
                 }
                 scrollToBottom();
             } catch (error) {
+                loadingSpinner.style.display = 'none';
                 removeBotTyping();
                 const botMessage = createBotMessage('Error retrieving word definition.');
+                botMessage.className += ' error';
                 chatContainer.appendChild(botMessage);
             }
         }
