@@ -120,6 +120,20 @@
             margin-left: 10px; 
             border: 1px solid var(--input-border);
         }
+         .new-btn {
+            padding: 10px;
+            border-radius: 20px;
+            display: flex;
+            justify-content: right;
+            align-items: center;
+            cursor: pointer;
+            margin-right: 10px; 
+            border: 1px solid var(--input-border);
+        }
+        .new-btn span {
+            color: var(--send-btn-text);
+            font-size: 16px;
+        }
         .send-btn span {
             color: var(--send-btn-text);
             font-size: 16px;
@@ -180,6 +194,7 @@
             --input-text: #fff;
             --input-border: grey;
             --send-btn-text: grey;
+            --new-btn-text: grey;
             --typing-dot: grey;
         }
         body.light-mode {
@@ -193,6 +208,7 @@
             --input-text: #000;
             --input-border: #333;
             --send-btn-text: #000;
+            --new-btn-text: #000;
             --typing-dot: #ccc;
         }
     </style>
@@ -201,7 +217,7 @@
 
     <div class="header">
         <div>Adiasta</div>
-        <div class="send-btn" id="newChatBtn">New</div>
+        <div class="new-chat" id="newChatBtn">New</div>
     </div>
     <div class="chat-container" id="chatContainer">
         <div class="message bot">Hello! Send me a word to get its definition.</div>
