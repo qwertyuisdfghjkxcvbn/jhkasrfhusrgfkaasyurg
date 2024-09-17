@@ -189,6 +189,7 @@
             --chat-text: #e0e0e0;
             --user-bg: #282828;
             --user-text: white;
+            --bot-bg: #3a3a3a;
             --bot-text: #e0e0e0;
             --input-text: #fff;
             --input-border: grey;
@@ -204,6 +205,7 @@
             --chat-text: #000;
             --user-bg: #F0F0F0;
             --user-text: black;
+            --bot-bg: #f1f1f1;
             --bot-text: #000;
             --input-text: #000;
             --input-border: #333;
@@ -219,7 +221,7 @@
             width: 100%;
             height: 100%;
             background: rgba(0, 0, 0, 0.7);
-            z-index: 999;
+            z-index: 2000;
             overflow: auto;
             opacity: 0;
             transition: opacity 0.3s ease;
@@ -231,20 +233,21 @@
         .menu-content {
             background-color: var(--menu-bg);
             color: var(--header-text);
-            position: relative;
+            position: absolute;
+            top: 0;
+            left: 0;
             width: 100%;
             height: 100%;
-            margin: 50px auto;
             padding: 20px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
             animation: slideIn 0.3s ease;
         }
         .menu-content p {
-            color: white;
+            color: var(--header-text);
             line-height: 1.5;
         }
         .menu-content a {
-            color: white; 
+            color: var(--header-text); 
             text-decoration: none;
         }
         .menu-content a:hover {
@@ -252,10 +255,10 @@
         }
         @keyframes slideIn {
             from {
-                transform: translateX(100%);
+                transform: translateY(-100%);
             }
             to {
-                transform: translateX(0);
+                transform: translateY(0);
             }
         }
         .menu-content h2 {
@@ -276,6 +279,7 @@
             right: 10px;
             cursor: pointer;
             font-size: 20px;
+            color: var(--header-text);
         }
     </style>
 </head>
@@ -384,12 +388,12 @@
         creditsLink.addEventListener('click', () => {
             menuContent.innerHTML = `
                 <h2>Credits</h2>
-                <p style="color: white;">
+                <p style="color: var(--header-text);">
                     We would like to acknowledge the following technologies and tools that have contributed to the development of this application:<br><br>
-                    <strong><a href="https://dictionaryapi.dev/" style="color: white;">Dictionary API</a></strong>
-                    <strong><a href="https://getbootstrap.com/" style="color: white;">Bootstrap</a></strong>
-                    <strong><a href="https://fontawesome.com/" style="color: white;">Font Awesome</a></strong>
-                    <strong><a href="https://fonts.google.com/" style="color: white;">Google Fonts</a></strong>
+                    <strong><a href="https://dictionaryapi.dev/" style="color: var(--header-text);">Dictionary API</a></strong>
+                    <strong><a href="https://getbootstrap.com/" style="color: var(--header-text);">Bootstrap</a></strong>
+                    <strong><a href="https://fontawesome.com/" style="color: var(--header-text);">Font Awesome</a></strong>
+                    <strong><a href="https://fonts.google.com/" style="color: var(--header-text);">Google Fonts</a></strong>
                 </p>
             `;
         });
