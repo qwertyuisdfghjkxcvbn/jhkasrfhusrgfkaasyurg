@@ -36,19 +36,20 @@
             justify-content: center;
             align-items: center;
             backdrop-filter: blur(15px);
-            -webkit-backdrop-filter: blur(15px);
+             -webkit-backdrop-filter: blur(15px); 
             transition: background-color 0.3s ease, color 0.3s ease;
         }
-        .header .new-btn, .header .menu-btn {
+        .header .new-btn {
             position: absolute;
+            right: 5px;
             cursor: pointer;
             font-size: 16px;
         }
-        .header .new-btn {
-            right: 5px;
-        }
-        .header .menu-btn {
+          .header .menu-btn {
+            position: absolute;
             left: 10px;
+            cursor: pointer;
+            font-size: 16px;
         }
         .chat-container {
             padding: 80px 10px 90px;
@@ -97,7 +98,7 @@
             bottom: 0;
             z-index: 1000;
             backdrop-filter: blur(15px);
-            -webkit-backdrop-filter: blur(15px);
+             -webkit-backdrop-filter: blur(15px); 
             transition: background-color 0.3s ease;
         }
         input[type="text"] {
@@ -114,21 +115,41 @@
         input[type="text"]::placeholder {
             color: grey;
         }
-        .send-btn, .new-btn, .menu-btn {
+        .send-btn {
             padding: 10px;
             border-radius: 20px;
             display: flex;
             justify-content: center;
             align-items: center;
             cursor: pointer;
-            margin: 10px;
+            margin-left: 10px; 
             border: 1px solid var(--input-border);
         }
-        .menu-btn {
-            position: absolute;
-            left: 10px;
+         .new-btn {
+            padding: 10px;
+            border-radius: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            margin-right: 10px; 
+            border: 1px solid var(--input-border);
+        }
+         .menu-btn {
+            padding: 10px;
+            border-radius: 20px;
+            display: flex;
+            justify-content: left;
+            align-items: center;
+            cursor: pointer;
+            margin-right: 10px; 
+            border: 1px solid var(--input-border);
         }
         .menu-btn span {
+            color: var(--send-btn-text);
+            font-size: 16px;
+        }
+        .new-btn span {
             color: var(--send-btn-text);
             font-size: 16px;
         }
@@ -182,14 +203,12 @@
             100% { transform: rotate(360deg); }
         }
         body.dark-mode {
-            --menu-bg: black;
             --header-bg: rgba(0, 0, 0, 0.7);
             --header-text: white;
             --chat-bg: black;
             --chat-text: #e0e0e0;
             --user-bg: #282828;
             --user-text: white;
-            --bot-bg: #3a3a3a;
             --bot-text: #e0e0e0;
             --input-text: #fff;
             --input-border: grey;
@@ -198,14 +217,12 @@
             --typing-dot: grey;
         }
         body.light-mode {
-            --menu-bg: white;
             --header-bg: rgba(255, 255, 255, 0.8);
             --header-text: black;
             --chat-bg: white;
             --chat-text: #000;
             --user-bg: #F0F0F0;
             --user-text: black;
-            --bot-bg: #f1f1f1;
             --bot-text: #000;
             --input-text: #000;
             --input-border: #333;
@@ -213,112 +230,30 @@
             --new-btn-text: #000;
             --typing-dot: #ccc;
         }
-        .menu-overlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.7);
-            z-index: 2000;
-            overflow: auto;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-        .menu-overlay.show {
-            display: block;
-            opacity: 1;
-        }
-        .menu-content {
-            background-color: var(--menu-bg);
-            color: var(--header-text);
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            padding: 20px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-            animation: slideIn 0.3s ease;
-        }
-        .menu-content p {
-            color: var(--header-text);
-            line-height: 1.5;
-        }
-        .menu-content a {
-            color: var(--header-text); 
-            text-decoration: none;
-        }
-        .menu-content a:hover {
-            text-decoration: underline;
-        }
-        @keyframes slideIn {
-            from {
-                transform: translateY(-100%);
-            }
-            to {
-                transform: translateY(0);
-            }
-        }
-        .menu-content h2 {
-            margin-bottom: 20px;
-        }
-        .menu-content a {
-            display: block;
-            margin: 10px 0;
-            color: var(--header-text);
-            text-decoration: none;
-        }
-        .menu-content a:hover {
-            text-decoration: underline;
-        }
-        .close-menu {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            cursor: pointer;
-            font-size: 20px;
-            color: var(--header-text);
-        }
     </style>
 </head>
 <body>
+
     <div class="header">
         <div>Adiasta</div>
         <div class="new-btn" id="newChatBtn">New</div>
-        <div class="menu-btn" id="menuBtn">
-            <span>&#9776;</span>
-        </div>
+        <div class="menu-btn" id="menuBtn">Menu</div>
+
     </div>
     <div class="chat-container" id="chatContainer">
         <div class="message bot">Hello! Send me a word to get its definition.</div>
     </div>
+
     <div class="input-container">
-        <input type="text" id="wordInput" placeholder="Type a word...">
+        <input type="text" id="wordInput" placeholder="Type a word..." aria-label="Chat Input">
         <div class="send-btn" id="sendBtn">
             <span>Go</span>
         </div>
     </div>
+
     <div class="loading-spinner" id="loadingSpinner" style="display: none;"></div>
-    <div class="menu-overlay" id="menuOverlay">
-        <div class="menu-content">
-            <div class="close-menu" id="closeMenu">&times;</div>
-            <h2>Menu</h2>
-            <a href="#" id="legalLink">Legal</a>
-            <a href="#" id="contactUsLink">Contact Us</a>
-            <a href="#" id="creditsLink">Credits</a>
-            <div id="menuContent"></div>
-        </div>
-    </div>
+
     <script>
-        const menuBtn = document.getElementById('menuBtn');
-        const closeMenu = document.getElementById('closeMenu');
-        const menuOverlay = document.getElementById('menuOverlay');
-        const menuContent = document.getElementById('menuContent');
-        const legalLink = document.getElementById('legalLink');
-        const contactUsLink = document.getElementById('contactUsLink');
-        const creditsLink = document.getElementById('creditsLink');
         const newChatBtn = document.getElementById('newChatBtn');
         const chatContainer = document.getElementById('chatContainer');
         const sendBtn = document.getElementById('sendBtn');
@@ -332,71 +267,6 @@
 
         window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', checkSystemTheme);
         checkSystemTheme();
-
-        menuBtn.addEventListener('click', () => {
-            menuOverlay.classList.add('show');
-        });
-
-        closeMenu.addEventListener('click', () => {
-            menuOverlay.classList.remove('show');
-        });
-
-        legalLink.addEventListener('click', () => {
-            menuContent.innerHTML = `
-               <h2>Legal</h2>
-<p>Welcome to Adiasta. This page provides important legal information related to the use of our website and services. By accessing or using our site, you agree to comply with and be bound by the following terms and conditions. Please read them carefully.</p>
-</br>
-<h3>Terms of Service</h3>
-<p>These Terms of Service govern your use of our website and services. By using our site, you agree to adhere to these terms. If you do not agree with these terms, you should not use our services. We reserve the right to modify these terms at any time, and your continued use of the site signifies your acceptance of any changes.</p>
-</br>
-<h3>Privacy Policy</h3>
-<p>Your privacy is important to us. Our Privacy Policy outlines how we collect, use, and protect your personal information. We are committed to safeguarding your privacy and handling your personal data responsibly. Please review our Privacy Policy to understand how we manage your data.</p>
-</br>
-<h3>Intellectual Property</h3>
-<p>All content on this website, including text, images, logos, and graphics, is owned by Adiasta or its licensors. Unauthorized use or reproduction of this content is prohibited. You may not use our content for commercial purposes without prior written consent from us.</p>
-</br>
-<h3>Limitation of Liability</h3>
-<p>Adiasta is not liable for any damages arising from the use or inability to use our website, including but not limited to direct, indirect, incidental, punitive, or consequential damages. We do not guarantee that our site will be available at all times or free of errors.</p>
-</br>
-<h3>Governing Law</h3>
-<p>These terms are governed by and construed in accordance with the laws of Switzerland. Any disputes arising from the use of our site or services will be subject to the exclusive jurisdiction of the courts located in Switzerland.</p>
-</br>
-<h3>Contact Information</h3>
-<p>If you have any questions or concerns about these terms, please contact us at:</p>
-<p>Email:support@adiasta.com</p>
-</br>
-<p>Thank you for using Adiasta.</p>
-</br>
-            `;
-        });
-
-        contactUsLink.addEventListener('click', () => {
-            menuContent.innerHTML = `
-                <h2>Contact Us</h2>
-                <form action="https://formspree.io/YOUR_EMAIL" method="POST">
-                    <label for="name">Name:</label>
-                    <input type="text" id="name" name="name" required><br><br>
-                    <label for="email">Email:</label>
-                    <input type="email" id="email" name="email" required><br><br>
-                    <label for="message">Message:</label><br>
-                    <textarea id="message" name="message" rows="4" required></textarea><br><br>
-                    <input type="submit" value="Send">
-                </form>
-            `;
-        });
-
-        creditsLink.addEventListener('click', () => {
-            menuContent.innerHTML = `
-                <h2>Credits</h2>
-                <p style="color: var(--header-text);">
-                    We would like to acknowledge the following technologies and tools that have contributed to the development of this application:<br><br>
-                    <strong><a href="https://dictionaryapi.dev/" style="color: var(--header-text);">Dictionary API</a></strong>
-                    <strong><a href="https://getbootstrap.com/" style="color: var(--header-text);">Bootstrap</a></strong>
-                    <strong><a href="https://fontawesome.com/" style="color: var(--header-text);">Font Awesome</a></strong>
-                    <strong><a href="https://fonts.google.com/" style="color: var(--header-text);">Google Fonts</a></strong>
-                </p>
-            `;
-        });
 
         sendBtn.addEventListener('click', sendMessage);
         wordInput.addEventListener('keypress', function(event) {
@@ -482,4 +352,4 @@
         }
     </script>
 </body>
-</html>
+</html> 
