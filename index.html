@@ -239,6 +239,17 @@
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
             animation: slideIn 0.3s ease;
         }
+        .menu-content p {
+    color: white
+    line-height: 1.5;
+}
+.menu-content a {
+    color: white; 
+    text-decoration: none;
+}
+.menu-content a:hover {
+    text-decoration: underline;
+}
         @keyframes slideIn {
             from {
                 transform: translateX(100%);
@@ -437,6 +448,22 @@
         function scrollToBottom() {
             chatContainer.scrollTop = chatContainer.scrollHeight;
         }
+        creditsLink.addEventListener('click', () => {
+    menuContent.innerHTML = `
+        <h2>Credits</h2>
+        <p style="color: white;">
+            We would like to acknowledge the following technologies and tools that have contributed to the development of this application:<br><br>
+            - <strong><a href="https://dictionaryapi.dev/" style="color: white;">Dictionary API</a></strong>: Provides definitions and meanings for words used in this application.<br>
+            - <strong><a href="https://openai.com/gpt-3" style="color: white;">OpenAI's GPT</a></strong>: Powers the chatbot functionality, enabling sophisticated conversational abilities and interactions.<br>
+            - <strong><a href="https://getbootstrap.com/" style="color: white;">Bootstrap</a></strong>: Utilized for responsive design elements, enhancing the user interface and experience.<br>
+            - <strong><a href="https://fontawesome.com/" style="color: white;">Font Awesome</a></strong>: Provides icons used throughout the application.<br>
+            - <strong><a href="https://fonts.google.com/" style="color: white;">Google Fonts</a></strong>: Used to maintain clean and readable typography.<br>
+            - Custom CSS & JavaScript: Developed specifically for this application to enhance functionality and provide a smooth user experience.<br>
+            - Additional Libraries and Tools: Various other libraries and tools were utilized to improve the functionality and performance of the application.<br><br>
+            Thank you to all the open-source projects and contributors whose work has made this application possible!
+        </p>
+    `;
+});
     </script>
 </body>
 </html>
