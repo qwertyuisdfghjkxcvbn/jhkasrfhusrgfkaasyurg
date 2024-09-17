@@ -36,7 +36,7 @@
             justify-content: center;
             align-items: center;
             backdrop-filter: blur(15px);
-            -webkit-backdrop-filter: blur(15px); 
+            -webkit-backdrop-filter: blur(15px);
             transition: background-color 0.3s ease, color 0.3s ease;
         }
         .header .new-btn, .header .menu-btn {
@@ -97,7 +97,7 @@
             bottom: 0;
             z-index: 1000;
             backdrop-filter: blur(15px);
-            -webkit-backdrop-filter: blur(15px); 
+            -webkit-backdrop-filter: blur(15px);
             transition: background-color 0.3s ease;
         }
         input[type="text"] {
@@ -229,7 +229,7 @@
             opacity: 1;
         }
         .menu-content {
-            background-color:var(--menu-bg);
+            background-color: var(--menu-bg);
             color: var(--header-text);
             position: relative;
             width: 100%;
@@ -240,16 +240,16 @@
             animation: slideIn 0.3s ease;
         }
         .menu-content p {
-    color: white
-    line-height: 1.5;
-}
-.menu-content a {
-    color: white; 
-    text-decoration: none;
-}
-.menu-content a:hover {
-    text-decoration: underline;
-}
+            color: white;
+            line-height: 1.5;
+        }
+        .menu-content a {
+            color: white; 
+            text-decoration: none;
+        }
+        .menu-content a:hover {
+            text-decoration: underline;
+        }
         @keyframes slideIn {
             from {
                 transform: translateX(100%);
@@ -291,7 +291,7 @@
         <div class="message bot">Hello! Send me a word to get its definition.</div>
     </div>
     <div class="input-container">
-        <input type="text" id="wordInput" placeholder="Type a word..." aria-label="Chat Input">
+        <input type="text" id="wordInput" placeholder="Type a word...">
         <div class="send-btn" id="sendBtn">
             <span>Go</span>
         </div>
@@ -339,8 +339,30 @@
 
         legalLink.addEventListener('click', () => {
             menuContent.innerHTML = `
-                <h2>Legal</h2>
-                <p>Content for the legal page goes here.</p>
+               <h2>Legal</h2>
+<p>Welcome to Adiasta. This page provides important legal information related to the use of our website and services. By accessing or using our site, you agree to comply with and be bound by the following terms and conditions. Please read them carefully.</p>
+</br>
+<h3>Terms of Service</h3>
+<p>These Terms of Service govern your use of our website and services. By using our site, you agree to adhere to these terms. If you do not agree with these terms, you should not use our services. We reserve the right to modify these terms at any time, and your continued use of the site signifies your acceptance of any changes.</p>
+</br>
+<h3>Privacy Policy</h3>
+<p>Your privacy is important to us. Our Privacy Policy outlines how we collect, use, and protect your personal information. We are committed to safeguarding your privacy and handling your personal data responsibly. Please review our Privacy Policy to understand how we manage your data.</p>
+</br>
+<h3>Intellectual Property</h3>
+<p>All content on this website, including text, images, logos, and graphics, is owned by Adiasta or its licensors. Unauthorized use or reproduction of this content is prohibited. You may not use our content for commercial purposes without prior written consent from us.</p>
+</br>
+<h3>Limitation of Liability</h3>
+<p>Adiasta is not liable for any damages arising from the use or inability to use our website, including but not limited to direct, indirect, incidental, punitive, or consequential damages. We do not guarantee that our site will be available at all times or free of errors.</p>
+</br>
+<h3>Governing Law</h3>
+<p>These terms are governed by and construed in accordance with the laws of Switzerland. Any disputes arising from the use of our site or services will be subject to the exclusive jurisdiction of the courts located in Switzerland.</p>
+</br>
+<h3>Contact Information</h3>
+<p>If you have any questions or concerns about these terms, please contact us at:</p>
+<p>Email:support@adiasta.com</p>
+</br>
+<p>Thank you for using Adiasta.</p>
+</br>
             `;
         });
 
@@ -362,7 +384,13 @@
         creditsLink.addEventListener('click', () => {
             menuContent.innerHTML = `
                 <h2>Credits</h2>
-                <p>Content for the credits page goes here.</p>
+                <p style="color: white;">
+                    We would like to acknowledge the following technologies and tools that have contributed to the development of this application:<br><br>
+                    <strong><a href="https://dictionaryapi.dev/" style="color: white;">Dictionary API</a></strong>
+                    <strong><a href="https://getbootstrap.com/" style="color: white;">Bootstrap</a></strong>
+                    <strong><a href="https://fontawesome.com/" style="color: white;">Font Awesome</a></strong>
+                    <strong><a href="https://fonts.google.com/" style="color: white;">Google Fonts</a></strong>
+                </p>
             `;
         });
 
@@ -448,22 +476,6 @@
         function scrollToBottom() {
             chatContainer.scrollTop = chatContainer.scrollHeight;
         }
-        creditsLink.addEventListener('click', () => {
-    menuContent.innerHTML = `
-        <h2>Credits</h2>
-        <p style="color: white;">
-            We would like to acknowledge the following technologies and tools that have contributed to the development of this application:<br><br>
-            - <strong><a href="https://dictionaryapi.dev/" style="color: white;">Dictionary API</a></strong>: Provides definitions and meanings for words used in this application.<br>
-            - <strong><a href="https://openai.com/gpt-3" style="color: white;">OpenAI's GPT</a></strong>: Powers the chatbot functionality, enabling sophisticated conversational abilities and interactions.<br>
-            - <strong><a href="https://getbootstrap.com/" style="color: white;">Bootstrap</a></strong>: Utilized for responsive design elements, enhancing the user interface and experience.<br>
-            - <strong><a href="https://fontawesome.com/" style="color: white;">Font Awesome</a></strong>: Provides icons used throughout the application.<br>
-            - <strong><a href="https://fonts.google.com/" style="color: white;">Google Fonts</a></strong>: Used to maintain clean and readable typography.<br>
-            - Custom CSS & JavaScript: Developed specifically for this application to enhance functionality and provide a smooth user experience.<br>
-            - Additional Libraries and Tools: Various other libraries and tools were utilized to improve the functionality and performance of the application.<br><br>
-            Thank you to all the open-source projects and contributors whose work has made this application possible!
-        </p>
-    `;
-});
     </script>
 </body>
 </html>
