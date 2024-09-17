@@ -248,7 +248,6 @@
             --chat-text: #e0e0e0;
             --user-bg: #282828;
             --user-text: white;
-            --bot-bg: #1c1c1c;
             --bot-text: #e0e0e0;
             --input-text: #fff;
             --input-border: grey;
@@ -264,7 +263,6 @@
             --chat-text: #000;
             --user-bg: #F0F0F0;
             --user-text: black;
-            --bot-bg: #f9f9f9;
             --bot-text: #000;
             --input-text: #000;
             --input-border: #333;
@@ -277,14 +275,13 @@
 </head>
 <body>
 
-    <div class="header">
-        <div class="menu-btn" id="menuBtn">
-            <span>&#9776;</span>
-        </div>
-        <div>Adiasta</div>
-        <div class="new-btn" id="newChatBtn">New</div>
-        <div class="menu-btn" id="menuBtnAlt">Menu</div>
+<div class="header">
+    <div class="menu-btn" id="menuBtn">
+        <span>Menu</span>
     </div>
+    <div>Adiasta</div>
+    <div class="new-btn" id="newChatBtn">New</div>
+</div>
     <div class="chat-container" id="chatContainer">
         <div class="message bot">Hello! Send me a word to get its definition.</div>
     </div>
@@ -307,179 +304,175 @@
         </div>
     </div>
 
-    <script>
-        const menuBtn = document.getElementById('menuBtn');
-        const menuBtnAlt = document.getElementById('menuBtnAlt');
-        const newChatBtn = document.getElementById('newChatBtn');
-        const chatContainer = document.getElementById('chatContainer');
-        const sendBtn = document.getElementById('sendBtn');
-        const wordInput = document.getElementById('wordInput');
-        const loadingSpinner = document.getElementById('loadingSpinner');
-        const menuOverlay = document.getElementById('menuOverlay');
-        const closeMenu = document.getElementById('closeMenu');
-        const legalLink = document.getElementById('legalLink');
-        const contactUsLink = document.getElementById('contactUsLink');
-        const creditsLink = document.getElementById('creditsLink');
+   <script>
+    const menuBtn = document.getElementById('menuBtn');
+    const newChatBtn = document.getElementById('newChatBtn');
+    const chatContainer = document.getElementById('chatContainer');
+    const sendBtn = document.getElementById('sendBtn');
+    const wordInput = document.getElementById('wordInput');
+    const loadingSpinner = document.getElementById('loadingSpinner');
+    const menuOverlay = document.getElementById('menuOverlay');
+    const closeMenu = document.getElementById('closeMenu');
+    const legalLink = document.getElementById('legalLink');
+    const contactUsLink = document.getElementById('contactUsLink');
+    const creditsLink = document.getElementById('creditsLink');
+    const menuContent = document.getElementById('menuContent');
 
-        function checkSystemTheme() {
-            const isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
-            document.body.className = isDarkMode ? 'dark-mode' : 'light-mode';
+    function checkSystemTheme() {
+        const isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        document.body.className = isDarkMode ? 'dark-mode' : 'light-mode';
+    }
+
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', checkSystemTheme);
+    checkSystemTheme();
+
+    sendBtn.addEventListener('click', sendMessage);
+    wordInput.addEventListener('keypress', function(event) {
+        if (event.key === 'Enter') sendMessage();
+    });
+
+    newChatBtn.addEventListener('click', () => {
+        chatContainer.innerHTML = '<div class="message bot">Hello! Send me a word to get its definition.</div>';
+    });
+
+    function sendMessage() {
+        const message = wordInput.value.trim();
+        if (message) {
+            addMessage(message, 'user');
+            showBotTyping();
+            fetchDefinition(message);
+            wordInput.value = '';
         }
+    }
 
-        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', checkSystemTheme);
-        checkSystemTheme();
+    function showBotTyping() {
+        const botTyping = document.createElement('div');
+        botTyping.className = 'bot-typing';
+        botTyping.innerHTML = '<div></div><div></div><div></div>';
+        chatContainer.appendChild(botTyping);
+        scrollToBottom();
+    }
 
-        sendBtn.addEventListener('click', sendMessage);
-        wordInput.addEventListener('keypress', function(event) {
-            if (event.key === 'Enter') sendMessage();
-        });
+    async function fetchDefinition(word) {
+        try {
+            loadingSpinner.style.display = 'block';
+            const response = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${word}`);
+            const data = await response.json();
+            loadingSpinner.style.display = 'none';
+            removeBotTyping();
 
-        newChatBtn.addEventListener('click', () => {
-            chatContainer.innerHTML = '<div class="message bot">Hello! Send me a word to get its definition.</div>';
-        });
+            if (data[0] && data[0].meanings) {
+                const definitions = data[0].meanings.map(m => m.definitions[0].definition).join('<br>');
+                const botMessage = createBotMessage(`<strong>Definition:</strong><br>${definitions}`);
+                chatContainer.appendChild(botMessage);
 
-        function sendMessage() {
-            const message = wordInput.value.trim();
-            if (message) {
-                addMessage(message, 'user');
-                showBotTyping();
-                fetchDefinition(message);
-                wordInput.value = '';
-            }
-        }
-
-        function showBotTyping() {
-            const botTyping = document.createElement('div');
-            botTyping.className = 'bot-typing';
-            botTyping.innerHTML = '<div></div><div></div><div></div>';
-            chatContainer.appendChild(botTyping);
-            scrollToBottom();
-        }
-
-        async function fetchDefinition(word) {
-            try {
-                loadingSpinner.style.display = 'block';
-                const response = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${word}`);
-                const data = await response.json();
-                loadingSpinner.style.display = 'none';
-                removeBotTyping();
-
-                if (data[0] && data[0].meanings) {
-                    const definitions = data[0].meanings.map(m => m.definitions[0].definition).join('<br>');
-                    const botMessage = createBotMessage(`<strong>Definition:</strong><br>${definitions}`);
-                    chatContainer.appendChild(botMessage);
-
-                    const examples = data[0].meanings.flatMap(m => m.definitions.flatMap(d => d.example ? [`${d.example}`] : [])).join('<br>');
-                    if (examples) {
-                        const exampleMessage = createBotMessage(`<strong>Examples:</strong><br>${examples}`);
-                        chatContainer.appendChild(exampleMessage);
-                    }
-                } else {
-                    const botMessage = createBotMessage('No definitions found.');
-                    chatContainer.appendChild(botMessage);
+                const examples = data[0].meanings.flatMap(m => m.definitions.flatMap(d => d.example ? [`${d.example}`] : [])).join('<br>');
+                if (examples) {
+                    const exampleMessage = createBotMessage(`<strong>Examples:</strong><br>${examples}`);
+                    chatContainer.appendChild(exampleMessage);
                 }
-                scrollToBottom();
-            } catch (error) {
-                loadingSpinner.style.display = 'none';
-                removeBotTyping();
-                const botMessage = createBotMessage('Error retrieving word definition.');
-                botMessage.className += ' error';
+            } else {
+                const botMessage = createBotMessage('No definitions found.');
                 chatContainer.appendChild(botMessage);
             }
-        }
-
-        function removeBotTyping() {
-            const botTyping = document.querySelector('.bot-typing');
-            if (botTyping) botTyping.remove();
-        }
-
-        function addMessage(text, sender) {
-            const messageElement = document.createElement('div');
-            messageElement.className = `message ${sender}`;
-            messageElement.textContent = text;
-            chatContainer.appendChild(messageElement);
             scrollToBottom();
+        } catch (error) {
+            loadingSpinner.style.display = 'none';
+            removeBotTyping();
+            const botMessage = createBotMessage('Error retrieving word definition.');
+            botMessage.className += ' error';
+            chatContainer.appendChild(botMessage);
         }
+    }
 
-        function createBotMessage(text) {
-            const botMessage = document.createElement('div');
-            botMessage.className = 'message bot';
-            botMessage.innerHTML = text;
-            return botMessage;
-        }
+    function removeBotTyping() {
+        const botTyping = document.querySelector('.bot-typing');
+        if (botTyping) botTyping.remove();
+    }
 
-        function scrollToBottom() {
-            chatContainer.scrollTop = chatContainer.scrollHeight;
-        }
+    function addMessage(text, sender) {
+        const messageElement = document.createElement('div');
+        messageElement.className = `message ${sender}`;
+        messageElement.textContent = text;
+        chatContainer.appendChild(messageElement);
+        scrollToBottom();
+    }
 
-        menuBtn.addEventListener('click', () => {
-            menuOverlay.classList.add('show');
-        });
+    function createBotMessage(text) {
+        const botMessage = document.createElement('div');
+        botMessage.className = 'message bot';
+        botMessage.innerHTML = text;
+        return botMessage;
+    }
 
-        menuBtnAlt.addEventListener('click', () => {
-            menuOverlay.classList.add('show');
-        });
+    function scrollToBottom() {
+        chatContainer.scrollTop = chatContainer.scrollHeight;
+    }
 
-        closeMenu.addEventListener('click', () => {
-            menuOverlay.classList.remove('show');
-        });
+    menuBtn.addEventListener('click', () => {
+        menuOverlay.classList.add('show');
+    });
 
-        legalLink.addEventListener('click', () => {
-            menuContent.innerHTML = `
-                <h2>Legal</h2>
-                <p>Welcome to Adiasta. This page provides important legal information related to the use of our website and services. By accessing or using our site, you agree to comply with and be bound by the following terms and conditions. Please read them carefully.</p>
-                <br>
-                <h3>Terms of Service</h3>
-                <p>These Terms of Service govern your use of our website and services. By using our site, you agree to adhere to these terms. If you do not agree with these terms, you should not use our services. We reserve the right to modify these terms at any time, and your continued use of the site signifies your acceptance of any changes.</p>
-                <br>
-                <h3>Privacy Policy</h3>
-                <p>Your privacy is important to us. Our Privacy Policy outlines how we collect, use, and protect your personal information. We are committed to safeguarding your privacy and handling your personal data responsibly. Please review our Privacy Policy to understand how we manage your data.</p>
-                <br>
-                <h3>Intellectual Property</h3>
-                <p>All content on this website, including text, images, logos, and graphics, is owned by Adiasta or its licensors. Unauthorized use or reproduction of this content is prohibited. You may not use our content for commercial purposes without prior written consent from us.</p>
-                <br>
-                <h3>Limitation of Liability</h3>
-                <p>Adiasta is not liable for any damages arising from the use or inability to use our website, including but not limited to direct, indirect, incidental, punitive, or consequential damages. We do not guarantee that our site will be available at all times or free of errors.</p>
-                <br>
-                <h3>Governing Law</h3>
-                <p>These terms are governed by and construed in accordance with the laws of Switzerland. Any disputes arising from the use of our site or services will be subject to the exclusive jurisdiction of the courts located in Switzerland.</p>
-                <br>
-                <h3>Contact Information</h3>
-                <p>If you have any questions or concerns about these terms, please contact us at:</p>
-                <p>Email: support@adiasta.com</p>
-                <br>
-                <p>Thank you for using Adiasta.</p>
-                <br>
-            `;
-        });
+    closeMenu.addEventListener('click', () => {
+        menuOverlay.classList.remove('show');
+    });
 
-        contactUsLink.addEventListener('click', () => {
-            menuContent.innerHTML = `
-                <h2>Contact Us</h2>
-                <form action="https://formspree.io/YOUR_EMAIL" method="POST">
-                    <label for="name">Name:</label>
-                    <input type="text" id="name" name="name" required><br><br>
-                    <label for="email">Email:</label>
-                    <input type="email" id="email" name="email" required><br><br>
-                    <label for="message">Message:</label><br>
-                    <textarea id="message" name="message" rows="4" required></textarea><br><br>
-                    <input type="submit" value="Send">
-                </form>
-            `;
-        });
+    legalLink.addEventListener('click', () => {
+        menuContent.innerHTML = `
+            <h2>Legal</h2>
+            <p>Welcome to Adiasta. This page provides important legal information related to the use of our website and services. By accessing or using our site, you agree to comply with and be bound by the following terms and conditions. Please read them carefully.</p>
+            <br>
+            <h3>Terms of Service</h3>
+            <p>These Terms of Service govern your use of our website and services. By using our site, you agree to adhere to these terms. If you do not agree with these terms, you should not use our services. We reserve the right to modify these terms at any time, and your continued use of the site signifies your acceptance of any changes.</p>
+            <br>
+            <h3>Privacy Policy</h3>
+            <p>Your privacy is important to us. Our Privacy Policy outlines how we collect, use, and protect your personal information. We are committed to safeguarding your privacy and handling your personal data responsibly. Please review our Privacy Policy to understand how we manage your data.</p>
+            <br>
+            <h3>Intellectual Property</h3>
+            <p>All content on this website, including text, images, logos, and graphics, is owned by Adiasta or its licensors. Unauthorized use or reproduction of this content is prohibited. You may not use our content for commercial purposes without prior written consent from us.</p>
+            <br>
+            <h3>Limitation of Liability</h3>
+            <p>Adiasta is not liable for any damages arising from the use or inability to use our website, including but not limited to direct, indirect, incidental, punitive, or consequential damages. We do not guarantee that our site will be available at all times or free of errors.</p>
+            <br>
+            <h3>Governing Law</h3>
+            <p>These terms are governed by and construed in accordance with the laws of Switzerland. Any disputes arising from the use of our site or services will be subject to the exclusive jurisdiction of the courts located in Switzerland.</p>
+            <br>
+            <h3>Contact Information</h3>
+            <p>If you have any questions or concerns about these terms, please contact us at:</p>
+            <p>Email: support@adiasta.com</p>
+            <br>
+            <p>Thank you for using Adiasta.</p>
+            <br>
+        `;
+    });
 
-        creditsLink.addEventListener('click', () => {
-            menuContent.innerHTML = `
-                <h2>Credits</h2>
-                <p>
-                    We would like to acknowledge the following technologies and tools that have contributed to the development of this application:<br><br>
-                    <strong><a href="https://dictionaryapi.dev/" style="color: var(--header-text);">Dictionary API</a></strong><br>
-                    <strong><a href="https://getbootstrap.com/" style="color: var(--header-text);">Bootstrap</a></strong><br>
-                    <strong><a href="https://fontawesome.com/" style="color: var(--header-text);">Font Awesome</a></strong><br>
-                    <strong><a href="https://fonts.google.com/" style="color: var(--header-text);">Google Fonts</a></strong>
-                </p>
-            `;
-        });
-    </script>
+    contactUsLink.addEventListener('click', () => {
+        menuContent.innerHTML = `
+            <h2>Contact Us</h2>
+            <form action="https://formspree.io/YOUR_EMAIL" method="POST">
+                <label for="name">Name:</label>
+                <input type="text" id="name" name="name" required><br><br>
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" required><br><br>
+                <label for="message">Message:</label><br>
+                <textarea id="message" name="message" rows="4" required></textarea><br><br>
+                <input type="submit" value="Send">
+            </form>
+        `;
+    });
+
+    creditsLink.addEventListener('click', () => {
+        menuContent.innerHTML = `
+            <h2>Credits</h2>
+            <p>
+                We would like to acknowledge the following technologies and tools that have contributed to the development of this application:<br><br>
+                <strong><a href="https://dictionaryapi.dev/" style="color: var(--header-text);">Dictionary API</a></strong><br>
+                <strong><a href="https://getbootstrap.com/" style="color: var(--header-text);">Bootstrap</a></strong><br>
+                <strong><a href="https://fontawesome.com/" style="color: var(--header-text);">Font Awesome</a></strong><br>
+                <strong><a href="https://fonts.google.com/" style="color: var(--header-text);">Google Fonts</a></strong>
+            </p>
+        `;
+    });
+</script>
 </body>
 </html>
