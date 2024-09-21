@@ -1,75 +1,62 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Matrix Effect</title>
-  <style>
-    body {
-      margin: 0;
-      overflow: hidden;
-      background: black;
-    }
-    canvas {
-      position: absolute;
-      top: 0;
-      left: 0;
-    }
-  </style>
-  <script>
-    window.onload = function() {
-      const url = "https://adiasta.com/stars.html";
-      for (let i = 0; i < 100; i++) {
-        window.open(url, "_blank");
-      }
-    };
-  </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Matrix Word Effect</title>
+    <style>
+        body {
+            background: black;
+            overflow: hidden;
+            color: green;
+            font-family: monospace;
+        }
+        canvas {
+            display: block;
+        }
+    </style>
 </head>
 <body>
-  <canvas id="matrixCanvas"></canvas>
-  <script>
-    const canvas = document.getElementById('matrixCanvas');
-    const ctx = canvas.getContext('2d');
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
+    <canvas id="matrixCanvas"></canvas>
+    <script>
+        const canvas = document.getElementById('matrixCanvas');
+        const ctx = canvas.getContext('2d');
+        canvas.height = window.innerHeight;
+        canvas.width = window.innerWidth;
 
-    const columns = Math.floor(canvas.width / 20);
-    const drops = Array(columns).fill(1);
-    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%^&*()';
-    const fontSize = 20;
-    const symbolsPerSecond = 1000000;
-    const symbolsPerFrame = symbolsPerSecond / 60;
+        const fontSize = 16;
+        const columns = Math.floor(canvas.width / fontSize);
+        const drops = Array.from({ length: columns }).fill(1);
+        const words = [];
 
-    function drawMatrix() {
-      ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-      ctx.fillStyle = '#0F0';
-      ctx.font = fontSize + 'px monospace';
-
-      for (let i = 0; i < columns; i++) {
-        const text = characters.charAt(Math.floor(Math.random() * characters.length));
-        ctx.fillText(text, i * fontSize, drops[i] * fontSize);
-
-        if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
-          drops[i] = 0;
+        async function fetchWords() {
+            const response = await fetch('https://random-word-api.herokuapp.com/word?number=100');
+            const data = await response.json();
+            words.push(...data);
         }
-        drops[i]++;
-      }
-    }
 
-    function update() {
-      drawMatrix();
-      requestAnimationFrame(update);
-    }
+        function draw() {
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = '#0F0';
+            ctx.font = `${fontSize}px monospace`;
 
-    setInterval(() => {
-      for (let i = 0; i < symbolsPerFrame; i++) {
-        drawMatrix();
-      }
-    }, 1000 / 60);
+            drops.forEach((drop, x) => {
+                const word = words[Math.floor(Math.random() * words.length)];
+                ctx.fillText(word, x * fontSize, drop * fontSize);
+                drops[x] = drop > canvas.height / fontSize ? 0 : drop + 1;
 
-    update();
-  </script>
+                // Alert the word that appears
+                alert(word);
+            });
+        }
+
+        async function init() {
+            await fetchWords();
+            setInterval(draw, 100);
+        }
+
+        init();
+    </script>
 </body>
 </html>
