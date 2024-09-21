@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Star Map</title>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      background: #000;
+    }
+    canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="starCanvas"></canvas>
+  <script>
+    const canvas = document.getElementById('starCanvas');
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    const colors = ['#FF5733', '#33FF57', '#3357FF', '#F3FF33', '#FF33A8'];
+    const maxStars = 1000000; // Max number of stars
+    let stars = [];
+
+    function createStar() {
+      const x = Math.random() * canvas.width;
+      const y = Math.random() * canvas.height;
+      const size = Math.random() * 15 + 5;
+      stars.push({ x, y, size, color: colors[Math.floor(Math.random() * colors.length)] });
+    }
+
+    function generateStars() {
+      for (let i = 0; i < 50000; i++) { // Generate 50,000 stars at a time
+        if (stars.length < maxStars) {
+          createStar();
+        }
+      }
+      drawStars();
+      requestAnimationFrame(generateStars);
+    }
+
+    function drawStars() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      stars.forEach(star => {
+        ctx.beginPath();
+        ctx.arc(star.x, star.y, star.size, 0, Math.PI * 2);
+        ctx.fillStyle = star.color;
+        ctx.fill();
+      });
+    }
+
+    // Start generating stars
+    generateStars();
+  </script>
+</body>
+</html>
