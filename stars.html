@@ -14,13 +14,30 @@
         canvas {
             display: block;
         }
+        #modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            font-size: 40px;
+            text-align: center;
+            justify-content: center;
+            align-items: center;
+            display: flex;
+        }
     </style>
 </head>
 <body>
     <canvas id="matrixCanvas"></canvas>
+    <div id="modal"></div>
     <script>
         const canvas = document.getElementById('matrixCanvas');
         const ctx = canvas.getContext('2d');
+        const modal = document.getElementById('modal');
         canvas.height = window.innerHeight;
         canvas.width = window.innerWidth;
 
@@ -35,6 +52,14 @@
             words.push(...data);
         }
 
+        function showModal(word) {
+            modal.textContent = word;
+            modal.style.display = 'flex';
+            setTimeout(() => {
+                modal.style.display = 'none';
+            }, 1000); // Adjust duration for visibility
+        }
+
         function draw() {
             ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -46,8 +71,8 @@
                 ctx.fillText(word, x * fontSize, drop * fontSize);
                 drops[x] = drop > canvas.height / fontSize ? 0 : drop + 1;
 
-                // Alert the word that appears
-                alert(word);
+                // Show the custom modal for the word
+                showModal(word);
             });
         }
 
