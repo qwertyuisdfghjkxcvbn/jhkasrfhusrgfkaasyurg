@@ -3,12 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Star Map</title>
+  <title>Matrix Effect</title>
   <style>
     body {
       margin: 0;
       overflow: hidden;
-      background: #000;
+      background: black;
     }
     canvas {
       position: absolute;
@@ -18,46 +18,50 @@
   </style>
 </head>
 <body>
-  <canvas id="starCanvas"></canvas>
+  <canvas id="matrixCanvas"></canvas>
   <script>
-    const canvas = document.getElementById('starCanvas');
+    const canvas = document.getElementById('matrixCanvas');
     const ctx = canvas.getContext('2d');
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
 
-    const colors = ['#FF5733', '#33FF57', '#3357FF', '#F3FF33', '#FF33A8'];
-    const maxStars = 1000000; // Max number of stars
-    let stars = [];
+    const columns = Math.floor(canvas.width / 20);
+    const drops = Array(columns).fill(1);
+    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%^&*()';
+    const fontSize = 20;
+    const symbolsPerSecond = 1000000;
+    const symbolsPerFrame = symbolsPerSecond / 60;
 
-    function createStar() {
-      const x = Math.random() * canvas.width;
-      const y = Math.random() * canvas.height;
-      const size = Math.random() * 15 + 5;
-      stars.push({ x, y, size, color: colors[Math.floor(Math.random() * colors.length)] });
-    }
+    function drawMatrix() {
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    function generateStars() {
-      for (let i = 0; i < 50000; i++) { // Generate 50,000 stars at a time
-        if (stars.length < maxStars) {
-          createStar();
+      ctx.fillStyle = '#0F0';
+      ctx.font = fontSize + 'px monospace';
+
+      for (let i = 0; i < columns; i++) {
+        const text = characters.charAt(Math.floor(Math.random() * characters.length));
+        ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+
+        if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+          drops[i] = 0;
         }
+        drops[i]++;
       }
-      drawStars();
-      requestAnimationFrame(generateStars);
     }
 
-    function drawStars() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      stars.forEach(star => {
-        ctx.beginPath();
-        ctx.arc(star.x, star.y, star.size, 0, Math.PI * 2);
-        ctx.fillStyle = star.color;
-        ctx.fill();
-      });
+    function update() {
+      drawMatrix();
+      requestAnimationFrame(update);
     }
 
-    // Start generating stars
-    generateStars();
+    setInterval(() => {
+      for (let i = 0; i < symbolsPerFrame; i++) {
+        drawMatrix();
+      }
+    }, 1000 / 60); // Run the drawing every frame
+
+    update();
   </script>
 </body>
 </html>
