@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nuclear Boom Button</title>
+    <title>Epic Boom Button</title>
     <style>
         body {
             font-family: 'Arial', sans-serif;
@@ -20,7 +20,7 @@
 
         .button-container {
             text-align: center;
-            z-index: 100; /* Ensure the button stays on top */
+            z-index: 100;
             position: relative;
         }
 
@@ -37,7 +37,7 @@
             font-family: 'Impact', sans-serif;
             text-transform: uppercase;
             position: relative;
-            z-index: 100; /* Ensure button is on top */
+            z-index: 100;
         }
 
         .nuclear-btn:active {
@@ -118,6 +118,26 @@
             100% { opacity: 0; transform: scale(2); }
         }
 
+        .shockwave {
+            position: absolute;
+            width: 100vw;
+            height: 100vh;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: radial-gradient(circle, rgba(255, 69, 0, 0.5) 10%, rgba(0, 0, 0, 0) 60%);
+            opacity: 0;
+            z-index: 4;
+            animation: shockwaveEffect 1.5s ease-out forwards;
+            display: none;
+        }
+
+        @keyframes shockwaveEffect {
+            0% { opacity: 0; transform: scale(0); }
+            50% { opacity: 1; transform: scale(1.5); }
+            100% { opacity: 0; transform: scale(2.5); }
+        }
+
         audio {
             display: none;
         }
@@ -132,6 +152,7 @@
 
     <div class="mushroom-cloud"></div>
     <div class="explosion-light"></div>
+    <div class="shockwave"></div>
 
     <audio id="epicExplosionSound">
         <source src="https://www.soundjay.com/explosion/sounds/explosion-01.mp3" type="audio/mp3">
@@ -140,26 +161,22 @@
     <script>
         function triggerEpicBoom() {
             const sound = document.getElementById("epicExplosionSound");
-
-            // Play explosion sound only if the file is available
             if (sound) {
                 sound.play().catch(error => console.log("Sound could not be played: ", error));
             }
 
-            // Add shake and flash effects
             document.body.classList.add("boom-effect");
-
-            // Display the BOOM text and visuals
             document.querySelector(".boom-text").style.display = "block";
             document.querySelector(".mushroom-cloud").style.display = "block";
             document.querySelector(".explosion-light").style.display = "block";
+            document.querySelector(".shockwave").style.display = "block";
 
-            // Remove the effects after 3 seconds
             setTimeout(() => {
                 document.body.classList.remove("boom-effect");
                 document.querySelector(".boom-text").style.display = "none";
                 document.querySelector(".mushroom-cloud").style.display = "none";
                 document.querySelector(".explosion-light").style.display = "none";
+                document.querySelector(".shockwave").style.display = "none";
             }, 3000);
         }
     </script>
