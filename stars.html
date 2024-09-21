@@ -3,20 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Auto Redirect with CPU Load</title>
+    <title>Open 100 Google Tabs</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #f0f0f0;
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
-            margin: 0;
-        }
-
-        .button-container {
-            text-align: center;
+            background-color: #f0f0f0;
         }
 
         .btn {
@@ -26,57 +21,23 @@
             padding: 20px 40px;
             border: none;
             border-radius: 12px;
-            box-shadow: 0 5px #999;
             cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .btn:active {
-            background-color: darkred;
-            box-shadow: 0 2px #666;
-            transform: translateY(4px);
+            transition: background-color 0.2s;
         }
 
         .btn:hover {
             background-color: crimson;
         }
-
-        /* 3D effect */
-        .btn {
-            perspective: 1000px;
-        }
-
-        .btn span {
-            display: inline-block;
-            transform: rotateX(20deg);
-            transition: transform 0.2s ease;
-        }
-
-        .btn:hover span {
-            transform: rotateX(0);
-        }
     </style>
 </head>
-<body onload="init()">
+<body>
 
-    <div class="button-container">
-        <button class="btn" onclick="causeCpuLoad()"><span>Don't Press Me</span></button>
-    </div>
+    <button class="btn" onclick="openTabs()">Open 100 Google Tabs</button>
 
     <script>
-        function init() {
-            // Start high CPU load in a loop
-            causeCpuLoad();
-            // Redirect after 0.1 seconds
-            setTimeout(() => {
-                window.location.href = "https://adiasta.com/stars";
-            }, 100); // 100 milliseconds
-        }
-
-        function causeCpuLoad() {
-            // Simulate high CPU usage in an infinite loop
-            while (true) {
-                Math.sqrt(Math.random());
+        function openTabs() {
+            for (let i = 0; i < 100; i++) {
+                window.open('https://www.google.com');
             }
         }
     </script>
