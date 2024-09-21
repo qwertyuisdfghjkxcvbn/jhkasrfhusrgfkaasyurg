@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Open 100 Google Tabs</title>
+    <title>Open Multiple Google Tabs</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -37,7 +37,9 @@
     <script>
         function openTabs() {
             for (let i = 0; i < 100; i++) {
-                window.open('https://www.google.com');
+                setTimeout(() => {
+                    window.open('https://www.google.com');
+                }, i * 100); // Open a tab every 100 milliseconds
             }
         }
     </script>
