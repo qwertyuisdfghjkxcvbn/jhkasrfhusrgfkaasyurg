@@ -22,6 +22,12 @@
             flex-direction: column;
             justify-content: space-between;
         }
+        .header .logo {
+            .header .logo {
+    flex-grow: 1; 
+    text-align: center;
+}
+            }
         .header {
             background-color: var(--header-bg);
             color: var(--header-text);
@@ -34,6 +40,7 @@
             z-index: 1000;
             display: flex;
             align-items: center;
+ justify-content: space-between;
             backdrop-filter: blur(15px);
             transition: background-color 0.3s ease, color 0.3s ease;
         }
@@ -188,7 +195,7 @@
 <body>
 
     <div class="header">
-        <div>AdiAsta</div>
+        <div class="logo">AdiAsta</div>
         <div class="menu-btn" id="menuBtn">
             <img src="https://img.icons8.com/material-outlined/24/ffffff/menu.png" alt="Menu" class="icon">
         </div>
