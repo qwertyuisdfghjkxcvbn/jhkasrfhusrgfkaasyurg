@@ -40,7 +40,10 @@
         .menu-btn {
             cursor: pointer;
             margin-left: auto;
-            color: var(--send-text);
+        }
+        .menu-btn img {
+            filter: var(--icon-filter);
+            transition: filter 0.3s;
         }
         .menu {
             display: none;
@@ -159,6 +162,7 @@
             --input-border: grey;
             --menu-bg: #333;
             --send-text: white;
+            --icon-filter: brightness(0) invert(1);
         }
         body.light-mode {
             --header-bg: rgba(255, 255, 255, 0.8);
@@ -172,6 +176,7 @@
             --input-border: #333;
             --menu-bg: white;
             --send-text: black;
+            --icon-filter: none;
         }
         .icon {
             width: 20px;
@@ -191,6 +196,7 @@
             <div class="menu-item" id="newChatBtn">New Chat</div>
             <div class="menu-item" id="clearChatBtn">Clear Chat</div>
             <div class="menu-item" id="wordOfDayBtn">Word of the Day</div>
+            <div class="menu-item" id="favoritesBtn">Favorites</div>
             <div class="menu-item" id="historyBtn">Show History</div>
             <div class="menu-item" id="toggleThemeBtn">Toggle Theme</div>
             <div class="menu-item" id="aboutBtn">About Us</div>
@@ -215,7 +221,6 @@
         const favoritesBtn = document.getElementById('favoritesBtn');
         const historyBtn = document.getElementById('historyBtn');
         const toggleThemeBtn = document.getElementById('toggleThemeBtn');
-        const searchSynonymsBtn = document.getElementById('searchSynonymsBtn');
         const chatContainer = document.getElementById('chatContainer');
         const sendBtn = document.getElementById('sendBtn');
         const wordInput = document.getElementById('wordInput');
@@ -257,10 +262,6 @@
         favoritesBtn.addEventListener('click', fetchFavorites);
         historyBtn.addEventListener('click', fetchLastWords);
         toggleThemeBtn.addEventListener('click', toggleTheme);
-        searchSynonymsBtn.addEventListener('click', () => {
-            if (currentWord) fetchSynonyms(currentWord);
-        });
-
         aboutBtn.addEventListener('click', () => {
             const botMessage = createBotMessage("About Us: This is a dictionary app created to help you learn new words!");
             chatContainer.appendChild(botMessage);
@@ -426,28 +427,6 @@
             const botMessage = createBotMessage(`Last searched words: ${lastWords || 'No history yet.'}`);
             chatContainer.appendChild(botMessage);
             scrollToBottom();
-        }
-
-        async function fetchSynonyms(word) {
-            try {
-                const response = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${word}`);
-                const data = await response.json();
-
-                if (data[0] && data[0].meanings) {
-                    const synonyms = data[0].meanings.flatMap(m => m.definitions.flatMap(d => d.synonyms || [])).join(', ');
-                    const botMessage = createBotMessage(`<strong>Synonyms:</strong> ${synonyms || 'No synonyms found.'}`);
-                    chatContainer.appendChild(botMessage);
-                } else {
-                    const botMessage = createBotMessage('No synonyms found.');
-                    chatContainer.appendChild(botMessage);
-                }
-                scrollToBottom();
-            } catch (error) {
-                const botMessage = createBotMessage('Error retrieving synonyms.');
-                botMessage.className += ' error';
-                chatContainer.appendChild(botMessage);
-                scrollToBottom();
-            }
         }
 
         function toggleTheme() {
