@@ -3,183 +3,94 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Epic Boom Button</title>
+    <title>Random Words Infinite Scroll</title>
     <style>
         body {
             font-family: 'Arial', sans-serif;
-            background: linear-gradient(135deg, #1a1a1a, #0d0d0d);
-            color: white;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
             margin: 0;
-            overflow: hidden;
-            position: relative;
+            padding: 20px;
+            background: linear-gradient(to bottom right, #ff7e5f, #feb47b);
+            color: #333;
         }
 
-        .button-container {
+        #content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .item {
+            background: #ffffff;
+            margin: 10px 0;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            width: 80%;
+            transition: transform 0.2s;
+        }
+
+        .item:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        #loading {
             text-align: center;
-            z-index: 100;
-            position: relative;
-        }
-
-        .nuclear-btn {
-            background: radial-gradient(circle at center, #ff3d3d, #a80000);
-            color: white;
-            font-size: 30px;
-            padding: 20px 50px;
-            border: 5px solid #ff0000;
-            border-radius: 50%;
-            box-shadow: 0 10px 30px rgba(255, 0, 0, 0.7);
-            cursor: pointer;
-            transition: all 0.3s;
-            font-family: 'Impact', sans-serif;
-            text-transform: uppercase;
-            position: relative;
-            z-index: 100;
-        }
-
-        .nuclear-btn:active {
-            background-color: darkred;
-            box-shadow: 0 5px #666;
-            transform: scale(0.9);
-        }
-
-        .boom-effect {
-            animation: epic-flash 0.1s 20 alternate, epic-shake 0.3s 6;
-        }
-
-        @keyframes epic-flash {
-            0% { background-color: red; }
-            100% { background-color: yellow; }
-        }
-
-        @keyframes epic-shake {
-            0% { transform: translate(1px, 1px) rotate(0deg); }
-            10% { transform: translate(-10px, -10px) rotate(-5deg); }
-            20% { transform: translate(-20px, 0px) rotate(5deg); }
-            30% { transform: translate(15px, 15px) rotate(0deg); }
-            40% { transform: translate(-15px, -10px) rotate(-3deg); }
-            50% { transform: translate(20px, 10px) rotate(2deg); }
-            60% { transform: translate(-20px, -20px) rotate(-1deg); }
-            70% { transform: translate(10px, 20px) rotate(1deg); }
-            80% { transform: translate(5px, -5px) rotate(-2deg); }
-            90% { transform: translate(-10px, 5px) rotate(3deg); }
-            100% { transform: translate(5px, -10px) rotate(0deg); }
-        }
-
-        .boom-text {
+            padding: 20px;
             display: none;
-            font-size: 150px;
-            color: yellow;
             font-weight: bold;
-            text-shadow: 10px 10px 0 red, 15px 15px 0 orange;
-            z-index: 2;
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-        }
-
-        .mushroom-cloud {
-            display: none;
-            width: 100%;
-            height: 100%;
-            background: radial-gradient(ellipse at center, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0) 70%);
-            opacity: 0;
-            animation: cloudExpand 2s forwards;
-            position: absolute;
-            z-index: 1;
-            top: 0;
-            left: 0;
-        }
-
-        @keyframes cloudExpand {
-            0% { opacity: 0; transform: scale(0); }
-            100% { opacity: 1; transform: scale(1.5); }
-        }
-
-        .explosion-light {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            background: radial-gradient(circle at center, rgba(255, 255, 255, 0.9), transparent 80%);
-            opacity: 0;
-            animation: lightPulse 1.5s forwards;
-            top: 0;
-            left: 0;
-            z-index: 3;
-        }
-
-        @keyframes lightPulse {
-            0% { opacity: 0; transform: scale(0.5); }
-            50% { opacity: 1; transform: scale(1.2); }
-            100% { opacity: 0; transform: scale(2); }
-        }
-
-        .shockwave {
-            position: absolute;
-            width: 100vw;
-            height: 100vh;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: radial-gradient(circle, rgba(255, 69, 0, 0.5) 10%, rgba(0, 0, 0, 0) 60%);
-            opacity: 0;
-            z-index: 4;
-            animation: shockwaveEffect 1.5s ease-out forwards;
-            display: none;
-        }
-
-        @keyframes shockwaveEffect {
-            0% { opacity: 0; transform: scale(0); }
-            50% { opacity: 1; transform: scale(1.5); }
-            100% { opacity: 0; transform: scale(2.5); }
-        }
-
-        audio {
-            display: none;
+            color: #ffffff;
         }
     </style>
 </head>
 <body>
-
-    <div class="button-container">
-        <button class="nuclear-btn" onclick="triggerEpicBoom()">⚠️ Launch the Boom</button>
-        <div class="boom-text">💥 BOOOOM!!! 💥</div>
-    </div>
-
-    <div class="mushroom-cloud"></div>
-    <div class="explosion-light"></div>
-    <div class="shockwave"></div>
-
-    <audio id="epicExplosionSound">
-        <source src="https://www.soundjay.com/explosion/sounds/explosion-01.mp3" type="audio/mp3">
-    </audio>
-
+    <div id="content"></div>
+    <div id="loading">Loading more items...</div>
+    
     <script>
-        function triggerEpicBoom() {
-            const sound = document.getElementById("epicExplosionSound");
-            if (sound) {
-                sound.play().catch(error => console.log("Sound could not be played: ", error));
-            }
+        let currentPage = 1;
 
-            document.body.classList.add("boom-effect");
-            document.querySelector(".boom-text").style.display = "block";
-            document.querySelector(".mushroom-cloud").style.display = "block";
-            document.querySelector(".explosion-light").style.display = "block";
-            document.querySelector(".shockwave").style.display = "block";
-
-            setTimeout(() => {
-                document.body.classList.remove("boom-effect");
-                document.querySelector(".boom-text").style.display = "none";
-                document.querySelector(".mushroom-cloud").style.display = "none";
-                document.querySelector(".explosion-light").style.display = "none";
-                document.querySelector(".shockwave").style.display = "none";
-            }, 3000);
+        async function fetchRandomWord() {
+            // Replace this URL with the appropriate API endpoint
+            const response = await fetch('https://random-word-api.herokuapp.com/word?number=1');
+            const data = await response.json();
+            return data[0]; // Get the random word
         }
-    </script>
 
+        async function fetchWordDefinition(word) {
+            // Replace this URL with your dictionary API endpoint
+            const response = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${word}`);
+            const data = await response.json();
+            return data[0].meanings[0].definitions[0].definition; // Get the definition
+        }
+
+        async function loadItems(page) {
+            const content = document.getElementById('content');
+            const loading = document.getElementById('loading');
+            loading.style.display = 'block';
+
+            for (let i = 0; i < 10; i++) {
+                const word = await fetchRandomWord();
+                const definition = await fetchWordDefinition(word);
+                const item = document.createElement('div');
+                item.className = 'item';
+                item.innerHTML = `<strong>${word}</strong>: ${definition}`;
+                content.appendChild(item);
+            }
+            loading.style.display = 'none';
+        }
+
+        function checkScroll() {
+            const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
+            if (scrollTop + clientHeight >= scrollHeight - 5) {
+                currentPage++;
+                loadItems(currentPage);
+            }
+        }
+
+        // Load initial items
+        loadItems(currentPage);
+        window.addEventListener('scroll', checkScroll);
+    </script>
 </body>
 </html>
