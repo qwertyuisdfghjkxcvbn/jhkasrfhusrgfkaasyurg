@@ -1,278 +1,308 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AdiAsta</title>
-    <link rel="manifest" href="manifest.json">
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <title>AdiAsta - Code Playground</title>
+    <link href="https://fonts.googleapis.com/css2?family=SF+Pro:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
-        /* Basic Reset */
-        * {
-            box-sizing: border-box;
+        body {
+            font-family: 'SF Pro', sans-serif;
             margin: 0;
             padding: 0;
+            background-color: #ffffff;
+            color: #000000;
+            transition: background-color 0.3s, color 0.3s;
+            overflow: hidden;
         }
-
-        body {
-            font-family: 'Roboto', sans-serif;
-            background-color: #ffffff; /* Light theme background */
-            color: #333; /* Dark text for light theme */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            background-color: #f5f5f5;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+        }
+        .button-container {
+            display: flex;
+            align-items: center;
+        }
+        button {
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            background-color: #007AFF; /* Apple blue */
+            color: #ffffff;
+            width: 40px;
+            height: 40px;
+            margin-left: 10px;
+            transition: background-color 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        button:hover {
+            background-color: #005BB5; /* Darker blue */
+        }
+        main {
             display: flex;
             flex-direction: column;
-            align-items: center;
-            min-height: 100vh;
+            height: calc(100vh - 80px);
             padding: 20px;
-            line-height: 1.6;
-            transition: background-color 0.3s, color 0.3s; /* Smooth transition for theme changes */
-        }
-
-        /* Dark Theme Styles */
-        body.dark {
-            background-color: #121212; /* Dark theme background */
-            color: #e0e0e0; /* Light text for dark theme */
-        }
-
-        header {
-            width: 100%;
-            padding: 20px;
-            background: transparent; /* Transparent header */
-            text-align: center;
-            position: relative;
-            z-index: 10; /* Ensure header is above other content */
-        }
-
-        .logo {
-            font-size: 2.5em;
-            font-weight: 700;
-            color: #007aff; /* iOS blue color for logo */
-            margin-bottom: 5px;
-        }
-
-        h1 {
-            font-size: 1.5em;
-            color: #007aff; /* Blue accent for title */
-        }
-
-        footer {
-            width: 100%;
-            padding: 10px;
-            background: transparent; /* Transparent footer */
-            text-align: center;
-            border-top: 1px solid #ddd; /* Subtle border */
-            margin-top: auto;
-        }
-
-        footer p {
-            color: #007aff; /* Blue text for footer */
-        }
-
-        /* Editor Container */
-        .editor {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: space-between;
-            width: 100%;
-            max-width: 1200px;
-            margin: 20px 0;
-            gap: 20px; /* Space between items */
-        }
-
-        .editor textarea {
-            width: 30%;
-            min-width: 250px;
-            height: 300px;
-            padding: 15px;
-            border: 1px solid #ddd; /* Light border */
-            border-radius: 8px; /* Rounded corners */
-            resize: none;
-            font-family: 'Courier New', Courier, monospace;
-            font-size: 1em;
-            transition: border-color 0.3s;
-            background: #f9f9f9; /* Light background for editor */
-            color: #333; /* Dark text */
-            overflow: auto; /* Allow scroll */
-        }
-
-        body.dark .editor textarea {
-            background: #2c2c2c; /* Dark background for editor in dark mode */
-            color: #e0e0e0; /* Light text */
-            border-color: #555; /* Darker border */
-        }
-
-        .editor textarea:focus {
-            border-color: #007aff; /* Blue border on focus */
-            outline: none;
-        }
-
-        button {
-            padding: 12px 20px;
-            background-color: #007aff; /* iOS blue button */
-            color: #ffffff; /* White text */
-            border: none;
-            border-radius: 8px; /* Rounded button */
-            cursor: pointer;
-            font-size: 1em;
-            transition: background 0.3s, transform 0.3s; /* Transition effects */
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2); /* Add shadow for depth */
-            margin: 10px; /* Margin around buttons */
-        }
-
-        button:hover {
-            background-color: #0056b3; /* Darker blue on hover */
-            transform: translateY(-2px); /* Lift effect */
-        }
-
-        button:active {
-            transform: translateY(1px); /* Pressed effect */
-        }
-
-        h2 {
-            margin-top: 40px;
-            font-size: 1.8em;
-            text-align: center;
-            color: #333; /* Dark text */
-        }
-
-        #output {
-            width: 100%;
-            height: 300px;
-            border: 1px solid #ddd; /* Light border */
-            border-radius: 8px; /* Rounded corners */
-            background: #ffffff; /* White background for output */
-            margin-top: 20px;
+            box-sizing: border-box;
             overflow: auto;
         }
-
-        /* Responsive Styles */
-        @media (max-width: 768px) {
-            .editor {
-                flex-direction: column; /* Stack the textareas on mobile */
-                align-items: center; /* Center align */
-            }
-
-            .editor textarea {
-                width: 90%; /* Full width on smaller screens */
-            }
-
-            button {
-                width: 90%; /* Full width for buttons on mobile */
-            }
+        .editor {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 20px;
+            flex: 1;
         }
-
-        /* Fullscreen styles */
+        .output {
+            border-top: 1px solid #ccc;
+            padding: 10px;
+            box-sizing: border-box;
+            display: none; /* Initially hidden */
+            position: relative;
+        }
+        .code-container {
+            margin-bottom: 20px;
+        }
+        .editor textarea {
+            width: 100%;
+            height: 150px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            resize: vertical;
+            font-family: 'SF Pro', sans-serif;
+            font-size: 14px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+            overflow-y: auto;
+        }
+        .editor h2 {
+            margin: 10px 0;
+            font-size: 18px;
+        }
+        .editor .button-container {
+            margin-top: 10px;
+            display: flex;
+            gap: 10px;
+        }
         .fullscreen {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            z-index: 1000;
-            background: white;
-            border: none;
+            background: rgba(0, 0, 0, 0.8);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
         }
-
-        body.dark .fullscreen {
-            background: #121212; /* Dark background for fullscreen */
+        .fullscreen .output-frame {
+            width: 80%;
+            height: 80%;
+            border: none;
+            border-radius: 5px;
+        }
+        .fullscreen .close-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            padding: 10px;
+            background: red;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            z-index: 110;
+        }
+        footer {
+            text-align: center;
+            padding: 15px;
+            background-color: #f5f5f5;
+            position: relative;
+        }
+        .dark-mode {
+            background-color: #222222;
+            color: #ffffff;
+        }
+        .dark-mode header {
+            background-color: #333333;
+        }
+        .dark-mode footer {
+            background-color: #333333;
+        }
+        .dark-mode button {
+            background-color: #ffffff;
+            color: #000000;
+        }
+        .dark-mode textarea {
+            background-color: #444444;
+            color: #ffffff;
+            border: 1px solid #888888;
+        }
+        @media (max-width: 600px) {
+            main {
+                flex-direction: column;
+            }
+            .editor, .output {
+                width: 100%;
+                padding: 0;
+            }
         }
     </style>
 </head>
-
 <body>
-
     <header>
-        <div class="logo">AdiAsta</div> <!-- Logo -->
-        <h1>Live Code Editor</h1>
+        <div class="logo">AdiAsta</div>
+        <div class="button-container">
+            <button id="theme-toggle" title="Toggle Dark/Light Mode"><i class="fas fa-adjust"></i></button>
+            <button id="download-btn" title="Download Files"><i class="fas fa-download"></i></button>
+            <button id="add-file-btn" title="Add File"><i class="fas fa-plus"></i></button>
+        </div>
     </header>
-
-    <div class="editor">
-        <textarea id="html" placeholder="Enter HTML code here..."></textarea>
-        <textarea id="css" placeholder="Enter CSS code here..."></textarea>
-        <textarea id="js" placeholder="Enter JavaScript code here..."></textarea>
-        <button id="run">Run Code</button>
-        <button id="fullscreen">Fullscreen Output</button>
+    <main>
+        <div class="editor">
+            <h2>HTML Editor</h2>
+            <div class="code-container">
+                <textarea id="html-input" placeholder="Write HTML here..."></textarea>
+                <div class="button-container">
+                    <button onclick="copyToClipboard('html-input')" title="Copy"><i class="fas fa-copy"></i></button>
+                    <button onclick="pasteFromClipboard('html-input')" title="Paste"><i class="fas fa-paste"></i></button>
+                    <button onclick="cutToClipboard('html-input')" title="Cut"><i class="fas fa-cut"></i></button>
+                </div>
+            </div>
+            <h2>CSS Editor</h2>
+            <div class="code-container">
+                <textarea id="css-input" placeholder="Write CSS here..."></textarea>
+                <div class="button-container">
+                    <button onclick="copyToClipboard('css-input')" title="Copy"><i class="fas fa-copy"></i></button>
+                    <button onclick="pasteFromClipboard('css-input')" title="Paste"><i class="fas fa-paste"></i></button>
+                    <button onclick="cutToClipboard('css-input')" title="Cut"><i class="fas fa-cut"></i></button>
+                </div>
+            </div>
+            <h2>JavaScript Editor</h2>
+            <div class="code-container">
+                <textarea id="js-input" placeholder="Write JavaScript here..."></textarea>
+                <div class="button-container">
+                    <button onclick="copyToClipboard('js-input')" title="Copy"><i class="fas fa-copy"></i></button>
+                    <button onclick="pasteFromClipboard('js-input')" title="Paste"><i class="fas fa-paste"></i></button>
+                    <button onclick="cutToClipboard('js-input')" title="Cut"><i class="fas fa-cut"></i></button>
+                </div>
+            </div>
+            <button id="run-btn" title="Run Code"><i class="fas fa-play"></i></button>
+        </div>
+        <div class="output">
+            <h2>Output</h2>
+            <div id="output-content"></div>
+            <button id="fullscreen-output" title="Show Fullscreen Output">🖥️</button>
+        </div>
+    </main>
+    <div class="fullscreen" id="fullscreen">
+        <button class="close-btn" id="close-fullscreen">Close</button>
+        <iframe class="output-frame" id="output-frame"></iframe>
     </div>
-
-    <h2>Output</h2>
-    <iframe id="output" sandbox="allow-same-origin allow-scripts"></iframe>
-
-    <div class="download-buttons">
-        <button id="downloadHtml">Download HTML</button>
-        <button id="downloadCss">Download CSS</button>
-        <button id="downloadJs">Download JavaScript</button>
-    </div>
-
     <footer>
-        <p>&copy; 2024 AdiAsta | All Rights Reserved</p>
+        <p>&copy; 2024 AdiAsta. All rights reserved.</p>
     </footer>
-
     <script>
-        // Set theme based on system preference
-        const body = document.body;
-        const prefersDarkScheme = window.matchMedia("(prefers-color-scheme: dark)");
+        document.getElementById('run-btn').addEventListener('click', function() {
+            const html = document.getElementById('html-input').value;
+            const css = document.getElementById('css-input').value;
+            const js = document.getElementById('js-input').value;
+            const output = document.getElementById('output-content');
+            output.innerHTML = html; // Display HTML in output area
+            const style = document.createElement('style');
+            style.innerHTML = css;
+            output.appendChild(style);
+            const script = document.createElement('script');
+            script.innerHTML = js;
+            output.appendChild(script);
+            document.querySelector('.output').style.display = 'block'; // Show output section
+        });
 
-        function setTheme(e) {
-            if (e.matches) {
-                body.classList.add("dark");
+        document.getElementById('fullscreen-output').addEventListener('click', function() {
+            const outputFrame = document.getElementById('output-frame');
+            outputFrame.srcdoc = document.getElementById('output-content').innerHTML;
+            document.getElementById('fullscreen').style.display = 'flex'; // Show fullscreen output
+        });
+
+        document.getElementById('close-fullscreen').addEventListener('click', function() {
+            document.getElementById('fullscreen').style.display = 'none'; // Hide fullscreen output
+        });
+
+        document.getElementById('download-btn').addEventListener('click', function() {
+            const htmlBlob = new Blob([document.getElementById('html-input').value], { type: 'text/html' });
+            const cssBlob = new Blob([document.getElementById('css-input').value], { type: 'text/css' });
+            const jsBlob = new Blob([document.getElementById('js-input').value], { type: 'application/javascript' });
+
+            const files = [
+                { name: 'index.html', blob: htmlBlob },
+                { name: 'styles.css', blob: cssBlob },
+                { name: 'script.js', blob: jsBlob }
+            ];
+
+            files.forEach(file => {
+                const a = document.createElement('a');
+                a.href = URL.createObjectURL(file.blob);
+                a.download = file.name;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+            });
+        });
+
+        document.getElementById('add-file-btn').addEventListener('click', function() {
+            const fileType = prompt("Enter file type (css/js):").toLowerCase();
+            const fileName = prompt("Enter file name:");
+            if (fileName && (fileType === 'css' || fileType === 'js')) {
+                const container = document.createElement('div');
+                container.className = 'code-container';
+                container.innerHTML = `
+                    <h2>${fileName.toUpperCase()} Editor</h2>
+                    <textarea id="${fileName}-input" placeholder="Write ${fileType.toUpperCase()} here..."></textarea>
+                    <div class="button-container">
+                        <button onclick="copyToClipboard('${fileName}-input')" title="Copy"><i class="fas fa-copy"></i></button>
+                        <button onclick="pasteFromClipboard('${fileName}-input')" title="Paste"><i class="fas fa-paste"></i></button>
+                        <button onclick="cutToClipboard('${fileName}-input')" title="Cut"><i class="fas fa-cut"></i></button>
+                    </div>
+                `;
+                document.querySelector('.editor').appendChild(container);
             } else {
-                body.classList.remove("dark");
-            }
-        }
-
-        prefersDarkScheme.addEventListener("change", setTheme);
-        setTheme(prefersDarkScheme); // Set initial theme
-
-        const runButton = document.getElementById('run');
-        const htmlInput = document.getElementById('html');
-        const cssInput = document.getElementById('css');
-        const jsInput = document.getElementById('js');
-        const outputFrame = document.getElementById('output');
-        const fullscreenButton = document.getElementById('fullscreen');
-
-        runButton.addEventListener('click', () => {
-            const outputDocument = outputFrame.contentDocument || outputFrame.contentWindow.document;
-            outputDocument.open();
-            outputDocument.write(htmlInput.value + "<style>" + cssInput.value + "</style>" + "<script>" + jsInput.value + "<\/script>");
-            outputDocument.close();
-        });
-
-        fullscreenButton.addEventListener('click', () => {
-            if (outputFrame.requestFullscreen) {
-                outputFrame.requestFullscreen();
-            } else if (outputFrame.mozRequestFullScreen) { // Firefox
-                outputFrame.mozRequestFullScreen();
-            } else if (outputFrame.webkitRequestFullscreen) { // Chrome, Safari, and Opera
-                outputFrame.webkitRequestFullscreen();
-            } else if (outputFrame.msRequestFullscreen) { // IE/Edge
-                outputFrame.msRequestFullscreen();
+                alert("Invalid file type. Use 'css' or 'js'.");
             }
         });
 
-        function downloadFile(filename, content) {
-            const blob = new Blob([content], { type: 'text/plain' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = filename;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
+        function copyToClipboard(elementId) {
+            const textArea = document.getElementById(elementId);
+            textArea.select();
+            document.execCommand('copy');
         }
 
-        document.getElementById('downloadHtml').addEventListener('click', () => {
-            downloadFile('index.html', htmlInput.value);
-        });
+        function pasteFromClipboard(elementId) {
+            const textArea = document.getElementById(elementId);
+            navigator.clipboard.readText().then(text => {
+                textArea.value = text;
+            });
+        }
 
-        document.getElementById('downloadCss').addEventListener('click', () => {
-            downloadFile('style.css', cssInput.value);
-        });
+        function cutToClipboard(elementId) {
+            const textArea = document.getElementById(elementId);
+            textArea.select();
+            document.execCommand('cut');
+        }
 
-        document.getElementById('downloadJs').addEventListener('click', () => {
-            downloadFile('script.js', jsInput.value);
+        document.getElementById('theme-toggle').addEventListener('click', function() {
+            document.body.classList.toggle('dark-mode');
         });
     </script>
 </body>
-
 </html>
