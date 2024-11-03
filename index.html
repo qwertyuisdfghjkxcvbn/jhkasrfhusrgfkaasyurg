@@ -41,6 +41,7 @@
     <button onclick="runCode()">Run</button>
   </div>
   <iframe id="preview"></iframe>
+  <button id="closeRunner" style="display:none; width:90%; margin: 10px auto;" onclick="closeRunner()">Close Runner</button>
 
   <script>
     async function pasteCode() {
@@ -69,6 +70,13 @@
       preview.srcdoc = code;
       document.getElementById("editor").style.display = "none";
       preview.style.display = "block";
+      document.getElementById("closeRunner").style.display = "block";
+    }
+
+    function closeRunner() {
+      document.getElementById("editor").style.display = "block";
+      document.getElementById("preview").style.display = "none";
+      document.getElementById("closeRunner").style.display = "none";
     }
   </script>
 </body>
