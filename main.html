@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Labyrinth of Discovery</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Lucida Console", Monaco, monospace;
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: #000;
+            color: #f0f0f0;
+            overflow: hidden;
+            text-align: center;
+            user-select: none;
+        }
+
+        .labyrinth {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .background-loop {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, #222, #000);
+            animation: slowSpin 25s linear infinite;
+            opacity: 0.5;
+        }
+
+        .message-layer {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 2em;
+            font-weight: bold;
+            color: rgba(255, 255, 255, 0.85);
+            opacity: 0;
+            transition: opacity 1s ease, transform 1s ease;
+        }
+
+        .light-circle {
+            position: absolute;
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            box-shadow: 0 0 30px 30px rgba(255, 255, 255, 0.3);
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+
+        .symbol-layer {
+            position: absolute;
+            font-size: 5vw;
+            font-weight: bold;
+            color: rgba(255, 255, 255, 0.15);
+            opacity: 0;
+            animation: fadeInOut 3s ease forwards;
+        }
+
+        @keyframes fadeInOut {
+            0% { opacity: 0; }
+            20% { opacity: 0.5; transform: scale(1.1); }
+            80% { opacity: 0.3; transform: scale(0.9); }
+            100% { opacity: 0; }
+        }
+
+        @keyframes slowSpin {
+            from {
+                transform: rotate(0deg) scale(1.1);
+            }
+            to {
+                transform: rotate(360deg) scale(1.1);
+            }
+        }
+
+        @keyframes glitch {
+            0% { transform: translate(0, 0); }
+            20% { transform: translate(5px, -5px); }
+            40% { transform: translate(-5px, 5px); }
+            60% { transform: translate(3px, -3px); }
+            80% { transform: translate(-3px, 3px); }
+            100% { transform: translate(0, 0); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="labyrinth" id="labyrinth">
+        <div class="background-loop"></div>
+        <div class="message-layer" id="messageLayer">Begin your journey...</div>
+        <div class="light-circle" id="lightCircle"></div>
+    </div>
+
+    <script>
+        const messages = [
+            "Seek the unseen...",
+            "Hidden truths lie ahead...",
+            "Dare to discover.",
+            "Nothing is as it seems.",
+            "You’re part of the riddle.",
+            "The answers are inside.",
+            "Through shadows, find light.",
+            "Knowledge awaits.",
+            "What are you seeking?",
+            "The labyrinth holds the key.",
+            "Follow your curiosity.",
+            "Mystery is the language of the soul.",
+            "Each step reveals more.",
+            "Are you ready for the unknown?",
+            "Questions lead the way.",
+            "Embrace the unknown.",
+            "Listen to the silence.",
+            "Every click unveils a story.",
+            "The path is never straight.",
+            "Look within for answers.",
+            "Truth hides in layers.",
+            "The unknown is your ally.",
+            "Enter, if you dare.",
+            "What you seek, seeks you.",
+            "Each interaction reveals more.",
+            "Symbols hold power.",
+            "Your journey has just begun.",
+            "Reality bends here.",
+            "Follow the whispers.",
+            "Every answer raises a question.",
+            "The labyrinth shifts as you move.",
+            "See beyond what you see.",
+            "The mystery deepens.",
+            "Unravel the hidden.",
+            "You’re on a path of discovery.",
+            "Listen to what is unsaid.",
+            "Nothing is random.",
+            "The unknown awaits your touch.",
+            "Seek, and you shall find.",
+            "Your journey is endless.",
+            "Each path has a purpose.",
+            "Whispers of truth echo here.",
+            "Open the door to secrets.",
+            "What lies behind the veil?",
+            "Let the mystery guide you.",
+            "The light reveals, the dark conceals.",
+            "Each step is a question.",
+            "Unseen forces move with you.",
+            "The journey is the destination.",
+            "Only seekers find.",
+            "Open your mind’s eye.",
+            "Embrace the paradox.",
+            "Feel the pull of the unknown.",
+            "Each moment is a clue.",
+            "Secrets are hidden in silence.",
+            "Curiosity fuels discovery.",
+            "The darkness holds answers.",
+            "Explore without expectation.",
+            "Enter at your own risk.",
+            "One path, many destinations.",
+            "Are you ready to see?",
+            "Step into the mystery.",
+            "The labyrinth remembers.",
+            "Nothing is as it appears.",
+            "What lies beyond sight?",
+            "Seek the truth in darkness.",
+            "Every click alters reality.",
+            "Let the unknown be your guide.",
+            "You are both seeker and sought.",
+            "Find what you didn't know you lost.",
+            "The journey shapes the destination.",
+            "Do not fear the unknown.",
+            "You are the key.",
+            "Truth is a moving target.",
+            "Seek, and the labyrinth will answer.",
+            "The unknown is a mirror.",
+            "Every choice leads somewhere.",
+            "Find the pattern in chaos.",
+            "The labyrinth holds no lies.",
+            "Curiosity reveals hidden paths.",
+            "Reality shifts with each step.",
+            "Truth hides in plain sight.",
+            "Do you trust what you see?",
+            "Questions are the key to discovery.",
+            "What do you seek in darkness?",
+            "Each moment reveals a choice.",
+            "Answers lie beyond the veil.",
+            "Welcome to the unknown.",
+            "The journey begins anew.",
+            "What do you seek here?",
+            "In mystery, truth awakens.",
+            "Embrace the journey.",
+            "Look beyond the surface.",
+            "Paths reveal themselves.",
+            "Truth shifts in shadows.",
+            "Every answer lies within.",
+            "The mystery grows deeper.",
+            "Challenge what you see.",
+            "Discover what is hidden.",
+            "What is lost can be found.",
+            "Open yourself to wonder.",
+            "Nothing here is by chance.",
+            "Each step is part of a puzzle."
+        ];
+
+        const symbols = ["Δ", "∇", "∅", "∞", "φ", "Ψ", "Θ", "Ξ", "∫", "∂", "⊗", "∇"];
+        const messageLayer = document.getElementById('messageLayer');
+        const lightCircle = document.getElementById('lightCircle');
+        const labyrinth = document.getElementById('labyrinth');
+
+        function showSymbol(x, y) {
+            const symbol = document.createElement('div');
+            symbol.classList.add('symbol-layer');
+            symbol.style.left = `${x}px`;
+            symbol.style.top = `${y}px`;
+            symbol.textContent = symbols[Math.floor(Math.random() * symbols.length)];
+            labyrinth.appendChild(symbol);
+            setTimeout(() => labyrinth.removeChild(symbol), 3000);
+        }
+
+        function revealLightAndMessage(event) {
+            const rect = labyrinth.getBoundingClientRect();
+            const x = event.clientX - rect.left;
+            const y = event.clientY - rect.top;
+
+            lightCircle.style.left = `${x - 40}px`;
+            lightCircle.style.top = `${y - 40}px`;
+            lightCircle.style.opacity = '1';
+
+            const randomMessage = messages[Math.floor(Math.random() * messages.length)];
+            messageLayer.textContent = randomMessage;
+            messageLayer.style.opacity = '1';
+            messageLayer.style.animation = 'glitch 0.5s ease-in-out';
+            messageLayer.style.transform = `translate(-50%, -50%) scale(${1 + Math.random() * 0.1})`;
+
+            showSymbol(x, y);
+
+            setTimeout(() => {
+                lightCircle.style.opacity = '0';
+                messageLayer.style.opacity = '0';
+                messageLayer.style.animation = '';
+            }, 3000);
+        }
+
+        labyrinth.addEventListener('click', revealLightAndMessage);
+        labyrinth.addEventListener('touchstart', (event) => {
+            event.preventDefault();
+            revealLightAndMessage(event.touches[0]);
+        });
+    </script>
+</body>
+</html>
