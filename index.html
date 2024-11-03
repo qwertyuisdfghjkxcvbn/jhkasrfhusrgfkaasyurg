@@ -8,8 +8,8 @@
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
       display: flex; justify-content: center; align-items: center; height: 100vh;
-      font-family: 'Arial', sans-serif; transition: background 0.3s, color 0.3s;
-      background: #f9f9f9; color: #333;
+      font-family: Arial, sans-serif; background: #f9f9f9; color: #333;
+      transition: background 0.3s, color 0.3s;
     }
     @media (prefers-color-scheme: dark) {
       body { background: #222; color: #eee; }
@@ -19,7 +19,7 @@
     .container { width: 90%; max-width: 500px; text-align: center; }
     h1 { font-size: 2em; font-weight: bold; margin-bottom: 15px; }
     textarea {
-      width: 100%; height: 150px; padding: 10px; font-family: monospace; font-size: 1em; margin-bottom: 10px;
+      width: 100%; height: 150px; padding: 10px; font-family: monospace; font-size: 1em;
       border: 1px solid #ccc; border-radius: 4px;
     }
     button {
@@ -28,7 +28,17 @@
       transition: background 0.3s;
     }
     button:hover { background: #444; }
-    #preview { display: none; width: 100%; height: 100vh; border: none; }
+    #previewContainer {
+      display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+      background: #000; color: #fff; z-index: 1000; overflow: hidden;
+    }
+    #closeRunner {
+      position: absolute; top: 10px; right: 10px; padding: 10px 15px;
+      background: #ff5252; border: none; font-size: 1em; font-weight: bold; color: #fff; cursor: pointer;
+      border-radius: 4px; transition: background 0.3s;
+    }
+    #closeRunner:hover { background: #ff3333; }
+    #preview { width: 100%; height: 100%; border: none; }
   </style>
 </head>
 <body>
@@ -40,8 +50,11 @@
     <button onclick="copyCode()">Copy</button>
     <button onclick="runCode()">Run</button>
   </div>
-  <iframe id="preview"></iframe>
-  <button id="closeRunner" style="display:none; width:90%; margin: 10px auto;" onclick="closeRunner()">Close Runner</button>
+  
+  <div id="previewContainer">
+    <button id="closeRunner" onclick="closeRunner()">Close Runner</button>
+    <iframe id="preview"></iframe>
+  </div>
 
   <script>
     async function pasteCode() {
@@ -66,17 +79,13 @@
 
     function runCode() {
       const code = document.getElementById("codeInput").value;
-      const preview = document.getElementById("preview");
-      preview.srcdoc = code;
+      document.getElementById("preview").srcdoc = code;
       document.getElementById("editor").style.display = "none";
-      preview.style.display = "block";
-      document.getElementById("closeRunner").style.display = "block";
+      document.getElementById("previewContainer").style.display = "block";
     }
 
     function closeRunner() {
-      document.getElementById("editor").style.display = "block";
-      document.getElementById("preview").style.display = "none";
-      document.getElementById("closeRunner").style.display = "none";
+      window.location.href = "https://adiasta.com";  // Redirects to Adiasta.com
     }
   </script>
 </body>
