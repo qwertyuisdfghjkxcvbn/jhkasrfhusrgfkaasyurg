@@ -11,13 +11,21 @@
       font-family: 'Arial', sans-serif; transition: background 0.3s, color 0.3s;
       background: #f9f9f9; color: #333;
     }
-    @media (prefers-color-scheme: dark) { body { background: #222; color: #eee; } }
+    @media (prefers-color-scheme: dark) {
+      body { background: #222; color: #eee; }
+      button { background: #444; color: #fff; }
+      button:hover { background: #555; }
+    }
     .container { width: 90%; max-width: 500px; text-align: center; }
     h1 { font-size: 2em; font-weight: bold; margin-bottom: 15px; }
-    textarea { width: 100%; height: 150px; padding: 10px; font-family: monospace; font-size: 1em; margin-bottom: 10px; }
+    textarea {
+      width: 100%; height: 150px; padding: 10px; font-family: monospace; font-size: 1em; margin-bottom: 10px;
+      border: 1px solid #ccc; border-radius: 4px;
+    }
     button {
       width: 100%; padding: 12px; margin: 5px 0; font-size: 1em; font-weight: bold;
-      background: #333; color: #fff; border: none; cursor: pointer;
+      background: #333; color: #fff; border: none; cursor: pointer; border-radius: 4px;
+      transition: background 0.3s;
     }
     button:hover { background: #444; }
     #preview { display: none; width: 100%; height: 100vh; border: none; }
@@ -36,17 +44,31 @@
 
   <script>
     async function pasteCode() {
-      document.getElementById("codeInput").value = await navigator.clipboard.readText().catch(() => '');
+      try {
+        const text = await navigator.clipboard.readText();
+        document.getElementById("codeInput").value = text;
+      } catch (err) {
+        alert("Failed to paste: " + err);
+      }
     }
-    function clearCode() { document.getElementById("codeInput").value = ''; }
+
+    function clearCode() {
+      document.getElementById("codeInput").value = '';
+    }
+
     function copyCode() {
-      navigator.clipboard.writeText(document.getElementById("codeInput").value);
+      const codeInput = document.getElementById("codeInput");
+      codeInput.select();
+      document.execCommand("copy");
+      alert("Code copied to clipboard!");
     }
+
     function runCode() {
       const code = document.getElementById("codeInput").value;
-      document.getElementById("preview").srcdoc = code;
+      const preview = document.getElementById("preview");
+      preview.srcdoc = code;
       document.getElementById("editor").style.display = "none";
-      document.getElementById("preview").style.display = "block";
+      preview.style.display = "block";
     }
   </script>
 </body>
