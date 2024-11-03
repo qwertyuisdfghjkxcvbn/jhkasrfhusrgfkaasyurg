@@ -1,312 +1,142 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AdiAsta - Code Playground</title>
-    <link href="https://fonts.googleapis.com/css2?family=SF+Pro:wght@400;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <style>
-        body {
-            font-family: 'SF Pro', sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #ffffff;
-            color: #000000;
-            transition: background-color 0.3s, color 0.3s;
-            overflow: hidden;
-        }
-        header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 15px 20px;
-            background-color: #f5f5f5;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-        }
-        .logo {
-            font-size: 24px;
-            font-weight: bold;
-        }
-        .button-container {
-            display: flex;
-            align-items: center;
-        }
-        button {
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            background-color: #007AFF; /* Apple blue */
-            color: #ffffff;
-            width: 40px;
-            height: 40px;
-            margin-left: 10px;
-            transition: background-color 0.3s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        button:hover {
-            background-color: #005BB5; /* Darker blue */
-        }
-        main {
-            display: flex;
-            flex-direction: column;
-            height: calc(100vh - 80px);
-            padding: 20px;
-            box-sizing: border-box;
-            overflow: hidden;
-        }
-        .editor {
-            display: flex;
-            flex-direction: column;
-            margin-bottom: 20px;
-            flex: 1;
-        }
-        .code-container {
-            margin-bottom: 20px;
-        }
-        .editor textarea {
-            width: calc(100% - 20px); /* Full width minus margins */
-            height: 150px;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            resize: vertical;
-            font-family: 'SF Pro', sans-serif;
-            font-size: 14px;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
-            overflow-y: auto;
-            margin: 0 10px; /* 10px margin on left and right */
-        }
-        .editor h2 {
-            margin: 10px 0;
-            font-size: 18px;
-        }
-        .output {
-            border-top: 1px solid #ccc;
-            padding: 10px;
-            box-sizing: border-box;
-            display: none; /* Initially hidden */
-            position: relative;
-            flex: 1;
-            background-color: #f5f5f5;
-            overflow: auto; /* Allow scrolling */
-        }
-        .output iframe {
-            width: 100%;
-            height: 100%;
-            border: none;
-        }
-        .fullscreen {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 100;
-        }
-        .fullscreen .output-frame {
-            width: 80%;
-            height: 80%;
-            border: none;
-            border-radius: 5px;
-        }
-        .fullscreen .close-btn {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            padding: 10px;
-            background: red;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            z-index: 110;
-        }
-        footer {
-            text-align: center;
-            padding: 15px;
-            background-color: #f5f5f5;
-            position: relative;
-        }
-        .dark-mode {
-            background-color: #222222;
-            color: #ffffff;
-        }
-        .dark-mode header {
-            background-color: #333333;
-        }
-        .dark-mode footer {
-            background-color: #333333;
-        }
-        .dark-mode button {
-            background-color: #ffffff;
-            color: #000000;
-        }
-        .dark-mode textarea {
-            background-color: #444444;
-            color: #ffffff;
-            border: 1px solid #888888;
-        }
-        @media (max-width: 600px) {
-            main {
-                flex-direction: column;
-            }
-            .editor, .output {
-                width: 100%;
-                padding: 0;
-            }
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Adiasta</title>
+  <style>
+    /* Root variables for dark and light modes */
+    :root {
+      --bg-color-light: #f0f0f0;
+      --bg-color-dark: #222;
+      --text-color-light: #111;
+      --text-color-dark: #f8f8f8;
+      --button-bg: #444;
+      --button-text: #fff;
+      --border-color: #666;
+      --accent-color: #d00;
+    }
+
+    /* Base styles for dark/light mode */
+    body {
+      font-family: Arial, sans-serif;
+      transition: background 0.3s, color 0.3s;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      color: var(--text-color-light);
+      background: var(--bg-color-light);
+    }
+
+    /* Automatic dark/light mode */
+    @media (prefers-color-scheme: dark) {
+      body {
+        background: var(--bg-color-dark);
+        color: var(--text-color-dark);
+      }
+      .button, #returnButton {
+        background: var(--bg-color-light);
+        color: var(--text-color-light);
+      }
+    }
+
+    /* Centered container with Malevich style */
+    .container {
+      width: 90%;
+      max-width: 600px;
+      border: 2px solid var(--border-color);
+      padding: 20px;
+      text-align: center;
+    }
+
+    /* Text area for input */
+    #codeInput {
+      width: 100%;
+      height: 200px;
+      padding: 10px;
+      background: var(--bg-color-dark);
+      color: var(--text-color-dark);
+      border: 1px solid var(--border-color);
+      margin: 10px 0;
+      font-family: monospace;
+    }
+
+    /* Button styles */
+    .button, #returnButton {
+      background: var(--button-bg);
+      color: var(--button-text);
+      padding: 10px 20px;
+      border: none;
+      cursor: pointer;
+      margin: 10px;
+      font-size: 1em;
+    }
+
+    /* Hidden until displayed on preview */
+    #preview {
+      display: none;
+      width: 100%;
+      height: 100vh;
+      border: none;
+    }
+
+    /* Footer with Swiss-made label */
+    footer {
+      position: fixed;
+      bottom: 20px;
+      font-size: 0.8em;
+      text-align: center;
+      color: var(--accent-color);
+    }
+  </style>
 </head>
 <body>
-    <header>
-        <div class="logo">AdiAsta</div>
-        <div class="button-container">
-            <button id="run-btn" title="Run Code"><i class="fas fa-play"></i></button>
-            <button id="theme-toggle" title="Toggle Dark/Light Mode"><i class="fas fa-adjust"></i></button>
-            <button id="add-file-btn" title="Add File"><i class="fas fa-plus"></i></button>
-        </div>
-    </header>
-    <main>
-        <div class="editor">
-            <h2>HTML Editor</h2>
-            <div class="code-container">
-                <textarea id="html-input" placeholder="Write HTML here..."></textarea>
-            </div>
-            <h2>CSS Editor</h2>
-            <div class="code-container">
-                <textarea id="css-input" placeholder="Write CSS here..."></textarea>
-            </div>
-            <h2>JavaScript Editor</h2>
-            <div class="code-container">
-                <textarea id="js-input" placeholder="Write JavaScript here..."></textarea>
-            </div>
-        </div>
-        <div class="output" id="output">
-            <iframe id="output-frame"></iframe>
-        </div>
-    </main>
-    <footer>
-        <button id="download-html" title="Download HTML"><i class="fas fa-file-code"></i></button>
-        <button id="download-css" title="Download CSS"><i class="fas fa-file-alt"></i></button>
-        <button id="download-js" title="Download JS"><i class="fas fa-file"></i></button>
-        &copy; 2024 AdiAsta. All rights reserved.
-    </footer>
-    <div class="fullscreen" id="fullscreen">
-        <button class="close-btn" id="close-fullscreen-full">Close</button>
-        <iframe id="output-fullscreen" class="output-frame"></iframe>
-    </div>
-    <script>
-        document.getElementById('add-file-btn').addEventListener('click', function() {
-            const fileType = prompt("Enter file type (css/js):").toLowerCase();
-            const fileName = prompt("Enter file name:");
-            if (fileName && (fileType === 'css' || fileType === 'js')) {
-                const container = document.createElement('div');
-                container.className = 'code-container';
-                container.innerHTML = `
-                    <h2>${fileName.toUpperCase()} Editor</h2>
-                    <textarea id="${fileName}-input" placeholder="Write ${fileType.toUpperCase()} here..."></textarea>
-                    <div class="button-container">
-                        <button onclick="copyToClipboard('${fileName}-input')" title="Copy"><i class="fas fa-copy"></i></button>
-                        <button onclick="pasteFromClipboard('${fileName}-input')" title="Paste"><i class="fas fa-paste"></i></button>
-                        <button onclick="cutToClipboard('${fileName}-input')" title="Cut"><i class="fas fa-cut"></i></button>
-                    </div>
-                `;
-                document.querySelector('.editor').appendChild(container);
-            } else {
-                alert("Invalid file type. Use 'css' or 'js'.");
-            }
-        });
+  <div class="container" id="editor">
+    <h1>Adiasta</h1>
+    <p>Enter your HTML, CSS, or JavaScript code below:</p>
+    <textarea id="codeInput" placeholder="Paste your code here..."></textarea>
+    <button class="button" onclick="displayPreview()">Run Code</button>
+  </div>
 
-        function copyToClipboard(elementId) {
-            const textArea = document.getElementById(elementId);
-            textArea.select();
-            document.execCommand('copy');
-        }
+  <!-- Hidden iframe to preview code -->
+  <iframe id="preview"></iframe>
 
-        function pasteFromClipboard(elementId) {
-            const textArea = document.getElementById(elementId);
-            navigator.clipboard.readText().then(text => {
-                textArea.value = text;
-            });
-        }
+  <!-- Return button to go back to editor -->
+  <button id="returnButton" class="button" style="display: none;" onclick="returnToEditor()">Return</button>
 
-        function cutToClipboard(elementId) {
-            const textArea = document.getElementById(elementId);
-            textArea.select();
-            document.execCommand('cut');
-        }
+  <footer>
+    <p>SWISS MADE</p>
+  </footer>
 
-        document.getElementById('theme-toggle').addEventListener('click', function() {
-            document.body.classList.toggle('dark-mode');
-        });
+  <script>
+    // Display the preview by loading code into the iframe
+    function displayPreview() {
+      const code = document.getElementById("codeInput").value;
+      const previewFrame = document.getElementById("preview");
+      const editor = document.getElementById("editor");
+      const returnButton = document.getElementById("returnButton");
 
-        document.getElementById('download-html').addEventListener('click', function() {
-            const htmlBlob = new Blob([document.getElementById('html-input').value], { type: 'text/html' });
-            const a = document.createElement('a');
-            a.href = URL.createObjectURL(htmlBlob);
-            a.download = 'index.html';
-            a.click();
-            URL.revokeObjectURL(a.href);
-        });
+      // Write the code to the iframe document
+      previewFrame.contentDocument.open();
+      previewFrame.contentDocument.write(code);
+      previewFrame.contentDocument.close();
 
-        document.getElementById('download-css').addEventListener('click', function() {
-            const cssBlob = new Blob([document.getElementById('css-input').value], { type: 'text/css' });
-            const a = document.createElement('a');
-            a.href = URL.createObjectURL(cssBlob);
-            a.download = 'styles.css';
-            a.click();
-            URL.revokeObjectURL(a.href);
-        });
+      // Hide the editor and show the preview + return button
+      editor.style.display = "none";
+      previewFrame.style.display = "block";
+      returnButton.style.display = "block";
+    }
 
-        document.getElementById('download-js').addEventListener('click', function() {
-            const jsBlob = new Blob([document.getElementById('js-input').value], { type: 'application/javascript' });
-            const a = document.createElement('a');
-            a.href = URL.createObjectURL(jsBlob);
-            a.download = 'script.js';
-            a.click();
-            URL.revokeObjectURL(a.href);
-        });
-
-        document.getElementById('run-btn').addEventListener('click', function() {
-            const html = document.getElementById('html-input').value;
-            const css = document.getElementById('css-input').value;
-            const js = document.getElementById('js-input').value;
-            const doc = document.getElementById('output-frame').contentDocument || document.getElementById('output-frame').contentWindow.document;
-            doc.open();
-            doc.write(html + "<style>" + css + "</style><script>" + js + "<\/script>");
-            doc.close();
-            document.querySelector('.output').style.display = 'block'; // Show output after running
-        });
-
-        document.getElementById('output-frame').addEventListener('click', function() {
-            const outputFullScreen = document.getElementById('output-fullscreen');
-            const html = document.getElementById('html-input').value;
-            const css = document.getElementById('css-input').value;
-            const js = document.getElementById('js-input').value;
-            outputFullScreen.srcdoc = html + "<style>" + css + "</style><script>" + js + "<\/script>";
-            document.getElementById('fullscreen').style.display = 'flex';
-        });
-
-        document.getElementById('close-fullscreen-full').addEventListener('click', function() {
-            document.getElementById('fullscreen').style.display = 'none';
-        });
-
-        document.getElementById('output-frame').addEventListener('load', function() {
-            const html = document.getElementById('html-input').value;
-            const css = document.getElementById('css-input').value;
-            const js = document.getElementById('js-input').value;
-            const doc = this.contentDocument || this.contentWindow.document;
-            doc.open();
-            doc.write(html + "<style>" + css + "</style><script>" + js + "<\/script>");
-            doc.close();
-        });
-    </script>
+    // Return to the editor view
+    function returnToEditor() {
+      document.getElementById("preview").style.display = "none";
+      document.getElementById("returnButton").style.display = "none";
+      document.getElementById("editor").style.display = "block";
+    }
+  </script>
 </body>
 </html>
