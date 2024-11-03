@@ -5,137 +5,112 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Adiasta</title>
   <style>
-    /* Root variables for dark and light modes */
-    :root {
-      --bg-color-light: #f0f0f0;
-      --bg-color-dark: #222;
-      --text-color-light: #111;
-      --text-color-dark: #f8f8f8;
-      --button-bg: #444;
-      --button-text: #fff;
-      --border-color: #666;
-      --accent-color: #d00;
-    }
-
-    /* Base styles for dark/light mode */
-    body {
-      font-family: Arial, sans-serif;
-      transition: background 0.3s, color 0.3s;
+    * {
       margin: 0;
       padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: Arial, sans-serif;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
       height: 100vh;
-      color: var(--text-color-light);
-      background: var(--bg-color-light);
+      background: #f5f5f5;
+      color: #333;
     }
-
-    /* Automatic dark/light mode */
-    @media (prefers-color-scheme: dark) {
-      body {
-        background: var(--bg-color-dark);
-        color: var(--text-color-dark);
-      }
-      .button, #returnButton {
-        background: var(--bg-color-light);
-        color: var(--text-color-light);
-      }
-    }
-
-    /* Centered container with Malevich style */
     .container {
       width: 90%;
       max-width: 600px;
-      border: 2px solid var(--border-color);
-      padding: 20px;
-      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
     }
-
-    /* Text area for input */
+    h1 {
+      font-size: 1.5em;
+      font-weight: bold;
+    }
     #codeInput {
       width: 100%;
-      height: 200px;
+      height: 150px;
       padding: 10px;
-      background: var(--bg-color-dark);
-      color: var(--text-color-dark);
-      border: 1px solid var(--border-color);
-      margin: 10px 0;
+      border: 1px solid #ccc;
       font-family: monospace;
-    }
-
-    /* Button styles */
-    .button, #returnButton {
-      background: var(--button-bg);
-      color: var(--button-text);
-      padding: 10px 20px;
-      border: none;
-      cursor: pointer;
-      margin: 10px;
       font-size: 1em;
+      resize: none;
     }
-
-    /* Hidden until displayed on preview */
+    .button-container {
+      display: flex;
+      gap: 10px;
+      width: 100%;
+    }
+    .button {
+      flex: 1;
+      padding: 10px;
+      font-size: 1em;
+      cursor: pointer;
+      border: none;
+      background: #333;
+      color: #fff;
+      text-transform: uppercase;
+    }
     #preview {
       display: none;
       width: 100%;
       height: 100vh;
       border: none;
     }
-
-    /* Footer with Swiss-made label */
-    footer {
-      position: fixed;
-      bottom: 20px;
-      font-size: 0.8em;
-      text-align: center;
-      color: var(--accent-color);
-    }
   </style>
 </head>
 <body>
   <div class="container" id="editor">
     <h1>Adiasta</h1>
-    <p>Enter your HTML, CSS, or JavaScript code below:</p>
-    <textarea id="codeInput" placeholder="Paste your code here..."></textarea>
-    <button class="button" onclick="displayPreview()">Run Code</button>
+    <textarea id="codeInput" placeholder="Enter code here..."></textarea>
+    <div class="button-container">
+      <button class="button" onclick="pasteCode()">Paste</button>
+      <button class="button" onclick="clearCode()">Clear</button>
+      <button class="button" onclick="displayPreview()">Run</button>
+    </div>
   </div>
 
-  <!-- Hidden iframe to preview code -->
   <iframe id="preview"></iframe>
-
-  <!-- Return button to go back to editor -->
   <button id="returnButton" class="button" style="display: none;" onclick="returnToEditor()">Return</button>
 
-  <footer>
-    <p>SWISS MADE</p>
-  </footer>
-
   <script>
-    // Display the preview by loading code into the iframe
+    async function pasteCode() {
+      try {
+        const text = await navigator.clipboard.readText();
+        document.getElementById("codeInput").value = text;
+      } catch (err) {
+        alert("Unable to paste from clipboard.");
+      }
+    }
+
+    function clearCode() {
+      document.getElementById("codeInput").value = '';
+    }
+
     function displayPreview() {
       const code = document.getElementById("codeInput").value;
       const previewFrame = document.getElementById("preview");
       const editor = document.getElementById("editor");
       const returnButton = document.getElementById("returnButton");
 
-      // Write the code to the iframe document
       previewFrame.contentDocument.open();
       previewFrame.contentDocument.write(code);
       previewFrame.contentDocument.close();
 
-      // Hide the editor and show the preview + return button
       editor.style.display = "none";
       previewFrame.style.display = "block";
       returnButton.style.display = "block";
     }
 
-    // Return to the editor view
     function returnToEditor() {
       document.getElementById("preview").style.display = "none";
       document.getElementById("returnButton").style.display = "none";
-      document.getElementById("editor").style.display = "block";
+      document.getElementById("editor").style.display = "flex";
     }
   </script>
 </body>
