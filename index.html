@@ -1,1 +1,278 @@
-<!doctype html><html xmlns="http://www.w3.org/1999/xhtml"><head><title>Keynote</title><meta name="viewport" content="initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no,width=device-width"/><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/></head><body id="body" bgcolor="black"><div id="stageArea"><div id="stage" class="stage"></div><div id="hyperlinkPlane" class="stage"></div></div><div id="slideshowNavigator"></div><div id="slideNumberControl"></div><div id="slideNumberDisplay"></div><div id="helpPlacard"></div><div id="waitingIndicator"><div id="waitingSpinner"></div></div><script src="assets/player/main.js"></script></body></html>
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AdiAsta</title>
+    <link rel="manifest" href="manifest.json">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        /* Basic Reset */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #ffffff; /* Light theme background */
+            color: #333; /* Dark text for light theme */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+            line-height: 1.6;
+            transition: background-color 0.3s, color 0.3s; /* Smooth transition for theme changes */
+        }
+
+        /* Dark Theme Styles */
+        body.dark {
+            background-color: #121212; /* Dark theme background */
+            color: #e0e0e0; /* Light text for dark theme */
+        }
+
+        header {
+            width: 100%;
+            padding: 20px;
+            background: transparent; /* Transparent header */
+            text-align: center;
+            position: relative;
+            z-index: 10; /* Ensure header is above other content */
+        }
+
+        .logo {
+            font-size: 2.5em;
+            font-weight: 700;
+            color: #007aff; /* iOS blue color for logo */
+            margin-bottom: 5px;
+        }
+
+        h1 {
+            font-size: 1.5em;
+            color: #007aff; /* Blue accent for title */
+        }
+
+        footer {
+            width: 100%;
+            padding: 10px;
+            background: transparent; /* Transparent footer */
+            text-align: center;
+            border-top: 1px solid #ddd; /* Subtle border */
+            margin-top: auto;
+        }
+
+        footer p {
+            color: #007aff; /* Blue text for footer */
+        }
+
+        /* Editor Container */
+        .editor {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            width: 100%;
+            max-width: 1200px;
+            margin: 20px 0;
+            gap: 20px; /* Space between items */
+        }
+
+        .editor textarea {
+            width: 30%;
+            min-width: 250px;
+            height: 300px;
+            padding: 15px;
+            border: 1px solid #ddd; /* Light border */
+            border-radius: 8px; /* Rounded corners */
+            resize: none;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 1em;
+            transition: border-color 0.3s;
+            background: #f9f9f9; /* Light background for editor */
+            color: #333; /* Dark text */
+            overflow: auto; /* Allow scroll */
+        }
+
+        body.dark .editor textarea {
+            background: #2c2c2c; /* Dark background for editor in dark mode */
+            color: #e0e0e0; /* Light text */
+            border-color: #555; /* Darker border */
+        }
+
+        .editor textarea:focus {
+            border-color: #007aff; /* Blue border on focus */
+            outline: none;
+        }
+
+        button {
+            padding: 12px 20px;
+            background-color: #007aff; /* iOS blue button */
+            color: #ffffff; /* White text */
+            border: none;
+            border-radius: 8px; /* Rounded button */
+            cursor: pointer;
+            font-size: 1em;
+            transition: background 0.3s, transform 0.3s; /* Transition effects */
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2); /* Add shadow for depth */
+            margin: 10px; /* Margin around buttons */
+        }
+
+        button:hover {
+            background-color: #0056b3; /* Darker blue on hover */
+            transform: translateY(-2px); /* Lift effect */
+        }
+
+        button:active {
+            transform: translateY(1px); /* Pressed effect */
+        }
+
+        h2 {
+            margin-top: 40px;
+            font-size: 1.8em;
+            text-align: center;
+            color: #333; /* Dark text */
+        }
+
+        #output {
+            width: 100%;
+            height: 300px;
+            border: 1px solid #ddd; /* Light border */
+            border-radius: 8px; /* Rounded corners */
+            background: #ffffff; /* White background for output */
+            margin-top: 20px;
+            overflow: auto;
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 768px) {
+            .editor {
+                flex-direction: column; /* Stack the textareas on mobile */
+                align-items: center; /* Center align */
+            }
+
+            .editor textarea {
+                width: 90%; /* Full width on smaller screens */
+            }
+
+            button {
+                width: 90%; /* Full width for buttons on mobile */
+            }
+        }
+
+        /* Fullscreen styles */
+        .fullscreen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1000;
+            background: white;
+            border: none;
+        }
+
+        body.dark .fullscreen {
+            background: #121212; /* Dark background for fullscreen */
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <div class="logo">AdiAsta</div> <!-- Logo -->
+        <h1>Live Code Editor</h1>
+    </header>
+
+    <div class="editor">
+        <textarea id="html" placeholder="Enter HTML code here..."></textarea>
+        <textarea id="css" placeholder="Enter CSS code here..."></textarea>
+        <textarea id="js" placeholder="Enter JavaScript code here..."></textarea>
+        <button id="run">Run Code</button>
+        <button id="fullscreen">Fullscreen Output</button>
+    </div>
+
+    <h2>Output</h2>
+    <iframe id="output" sandbox="allow-same-origin allow-scripts"></iframe>
+
+    <div class="download-buttons">
+        <button id="downloadHtml">Download HTML</button>
+        <button id="downloadCss">Download CSS</button>
+        <button id="downloadJs">Download JavaScript</button>
+    </div>
+
+    <footer>
+        <p>&copy; 2024 AdiAsta | All Rights Reserved</p>
+    </footer>
+
+    <script>
+        // Set theme based on system preference
+        const body = document.body;
+        const prefersDarkScheme = window.matchMedia("(prefers-color-scheme: dark)");
+
+        function setTheme(e) {
+            if (e.matches) {
+                body.classList.add("dark");
+            } else {
+                body.classList.remove("dark");
+            }
+        }
+
+        prefersDarkScheme.addEventListener("change", setTheme);
+        setTheme(prefersDarkScheme); // Set initial theme
+
+        const runButton = document.getElementById('run');
+        const htmlInput = document.getElementById('html');
+        const cssInput = document.getElementById('css');
+        const jsInput = document.getElementById('js');
+        const outputFrame = document.getElementById('output');
+        const fullscreenButton = document.getElementById('fullscreen');
+
+        runButton.addEventListener('click', () => {
+            const outputDocument = outputFrame.contentDocument || outputFrame.contentWindow.document;
+            outputDocument.open();
+            outputDocument.write(htmlInput.value + "<style>" + cssInput.value + "</style>" + "<script>" + jsInput.value + "<\/script>");
+            outputDocument.close();
+        });
+
+        fullscreenButton.addEventListener('click', () => {
+            if (outputFrame.requestFullscreen) {
+                outputFrame.requestFullscreen();
+            } else if (outputFrame.mozRequestFullScreen) { // Firefox
+                outputFrame.mozRequestFullScreen();
+            } else if (outputFrame.webkitRequestFullscreen) { // Chrome, Safari, and Opera
+                outputFrame.webkitRequestFullscreen();
+            } else if (outputFrame.msRequestFullscreen) { // IE/Edge
+                outputFrame.msRequestFullscreen();
+            }
+        });
+
+        function downloadFile(filename, content) {
+            const blob = new Blob([content], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        document.getElementById('downloadHtml').addEventListener('click', () => {
+            downloadFile('index.html', htmlInput.value);
+        });
+
+        document.getElementById('downloadCss').addEventListener('click', () => {
+            downloadFile('style.css', cssInput.value);
+        });
+
+        document.getElementById('downloadJs').addEventListener('click', () => {
+            downloadFile('script.js', jsInput.value);
+        });
+    </script>
+</body>
+
+</html>
