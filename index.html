@@ -1,4 +1,4 @@
-<!<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -25,6 +25,7 @@
 </head>
 <body>
   <div class="container" id="editor">
+    <h1>Adiasta</h1>
     <textarea id="codeInput" placeholder="Enter HTML, CSS, JS..."></textarea>
     <button onclick="pasteCode()">Paste</button>
     <button onclick="clearCode()">Clear</button>
@@ -46,122 +47,6 @@
       document.getElementById("preview").srcdoc = code;
       document.getElementById("editor").style.display = "none";
       document.getElementById("preview").style.display = "block";
-    }
-  </script>
-</body>
-</html> html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Adiasta</title>
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-    body {
-      font-family: Arial, sans-serif;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
-      background: #f5f5f5;
-      color: #333;
-    }
-    .container {
-      width: 90%;
-      max-width: 600px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 10px;
-    }
-    h1 {
-      font-size: 1.5em;
-      font-weight: bold;
-    }
-    #codeInput {
-      width: 100%;
-      height: 150px;
-      padding: 10px;
-      border: 1px solid #ccc;
-      font-family: monospace;
-      font-size: 1em;
-      resize: none;
-    }
-    .button-container {
-      display: flex;
-      gap: 10px;
-      width: 100%;
-    }
-    .button {
-      flex: 1;
-      padding: 10px;
-      font-size: 1em;
-      cursor: pointer;
-      border: none;
-      background: #333;
-      color: #fff;
-      text-transform: uppercase;
-    }
-    #preview {
-      display: none;
-      width: 100%;
-      height: 100vh;
-      border: none;
-    }
-  </style>
-</head>
-<body>
-  <div class="container" id="editor">
-    <h1>Adiasta</h1>
-    <textarea id="codeInput" placeholder="Enter code here..."></textarea>
-    <div class="button-container">
-      <button class="button" onclick="pasteCode()">Paste</button>
-      <button class="button" onclick="clearCode()">Clear</button>
-      <button class="button" onclick="displayPreview()">Run</button>
-    </div>
-  </div>
-
-  <iframe id="preview"></iframe>
-  <button id="returnButton" class="button" style="display: none;" onclick="returnToEditor()">Return</button>
-
-  <script>
-    async function pasteCode() {
-      try {
-        const text = await navigator.clipboard.readText();
-        document.getElementById("codeInput").value = text;
-      } catch (err) {
-        alert("Unable to paste from clipboard.");
-      }
-    }
-
-    function clearCode() {
-      document.getElementById("codeInput").value = '';
-    }
-
-    function displayPreview() {
-      const code = document.getElementById("codeInput").value;
-      const previewFrame = document.getElementById("preview");
-      const editor = document.getElementById("editor");
-      const returnButton = document.getElementById("returnButton");
-
-      previewFrame.contentDocument.open();
-      previewFrame.contentDocument.write(code);
-      previewFrame.contentDocument.close();
-
-      editor.style.display = "none";
-      previewFrame.style.display = "block";
-      returnButton.style.display = "block";
-    }
-
-    function returnToEditor() {
-      document.getElementById("preview").style.display = "none";
-      document.getElementById("returnButton").style.display = "none";
-      document.getElementById("editor").style.display = "flex";
     }
   </script>
 </body>
