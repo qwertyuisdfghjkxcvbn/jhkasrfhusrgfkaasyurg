@@ -1,4 +1,55 @@
-<!DOCTYPE html>
+<!<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Adiasta</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      display: flex; justify-content: center; align-items: center; height: 100vh;
+      font-family: 'Arial', sans-serif; transition: background 0.3s, color 0.3s;
+      background: #f9f9f9; color: #333;
+    }
+    @media (prefers-color-scheme: dark) { body { background: #222; color: #eee; } }
+    .container { width: 90%; max-width: 500px; text-align: center; }
+    h1 { font-size: 2em; font-weight: bold; margin-bottom: 15px; }
+    textarea { width: 100%; height: 150px; padding: 10px; font-family: monospace; font-size: 1em; margin-bottom: 10px; }
+    button {
+      width: 100%; padding: 12px; margin: 5px 0; font-size: 1em; font-weight: bold;
+      background: #333; color: #fff; border: none; cursor: pointer;
+    }
+    button:hover { background: #444; }
+    #preview { display: none; width: 100%; height: 100vh; border: none; }
+  </style>
+</head>
+<body>
+  <div class="container" id="editor">
+    <textarea id="codeInput" placeholder="Enter HTML, CSS, JS..."></textarea>
+    <button onclick="pasteCode()">Paste</button>
+    <button onclick="clearCode()">Clear</button>
+    <button onclick="copyCode()">Copy</button>
+    <button onclick="runCode()">Run</button>
+  </div>
+  <iframe id="preview"></iframe>
+
+  <script>
+    async function pasteCode() {
+      document.getElementById("codeInput").value = await navigator.clipboard.readText().catch(() => '');
+    }
+    function clearCode() { document.getElementById("codeInput").value = ''; }
+    function copyCode() {
+      navigator.clipboard.writeText(document.getElementById("codeInput").value);
+    }
+    function runCode() {
+      const code = document.getElementById("codeInput").value;
+      document.getElementById("preview").srcdoc = code;
+      document.getElementById("editor").style.display = "none";
+      document.getElementById("preview").style.display = "block";
+    }
+  </script>
+</body>
+</html> html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
