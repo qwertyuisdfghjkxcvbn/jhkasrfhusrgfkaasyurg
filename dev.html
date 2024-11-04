@@ -19,8 +19,8 @@
     .container { width: 90%; max-width: 500px; text-align: center; }
     h1 { font-size: 2em; font-weight: bold; margin-bottom: 15px; }
     textarea {
-      width: 100%; height: 150px; padding: 10px; font-family: monospace; font-size: 1em;
-      border: 1px solid #ccc; border-radius: 4px;
+      width: 100%; height: 300px; padding: 10px; font-family: monospace; font-size: 1em;
+      border: 1px solid #ccc; border-radius: 4px; background: darkgrey;
     }
     button {
       width: 100%; padding: 12px; margin: 5px 0; font-size: 1em; font-weight: bold;
@@ -33,9 +33,9 @@
       background: #000; color: #fff; z-index: 1000; overflow: hidden;
     }
     #closeRunner {
-      position: absolute; top: 10px; right: 10px; padding: 10px 15px;
+      position: absolute; padding: 10px 15px;
       background: #ff5252; border: none; font-size: 1em; font-weight: bold; color: #fff; cursor: pointer;
-      border-radius: 4px; transition: background 0.3s;
+      border-radius: 0px; transition: background 0.3s;
     }
     #closeRunner:hover { background: #ff3333; }
     #preview { width: 100%; height: 100%; border: none; }
@@ -69,21 +69,18 @@
     function clearCode() {
       document.getElementById("codeInput").value = '';
     }
-
     function copyCode() {
       const codeInput = document.getElementById("codeInput");
       codeInput.select();
       document.execCommand("copy");
       alert("Code copied to clipboard!");
     }
-
     function runCode() {
       const code = document.getElementById("codeInput").value;
       document.getElementById("preview").srcdoc = code;
       document.getElementById("editor").style.display = "none";
       document.getElementById("previewContainer").style.display = "block";
     }
-
     function closeRunner() {
       window.location.href = "https://adiasta.com/dev";  // Redirects to Adiasta.com
     }
