@@ -7,9 +7,9 @@
   <style>
     /* Reset and basic styles */
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      display: flex; justify-content: center; align-items: center; height: 100vh;
-      font-family: "Helvetica Neue", Arial, sans-serif; font-weight: 300;
+    html, body {
+      height: 100%; font-family: "Helvetica Neue", Arial, sans-serif;
+      display: flex; justify-content: center; align-items: center;
       text-align: center; transition: background-color 0.3s, color 0.3s;
     }
     h1 {
@@ -18,7 +18,7 @@
     }
     .button-container {
       display: flex; flex-direction: column; gap: 20px;
-      width: 90%; max-width: 320px;
+      width: 100%; max-width: 320px;
     }
     .button {
       padding: 18px; font-size: 1.2rem; font-weight: 600;
@@ -31,7 +31,7 @@
     }
 
     /* Dark mode styles */
-    body.dark-mode {
+    .dark-mode {
       background-color: #000; color: #fff;
     }
     .dark-mode .button {
@@ -42,7 +42,7 @@
     }
 
     /* Light mode styles */
-    body.light-mode {
+    .light-mode {
       background-color: #fff; color: #000;
     }
     .light-mode .button {
@@ -63,7 +63,7 @@
   </div>
 
   <script>
-    // Apply color mode based on user preference
+    // Automatically switch between dark and light modes
     const prefersDarkMode = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
     document.body.classList.add(prefersDarkMode ? 'dark-mode' : 'light-mode');
   </script>
