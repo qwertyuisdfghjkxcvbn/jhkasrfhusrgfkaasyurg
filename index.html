@@ -5,91 +5,51 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Adiasta Links</title>
   <style>
-    /* Base styles */
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+    /* Reset and basic styles */
+    * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
       display: flex; justify-content: center; align-items: center; height: 100vh;
-      font-family: Arial, sans-serif; margin: 0; text-align: center;
-      transition: background-color 0.3s, color 0.3s;
+      font-family: "Helvetica Neue", Arial, sans-serif; font-weight: 300;
+      text-align: center; transition: background-color 0.3s, color 0.3s;
     }
     h1 {
-      font-size: 2.5rem; margin-bottom: 20px;
-      background: linear-gradient(45deg, #007bfc, #005bb5);
-      color: transparent;
-      -webkit-background-clip: text;
-      background-clip: text;
-      animation: glow 2s ease-in-out infinite alternate;
-    }
-    @keyframes glow {
-      from { text-shadow: 0 0 10px #007bfc, 0 0 20px #007bfc; }
-      to { text-shadow: 0 0 20px #005bb5, 0 0 30px #005bb5; }
+      font-size: 3rem; font-weight: 700; margin-bottom: 40px;
+      letter-spacing: 0.1rem;
     }
     .button-container {
-      display: flex; flex-direction: column; gap: 15px;
-      margin-top: 10px;
+      display: flex; flex-direction: column; gap: 20px;
+      width: 90%; max-width: 320px;
     }
     .button {
-      padding: 15px 30px; font-size: 1rem; font-weight: bold;
-      color: #fff; border: none; border-radius: 8px;
-      cursor: pointer; text-decoration: none;
-      box-shadow: 0 5px 15px rgba(0, 123, 252, 0.3);
-      transition: transform 0.2s, background-color 0.3s, box-shadow 0.3s;
-      position: relative;
-      overflow: hidden;
-    }
-    .button:before {
-      content: ''; position: absolute; top: 0; left: -100%;
-      width: 100%; height: 100%; background: rgba(255, 255, 255, 0.2);
-      transform: skewX(-45deg); transition: left 0.5s;
-    }
-    .button:hover:before {
-      left: 100%;
+      padding: 18px; font-size: 1.2rem; font-weight: 600;
+      text-transform: uppercase; text-decoration: none;
+      border: 2px solid; display: inline-block;
+      letter-spacing: 0.05rem; transition: background-color 0.3s, color 0.3s, transform 0.2s;
     }
     .button:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 8px 20px rgba(0, 123, 252, 0.5);
-    }
-
-    /* Light mode styles */
-    body.light-mode {
-      background: linear-gradient(135deg, #f5f5f7, #d0d4d9);
-      color: #333;
-    }
-    .light-mode .button {
-      background-color: #007bfc;
-    }
-    .light-mode .button:hover {
-      background-color: #005bb5;
+      transform: scale(1.05);
     }
 
     /* Dark mode styles */
     body.dark-mode {
-      background: linear-gradient(135deg, #1e1e1e, #333);
-      color: #f5f5f7;
+      background-color: #000; color: #fff;
     }
     .dark-mode .button {
-      background-color: #3399ff;
+      color: #000; background-color: #fff; border-color: #fff;
     }
     .dark-mode .button:hover {
-      background-color: #007bfc;
+      background-color: #000; color: #fff;
     }
 
-    /* Detect user's preferred color scheme */
-    @media (prefers-color-scheme: dark) {
-      body {
-        background: linear-gradient(135deg, #1e1e1e, #333);
-        color: #f5f5f7;
-      }
+    /* Light mode styles */
+    body.light-mode {
+      background-color: #fff; color: #000;
     }
-    @media (prefers-color-scheme: light) {
-      body {
-        background: linear-gradient(135deg, #f5f5f7, #d0d4d9);
-        color: #333;
-      }
+    .light-mode .button {
+      color: #fff; background-color: #000; border-color: #000;
+    }
+    .light-mode .button:hover {
+      background-color: #fff; color: #000;
     }
   </style>
 </head>
@@ -99,14 +59,13 @@
     <div class="button-container">
       <a href="https://adiasta.com/dev" class="button">HTML Code Tester</a>
       <a href="https://adiasta.com/voc" class="button">Vocabulary</a>
-      <a href="https://adiasta.com/main" class="button">Hmmn</a>
     </div>
   </div>
 
   <script>
-    // Apply preferred color scheme based on user settings
-    const userPrefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-    document.body.classList.add(userPrefersDark ? 'dark-mode' : 'light-mode');
+    // Apply color mode based on user preference
+    const prefersDarkMode = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+    document.body.classList.add(prefersDarkMode ? 'dark-mode' : 'light-mode');
   </script>
 </body>
 </html>
