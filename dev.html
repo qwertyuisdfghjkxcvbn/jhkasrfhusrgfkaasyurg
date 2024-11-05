@@ -26,7 +26,7 @@
             margin-top: 10px; background: #ffffff; transition: background 0.3s;
         }
         @media (prefers-color-scheme: dark) {
-            .CodeMirror { background: #d3d3d3; border-color: #444; } /* Light grey background for CodeMirror in dark mode */
+            .CodeMirror { background: #d3d3d3; border-color: #444; } 
         }
         #controls {
             display: flex; justify-content: space-between; align-items: center;
@@ -39,7 +39,7 @@
             cursor: pointer; border-radius: 4px;
             transition: background 0.3s, transform 0.2s;
         }
-        button#runButton { background: #007bff; } /* Blue background for "Run" button */
+        button#runButton { background: #007bff; } 
         button:hover, select:hover, input:hover { background: #444; }
         button:active { transform: scale(0.95); }
         button#runButton:hover { background: #0056b3; } /* Darker blue on hover */
@@ -61,12 +61,12 @@
             button, select { font-size: 0.9em; padding: 8px; }
         }
         input {
-            background: #fff; /* Default background for light mode */
+            background: #fff; 
             border: 1px solid #ccc; border-radius: 4px;
         }
         @media (prefers-color-scheme: dark) {
             input {
-                background: #555; /* Dark background for input in dark mode */
+                background: #555; 
                 color: #fff;
                 border: 1px solid #777;
             }
@@ -98,8 +98,6 @@
     <script>
         let editor;
         let files = {};
-
-        // Initialize CodeMirror
         window.onload = function() {
             editor = CodeMirror(document.getElementById("codeMirrorContainer"), {
                 lineNumbers: true,
@@ -198,7 +196,7 @@
             const blob = new Blob([code], { type: 'text/html' });
             const link = document.createElement('a');
             link.href = URL.createObjectURL(blob);
-            link.download = 'code.html'; // Default name, can be changed if necessary
+            link.download = 'index.html';
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
@@ -217,7 +215,7 @@
         }
 
         function goHome() {
-            window.location.href = "https://adiasta.com";  // Redirects to Adiasta.com
+            window.location.href = "https://adiasta.com";
         }
     </script>
 </body>
