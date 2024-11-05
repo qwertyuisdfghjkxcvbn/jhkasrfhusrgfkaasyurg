@@ -1,89 +1,115 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Adiasta</title>
-  <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body {
-      display: flex; justify-content: center; align-items: center; height: 100vh;
-      font-family: Arial, sans-serif; background: #f9f9f9; color: #333;
-      transition: background 0.3s, color 0.3s;
-    }
-    @media (prefers-color-scheme: dark) {
-      body { background: #222; color: #eee; }
-      button { background: #444; color: #fff; }
-      button:hover { background: #555; }
-    }
-    .container { width: 90%; max-width: 500px; text-align: center; }
-    h1 { font-size: 2em; font-weight: bold; margin-bottom: 15px; }
-    textarea {
-      width: 100%; height: 150px; padding: 10px; font-family: monospace; font-size: 1em;
-      border: 1px solid #ccc; border-radius: 4px; 
-    }
-    button {
-      width: 100%; padding: 12px; margin: 5px 0; font-size: 1em; font-weight: bold;
-      background: #333; color: #fff; border: none; cursor: pointer; border-radius: 4px;
-      transition: background 0.3s;
-    }
-    button:hover { background: #444; }
-    #previewContainer {
-      display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-      background: #000; color: #fff; z-index: 1000; overflow: hidden;
-    }
-    #closeRunner {
-      position: absolute; padding: 10px 15px;
-      background: #ff5252; border: none; font-size: 1em; font-weight: bold; color: #fff; cursor: pointer;
-      border-radius: 0px; transition: background 0.3s;
-    }
-    #closeRunner:hover { background: #ff3333; }
-    #preview { width: 100%; height: 100%; border: none; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Adiasta Code Editor</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            display: flex; justify-content: center; align-items: center; height: 100vh;
+            font-family: Arial, sans-serif; background: #f9f9f9; color: #333;
+            transition: background 0.3s, color 0.3s;
+        }
+        @media (prefers-color-scheme: dark) {
+            body { background: #222; color: #eee; }
+            button { background: #444; color: #fff; }
+            button:hover { background: #555; }
+        }
+        .container { width: 90%; max-width: 500px; text-align: center; }
+        h1 { font-size: 2em; font-weight: bold; margin-bottom: 15px; }
+        textarea {
+            width: 100%; height: 150px; padding: 10px; font-family: monospace; font-size: 1em;
+            border: 1px solid #ccc; border-radius: 4px; 
+        }
+        button {
+            width: 100%; padding: 12px; margin: 5px 0; font-size: 1em; font-weight: bold;
+            background: #333; color: #fff; border: none; cursor: pointer; border-radius: 4px;
+            transition: background 0.3s;
+        }
+        button:hover { background: #444; }
+        #previewContainer {
+            display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: #000; color: #fff; z-index: 1000; overflow: hidden;
+        }
+        #closeRunner {
+            position: absolute; padding: 10px 15px;
+            background: #ff5252; border: none; font-size: 1em; font-weight: bold; color: #fff; cursor: pointer;
+            border-radius: 0px; transition: background 0.3s;
+        }
+        #closeRunner:hover { background: #ff3333; }
+        #preview { width: 100%; height: 100%; border: none; }
+        #homeButton {
+            background: #0071e3; 
+            margin-bottom: 15px;
+        }
+        #homeButton:hover { background: #005bb5; }
+    </style>
 </head>
 <body>
-  <div class="container" id="editor">
-    <h1>Adiasta</h1>
-    <textarea id="codeInput" placeholder="Enter HTML, CSS, JS..."></textarea>
-    <button onclick="pasteCode()">Paste</button>
-    <button onclick="clearCode()">Clear</button>
-    <button onclick="copyCode()">Copy</button>
-    <button onclick="runCode()">Run</button>
-  </div>
-  
-  <div id="previewContainer">
-    <button id="closeRunner" onclick="closeRunner()">Close Runner</button>
-    <iframe id="preview"></iframe>
-  </div>
+    <div class="container" id="editor">
+        <h1>Adiasta Code Editor</h1>
+        <textarea id="codeInput" placeholder="Enter HTML, CSS, JS..."></textarea>
+        <button onclick="pasteCode()">Paste</button>
+        <button onclick="clearCode()">Clear</button>
+        <button onclick="copyCode()">Copy</button>
+        <button onclick="downloadCode()">Download</button>
+        <button onclick="runCode()">Run</button>
+        <button id="homeButton" onclick="goHome()">Home</button>
+    </div>
+    
+    <div id="previewContainer">
+        <button id="closeRunner" onclick="closeRunner()">Close Runner</button>
+        <iframe id="preview"></iframe>
+    </div>
 
-  <script>
-    async function pasteCode() {
-      try {
-        const text = await navigator.clipboard.readText();
-        document.getElementById("codeInput").value = text;
-      } catch (err) {
-        alert("Failed to paste: " + err);
-      }
-    }
+    <script>
+        async function pasteCode() {
+            try {
+                const text = await navigator.clipboard.readText();
+                document.getElementById("codeInput").value = text;
+            } catch (err) {
+                alert("Failed to paste: " + err);
+            }
+        }
 
-    function clearCode() {
-      document.getElementById("codeInput").value = '';
-    }
-    function copyCode() {
-      const codeInput = document.getElementById("codeInput");
-      codeInput.select();
-      document.execCommand("copy");
-      alert("Code copied to clipboard!");
-    }
-    function runCode() {
-      const code = document.getElementById("codeInput").value;
-      document.getElementById("preview").srcdoc = code;
-      document.getElementById("editor").style.display = "none";
-      document.getElementById("previewContainer").style.display = "block";
-    }
-    function closeRunner() {
-      window.location.href = "https://adiasta.com/dev";  // Redirects to Adiasta.com
-    }
-  </script>
+        function clearCode() {
+            document.getElementById("codeInput").value = '';
+        }
+
+        function copyCode() {
+            const codeInput = document.getElementById("codeInput");
+            codeInput.select();
+            document.execCommand("copy");
+            alert("Code copied to clipboard!");
+        }
+
+        function downloadCode() {
+            const code = document.getElementById("codeInput").value;
+            const blob = new Blob([code], { type: 'text/html' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = 'code.html';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        function runCode() {
+            const code = document.getElementById("codeInput").value;
+            document.getElementById("preview").srcdoc = code;
+            document.getElementById("editor").style.display = "none";
+            document.getElementById("previewContainer").style.display = "block";
+        }
+
+        function closeRunner() {
+            document.getElementById("previewContainer").style.display = "none";
+            document.getElementById("editor").style.display = "block";
+        }
+
+        function goHome() {
+            window.location.href = "https://adiasta.com";  // Redirects to Adiasta.com
+        }
+    </script>
 </body>
 </html>
