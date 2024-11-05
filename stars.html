@@ -1,193 +1,205 @@
-<!DOCTYPE html>
+
+    <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Neon Words Generator</title>
-        <link rel="manifest" href="/site.webmanifest">
+            <link rel="manifest" href="/site.webmanifest">
     <link rel="manifest" href="/manifest.json">
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;600&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&display=swap" rel="stylesheet">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D Mobile Game</title>
     <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-        body {
-            font-family: 'Roboto', sans-serif;
-            background-color: #0c0c0c;
-            color: #f0f0f0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            overflow: hidden;
-        }
-
-        h1 {
-            font-size: 2.5em;
-            margin-bottom: 20px;
-            text-shadow: 0 0 10px rgba(255, 75, 92, 0.9);
-        }
-
-        #content {
-            width: calc(100% - 40px); /* Margin of 20px on each side */
-            max-width: 800px;
-            height: 70vh; /* Restrict height for scrolling */
-            overflow-y: auto;
-            padding: 20px;
-            border: 2px solid #ff4b5c;
-            border-radius: 12px;
-            background: rgba(255, 255, 255, 0.05);
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.8);
-            backdrop-filter: blur(10px);
-        }
-
-        .item {
-            background: rgba(255, 255, 255, 0.1);
-            border: 3px solid #ff4b5c;
-            margin: 20px 0;
-            padding: 20px;
-            border-radius: 10px;
-            transition: transform 0.3s, background 0.3s, box-shadow 0.3s;
-            position: relative;
-            overflow: hidden;
-            animation: fadeIn 0.5s ease forwards;
-        }
-
-        @keyframes fadeIn {
-            from {
-                transform: translateY(20px);
-                opacity: 0;
-            }
-            to {
-                transform: translateY(0);
-                opacity: 1;
-            }
-        }
-
-        .item:hover {
-            background: rgba(255, 75, 92, 0.3);
-            transform: scale(1.02);
-            box-shadow: 0 10px 30px rgba(255, 75, 92, 0.7);
-        }
-
-        .word-type {
-            font-weight: 600;
-            color: #ffeb3b; /* Bright yellow for emphasis */
-        }
-
-        #loading {
-            display: none;
-            margin: 20px 0;
-            font-size: 1.2em;
-            color: #ff4b5c;
-            text-align: center;
-        }
-
-        #scrollToTop {
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            display: none;
-            background-color: rgba(255, 75, 92, 0.9);
-            color: white;
-            border: none;
-            border-radius: 5px;
-            padding: 10px 15px;
-            cursor: pointer;
-            transition: background-color 0.3s, transform 0.3s;
-            z-index: 10;
-        }
-
-        #scrollToTop:hover {
-            background-color: rgba(255, 75, 92, 1);
-            transform: scale(1.1);
-        }
-
-        @media (max-width: 768px) {
-            h1 {
-                font-size: 2em;
-            }
-
-            .item {
-                padding: 15px;
-            }
-
-            #scrollToTop {
-                padding: 8px;
-            }
-        }
+        body { margin: 0; }
+        canvas { display: block; }
+        #score { position: absolute; top: 10px; left: 10px; color: white; font-size: 24px; }
+        #health { position: absolute; top: 40px; left: 10px; color: white; font-size: 24px; }
     </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 </head>
 <body>
-    <h1>Neon Words Generator</h1>
-    <div id="content"></div>
-    <div id="loading">Loading more items...</div>
-    <button id="scrollToTop" onclick="scrollToTop()">Scroll to Top</button>
-
+    <div id="score">Score: 0</div>
+    <div id="health">Health: 3</div>
     <script>
-        const itemsPerLoad = 5;
-        let loading = false;
+        let scene, camera, renderer;
+        let player, enemies = [], items = [];
+        let score = 0;
+        let health = 3;
+        let isMovingLeft = false, isMovingRight = false;
+        const enemyCount = 5;
+        const itemCount = 10;
+        const enemySpeed = 0.02;
 
-        async function fetchRandomWord() {
-            const response = await fetch('https://random-word-api.herokuapp.com/word?number=1');
-            return (await response.json())[0];
-        }
+        function init() {
+            // Create the scene
+            scene = new THREE.Scene();
+            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            document.body.appendChild(renderer.domElement);
 
-        async function fetchWordDetails(word) {
-            const response = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${word}`);
-            const data = await response.json();
-            return data.length > 0 ? {
-                definition: data[0]?.meanings[0]?.definitions[0]?.definition,
-                partOfSpeech: data[0]?.meanings[0]?.partOfSpeech
-            } : { definition: null, partOfSpeech: null };
-        }
+            // Create the player
+            const playerGeometry = new THREE.BoxGeometry(1, 1, 1);
+            const playerMaterial = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+            player = new THREE.Mesh(playerGeometry, playerMaterial);
+            player.position.y = 0.5; // Raise above ground
+            scene.add(player);
 
-        async function loadItems() {
-            if (loading) return;
-            loading = true;
-            const content = document.getElementById('content');
-            const loadingText = document.getElementById('loading');
-            loadingText.style.display = 'block';
+            // Create ground
+            const groundGeometry = new THREE.PlaneGeometry(100, 100);
+            const groundMaterial = new THREE.MeshBasicMaterial({ color: 0x555555, side: THREE.DoubleSide });
+            const ground = new THREE.Mesh(groundGeometry, groundMaterial);
+            ground.rotation.x = -Math.PI / 2; // Rotate to make it horizontal
+            scene.add(ground);
 
-            for (let i = 0; i < itemsPerLoad; i++) {
-                let word, details;
-                do {
-                    word = await fetchRandomWord();
-                    details = await fetchWordDetails(word);
-                } while (!details.definition);
-                
-                const item = document.createElement('div');
-                item.className = 'item';
-                item.innerHTML = `<strong>${word}</strong> <span class="word-type">(${details.partOfSpeech})</span>: ${details.definition}`;
-                content.appendChild(item);
+            // Create enemies
+            for (let i = 0; i < enemyCount; i++) {
+                createEnemy();
             }
 
-            loadingText.style.display = 'none';
-            loading = false;
-        }
-
-        function checkScroll() {
-            const content = document.getElementById('content');
-            const { scrollTop, clientHeight, scrollHeight } = content;
-            if (scrollTop + clientHeight >= scrollHeight - 5) {
-                loadItems();
+            // Create items
+            for (let i = 0; i < itemCount; i++) {
+                createItem();
             }
-            const scrollToTopButton = document.getElementById('scrollToTop');
-            scrollToTopButton.style.display = scrollTop > 300 ? 'block' : 'none';
+
+            // Set camera position
+            camera.position.z = 5;
+            camera.position.y = 2;
+
+            // Add event listeners
+            window.addEventListener('resize', onWindowResize, false);
+            document.addEventListener('keydown', onKeyDown, false);
+            document.addEventListener('keyup', onKeyUp, false);
+
+            animate();
         }
 
-        function scrollToTop() {
-            document.getElementById('content').scrollTo({ top: 0, behavior: 'smooth' });
+        function createEnemy() {
+            const enemyGeometry = new THREE.BoxGeometry(1, 1, 1);
+            const enemyMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 });
+            const enemy = new THREE.Mesh(enemyGeometry, enemyMaterial);
+            enemy.position.x = Math.random() * 50 - 25; // Random x position
+            enemy.position.y = 0.5; // Above ground
+            enemy.position.z = Math.random() * -50 - 5; // Start behind the player
+            enemies.push(enemy);
+            scene.add(enemy);
         }
 
-        // Initial load and event listeners
-        loadItems();
-        document.getElementById('content').addEventListener('scroll', checkScroll);
+        function createItem() {
+            const itemGeometry = new THREE.SphereGeometry(0.3, 32, 32);
+            const itemMaterial = new THREE.MeshBasicMaterial({ color: 0xffff00 });
+            const item = new THREE.Mesh(itemGeometry, itemMaterial);
+            item.position.x = Math.random() * 50 - 25; // Random x position
+            item.position.y = 0.3; // Slightly above ground
+            item.position.z = Math.random() * -50 - 5; // Start behind the player
+            items.push(item);
+            scene.add(item);
+        }
+
+        function onWindowResize() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        }
+
+        function onKeyDown(event) {
+            if (event.key === 'ArrowLeft') {
+                isMovingLeft = true;
+            } else if (event.key === 'ArrowRight') {
+                isMovingRight = true;
+            }
+        }
+
+        function onKeyUp(event) {
+            if (event.key === 'ArrowLeft') {
+                isMovingLeft = false;
+            } else if (event.key === 'ArrowRight') {
+                isMovingRight = false;
+            }
+        }
+
+        function updatePlayerPosition() {
+            if (isMovingLeft && player.position.x > -4.5) {
+                player.position.x -= 0.1; // Move left
+            }
+            if (isMovingRight && player.position.x < 4.5) {
+                player.position.x += 0.1; // Move right
+            }
+        }
+
+        function updateEnemies() {
+            for (let enemy of enemies) {
+                enemy.position.z += enemySpeed; // Move towards the player
+                if (enemy.position.z > 5) {
+                    // Reset enemy to the back
+                    enemy.position.z = Math.random() * -50 - 5;
+                    enemy.position.x = Math.random() * 50 - 25;
+                }
+                // Check for collisions
+                if (enemy.position.z > player.position.z - 1 &&
+                    enemy.position.z < player.position.z + 1 &&
+                    enemy.position.x > player.position.x - 1 &&
+                    enemy.position.x < player.position.x + 1) {
+                    // Reset health on collision
+                    health--;
+                    document.getElementById('health').innerText = 'Health: ' + health;
+                    if (health <= 0) {
+                        alert("Game Over! Your final score is: " + score);
+                        resetGame();
+                    }
+                }
+            }
+        }
+
+        function updateItems() {
+            for (let i = items.length - 1; i >= 0; i--) {
+                const item = items[i];
+                item.position.z += enemySpeed; // Move towards the player
+                if (item.position.z > 5) {
+                    // Reset item to the back
+                    item.position.z = Math.random() * -50 - 5;
+                    item.position.x = Math.random() * 50 - 25;
+                }
+                // Check for collection
+                if (item.position.z > player.position.z - 0.5 &&
+                    item.position.z < player.position.z + 0.5 &&
+                    item.position.x > player.position.x - 0.5 &&
+                    item.position.x < player.position.x + 0.5) {
+                    // Increase score and reset item
+                    score++;
+                    document.getElementById('score').innerText = 'Score: ' + score;
+                    item.position.z = Math.random() * -50 - 5; // Reset item to the back
+                    item.position.x = Math.random() * 50 - 25; // Random x position
+                }
+            }
+        }
+
+        function resetGame() {
+            score = 0;
+            health = 3;
+            document.getElementById('score').innerText = 'Score: ' + score;
+            document.getElementById('health').innerText = 'Health: ' + health;
+            // Reset player position
+            player.position.set(0, 0.5, 0);
+            // Reset enemies and items
+            enemies.forEach(enemy => {
+                enemy.position.z = Math.random() * -50 - 5;
+                enemy.position.x = Math.random() * 50 - 25;
+            });
+            items.forEach(item => {
+                item.position.z = Math.random() * -50 - 5;
+                item.position.x = Math.random() * 50 - 25;
+            });
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+            updatePlayerPosition();
+            updateEnemies();
+            updateItems();
+            renderer.render(scene, camera);
+        }
+
+        init();
     </script>
 </body>
 </html>
