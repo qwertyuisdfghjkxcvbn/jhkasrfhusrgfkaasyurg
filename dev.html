@@ -3,34 +3,46 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Adiasta Code Editor</title>
+    <title>Code Editor</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/codemirror.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            display: flex; justify-content: center; align-items: center; height: 100vh;
-            font-family: Arial, sans-serif; background: #f9f9f9; color: #333;
+            display: flex; justify-content: center; align-items: flex-start; height: 100vh;
+            font-family: 'Helvetica Neue', Arial, sans-serif; background: #f4f4f4; color: #333;
             transition: background 0.3s, color 0.3s;
         }
         @media (prefers-color-scheme: dark) {
-            body { background: #222; color: #eee; }
-            button { background: #444; color: #fff; }
-            button:hover { background: #555; }
+            body { background: #1e1e1e; color: #ffffff; }
         }
-        .container { width: 90%; max-width: 500px; text-align: center; }
-        h1 { font-size: 2em; font-weight: bold; margin-bottom: 15px; }
-        textarea {
-            width: 100%; height: 150px; padding: 10px; font-family: monospace; font-size: 1em;
-            border: 1px solid #ccc; border-radius: 4px; 
-        }
-        button {
-            width: 100%; padding: 12px; margin: 5px 0; font-size: 1em; font-weight: bold;
-            background: #333; color: #fff; border: none; cursor: pointer; border-radius: 4px;
+        .container { width: 90%; max-width: 800px; margin: 0 auto; }
+        h1 { font-size: 2em; font-weight: bold; margin-bottom: 15px; text-align: center; }
+        .CodeMirror {
+            height: auto;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            margin-bottom: 10px;
+            background: #ffffff; /* Default background for light mode */
             transition: background 0.3s;
         }
-        button:hover { background: #444; }
+        @media (prefers-color-scheme: dark) {
+            .CodeMirror { background: #2d2d2d; }
+        }
+        #controls {
+            display: flex; justify-content: space-between; margin-bottom: 10px; align-items: center;
+        }
+        button, select {
+            padding: 10px; font-size: 1em; font-weight: bold; 
+            background: #333; color: #fff; border: none; cursor: pointer; border-radius: 4px;
+            transition: background 0.3s, transform 0.2s;
+        }
+        button:hover, select:hover { background: #444; }
+        button:active { transform: scale(0.95); }
         #previewContainer {
             display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
             background: #000; color: #fff; z-index: 1000; overflow: hidden;
+            transition: opacity 0.3s ease;
         }
         #closeRunner {
             position: absolute; padding: 10px 15px;
@@ -39,23 +51,36 @@
         }
         #closeRunner:hover { background: #ff3333; }
         #preview { width: 100%; height: 100%; border: none; }
-        #homeButton {
-            background: #0071e3; 
-            margin-bottom: 15px;
+        #searchContainer {
+            display: flex; margin-top: 10px; justify-content: space-between;
         }
-        #homeButton:hover { background: #005bb5; }
+        #searchInput {
+            flex-grow: 1; padding: 10px; border: 1px solid #ccc; border-radius: 4px;
+            margin-right: 5px; font-size: 1em;
+        }
     </style>
 </head>
 <body>
     <div class="container" id="editor">
-        <h1>Adiasta Code Editor</h1>
-        <textarea id="codeInput" placeholder="Enter HTML, CSS, JS..."></textarea>
-        <button onclick="pasteCode()">Paste</button>
-        <button onclick="clearCode()">Clear</button>
-        <button onclick="copyCode()">Copy</button>
-        <button onclick="downloadCode()">Download</button>
-        <button onclick="runCode()">Run</button>
-        <button id="homeButton" onclick="goHome()">Home</button>
+        <div id="controls">
+            <button id="runButton" onclick="runCode()">Run</button>
+            <select id="fileSelector" onchange="loadFile()">
+                <option value="">Select a file</option>
+            </select>
+            <button id="newFileButton" onclick="newFile()">New File</button>
+            <button id="homeButton" onclick="goHome()">Home</button>
+        </div>
+        <div id="codeMirrorContainer"></div>
+        <div id="searchContainer">
+            <input type="text" id="searchInput" placeholder="Search code..." />
+            <button id="searchButton" onclick="searchCode()">Search</button>
+        </div>
+        <div id="buttonContainer" style="margin-top: 10px;">
+            <button onclick="pasteCode()">Paste</button>
+            <button onclick="clearCode()">Clear</button>
+            <button onclick="copyCode()">Copy</button>
+            <button onclick="downloadCode()">Download</button>
+        </div>
     </div>
     
     <div id="previewContainer">
@@ -63,48 +88,144 @@
         <iframe id="preview"></iframe>
     </div>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/codemirror.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/mode/xml/xml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/mode/javascript/javascript.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/mode/css/css.min.js"></script>
+    
     <script>
+        let editor;
+        let files = {};
+
+        // Initialize CodeMirror
+        window.onload = function() {
+            editor = CodeMirror(document.getElementById("codeMirrorContainer"), {
+                lineNumbers: true,
+                mode: "text/html",
+                theme: "default",
+                autoCloseTags: true,
+                matchBrackets: true,
+                lineWrapping: true,
+                styleActiveLine: true,
+                viewportMargin: Infinity,
+            });
+        };
+
+        function newFile() {
+            const fileName = prompt("Enter file name (html, css, js):");
+            if (fileName) {
+                const extension = fileName.split('.').pop();
+                let initialContent = '';
+
+                switch (extension) {
+                    case 'html':
+                        initialContent = '<!DOCTYPE html>\n<html lang="en">\n<head>\n    <meta charset="UTF-8">\n    <meta name="viewport" content="width=device-width, initial-scale=1.0">\n    <title>New HTML File</title>\n</head>\n<body>\n\n</body>\n</html>';
+                        editor.setOption("mode", "text/html");
+                        break;
+                    case 'css':
+                        initialContent = '/* New CSS File */\n\n';
+                        editor.setOption("mode", "text/css");
+                        break;
+                    case 'js':
+                        initialContent = '// New JavaScript File\n\n';
+                        editor.setOption("mode", "text/javascript");
+                        break;
+                    default:
+                        alert('Unsupported file type. Please enter a valid file name with html, css, or js extension.');
+                        return;
+                }
+
+                files[fileName] = initialContent;
+                updateFileSelector();
+                loadFile(fileName);
+            }
+        }
+
+        function updateFileSelector() {
+            const fileSelector = document.getElementById("fileSelector");
+            fileSelector.innerHTML = '<option value="">Select a file</option>';
+            for (const file in files) {
+                fileSelector.innerHTML += `<option value="${file}">${file}</option>`;
+            }
+        }
+
+        function loadFile(fileName) {
+            const selectedFile = fileName || document.getElementById("fileSelector").value;
+            if (selectedFile) {
+                editor.setValue(files[selectedFile]);
+                editor.setOption("mode", getFileMode(selectedFile));
+            }
+        }
+
+        function getFileMode(fileName) {
+            const extension = fileName.split('.').pop();
+            switch (extension) {
+                case 'html':
+                    return 'text/html';
+                case 'css':
+                    return 'text/css';
+                case 'js':
+                    return 'text/javascript';
+                default:
+                    return 'text/plain';
+            }
+        }
+
         async function pasteCode() {
             try {
                 const text = await navigator.clipboard.readText();
-                document.getElementById("codeInput").value = text;
+                editor.setValue(text);
             } catch (err) {
                 alert("Failed to paste: " + err);
             }
         }
 
         function clearCode() {
-            document.getElementById("codeInput").value = '';
+            editor.setValue('');
         }
 
         function copyCode() {
-            const codeInput = document.getElementById("codeInput");
-            codeInput.select();
-            document.execCommand("copy");
-            alert("Code copied to clipboard!");
+            const code = editor.getValue();
+            navigator.clipboard.writeText(code).then(() => {
+                alert("Code copied to clipboard!");
+            });
         }
 
         function downloadCode() {
-            const code = document.getElementById("codeInput").value;
+            const code = editor.getValue();
             const blob = new Blob([code], { type: 'text/html' });
             const link = document.createElement('a');
             link.href = URL.createObjectURL(blob);
-            link.download = 'code.html';
+            link.download = 'code.html'; // Default name, can be changed if necessary
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
         }
 
         function runCode() {
-            const code = document.getElementById("codeInput").value;
+            const code = editor.getValue();
             document.getElementById("preview").srcdoc = code;
             document.getElementById("editor").style.display = "none";
             document.getElementById("previewContainer").style.display = "block";
         }
 
         function closeRunner() {
-            document.getElementById("previewContainer").style.display = "none";
             document.getElementById("editor").style.display = "block";
+            document.getElementById("previewContainer").style.display = "none";
+        }
+
+        function searchCode() {
+            const query = document.getElementById("searchInput").value;
+            if (query) {
+                const regex = new RegExp(query, "gi");
+                const matches = editor.getValue().match(regex);
+                if (matches) {
+                    alert(`Found ${matches.length} occurrence(s) of "${query}".`);
+                    // Highlighting logic can be added here
+                } else {
+                    alert(`No occurrences found for "${query}".`);
+                }
+            }
         }
 
         function goHome() {
