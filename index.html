@@ -5,52 +5,75 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Adiasta</title>
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    html, body {
-      height: 100%; font-family: "Helvetica Neue", Arial, sans-serif;
-      display: flex; justify-content: center; align-items: center;
-      text-align: center; transition: background-color 0.3s, color 0.3s;
+    * { 
+      box-sizing: border-box; 
+      margin: 0; 
+      padding: 0; 
     }
-    h1 {
-      font-size: 3rem; font-weight: 700; margin-bottom: 40px;
-      letter-spacing: 0.1rem;
+    html, body {
+      height: 100%; 
+      width: 100%;
+      font-family: "Helvetica Neue", Arial, sans-serif;
+      display: flex; 
+      justify-content: center; 
+      align-items: center;
+      text-align: center; 
+      background-color: #f9f9f9; 
+      color: #333;
+      transition: background-color 0.3s, color 0.3s;
+    }
+    .container {
+      max-width: 400px;
+      padding: 40px;
+      border-radius: 8px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      background: #fff;
+      width: 90%;
     }
     .button-container {
-      display: flex; flex-direction: column; gap: 20px;
-      width: 100%; max-width: 320px;
+      display: flex; 
+      flex-direction: column; 
+      gap: 15px;
     }
     .button {
-      padding: 18px; font-size: 1.0rem; font-weight: 600;
-      text-transform: uppercase; text-decoration: none;
-      border: 1px solid; display: inline-block;
-      letter-spacing: 0.05rem; transition: background-color 0.3s, color 0.3s, transform 0.2s;
+      padding: 16px; 
+      font-size: 1.0rem; 
+      font-weight: 600;
+      text-decoration: none;
+      border: 1px solid #007bff; 
+      display: inline-block;
+      color: #007bff; 
+      background-color: transparent; 
+      border-radius: 5px;
+      letter-spacing: 0.05rem; 
+      transition: background-color 0.3s, color 0.3s, transform 0.2s;
     }
     .button:hover {
+      background-color: #007bff; 
+      color: #fff; 
       transform: scale(1.05);
     }
-    .dark-mode {
-      background-color: #000; color: #fff;
-    }
-    .dark-mode .button {
-      color: #000; background-color: #fff; border-color: #fff;
-    }
-    .dark-mode .button:hover {
-      background-color: #000; color: #fff;
-    }
-    .light-mode {
-      background-color: #fff; color: #000;
-    }
-    .light-mode .button {
-      color: #fff; background-color: #000; border-color: #000;
-    }
-    .light-mode .button:hover {
-      background-color: #fff; color: #000;
+    @media (prefers-color-scheme: dark) {
+      body {
+        background-color: #222; 
+        color: #ddd;
+      }
+      .container {
+        background-color: #333;
+        box-shadow: none;
+      }
+      .button {
+        border-color: #fff;
+        color: #fff;
+      }
+      .button:hover {
+        background-color: #444;
+      }
     }
   </style>
 </head>
 <body>
-  <div>
-    <h1>Adiasta</h1>
+  <div class="container">
     <div class="button-container">
       <a href="https://adiasta.com/dev" class="button">HTML Code Tester</a>
       <a href="https://adiasta.com/voc" class="button">Vocabulary</a>
