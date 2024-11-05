@@ -18,27 +18,27 @@
             body { background: #1e1e1e; color: #ffffff; }
         }
         .container { width: 100%; max-width: 800px; margin: 0 auto; }
-        h1 { font-size: 2em; font-weight: bold; margin-bottom: 15px; text-align: center; }
+        h1 { font-size: 2em; font-weight: bold; margin-bottom: 15px; text-align: center; background: lightgrey}
         .CodeMirror {
             height: auto; border: 1px solid #ccc; border-radius: 4px;
-            margin-top: 10px; background: #ffffff;
+            margin-top: 10px; background: lightgrey;
             transition: background 0.3s;
         }
         @media (prefers-color-scheme: dark) {
-            .CodeMirror { background: #2d2d2d; border-color: #444; }
+            .CodeMirror { background: lightgrey; border-color: #444; }
         }
         #controls {
-            display: flex; flex-wrap: wrap; gap: 8px; justify-content: center;
+            display: flex; flex-wrap: wrap; gap: 8px; justify-content: space-between;
             margin-bottom: 10px; align-items: center;
         }
-        button, select {
+        button, select, input {
             padding: 10px; font-size: 0.9em; font-weight: bold;
             background: #333; color: #fff; border: none;
             cursor: pointer; border-radius: 4px;
             transition: background 0.3s, transform 0.2s;
         }
         button#runButton { background: #007bff; } /* Blue background for "Run" button */
-        button:hover, select:hover { background: #444; }
+        button:hover, select:hover, input:hover { background: #444; }
         button:active { transform: scale(0.95); }
         button#runButton:hover { background: #0056b3; } /* Darker blue on hover */
         #previewContainer {
@@ -58,21 +58,27 @@
             #controls { flex-direction: column; gap: 5px; }
             button, select { font-size: 0.9em; padding: 8px; }
         }
+        input {
+            background: #fff; /* Default background for light mode */
+            border: 1px solid #ccc; border-radius: 4px;
+        }
+        @media (prefers-color-scheme: dark) {
+            input {
+                background: grey; /* Dark background for input in dark mode */
+                color: #fff;
+                border: 1px solid #555;
+            }
+        }
     </style>
 </head>
 <body>
     <div class="container" id="editor">
         <div id="controls">
-            <button id="newFileButton" onclick="newFile()">New File</button>
-            <button id="runButton" onclick="runCode()">Run</button>
             <button onclick="pasteCode()">Paste</button>
             <button onclick="clearCode()">Clear</button>
             <button onclick="copyCode()">Copy</button>
             <button onclick="downloadCode()">Download</button>
-            <select id="fileSelector" onchange="loadFile()">
-                <option value="">Select a file</option>
-            </select>
-            <button id="homeButton" onclick="goHome()">Home</button>
+            <button id="runButton" onclick="runCode()">Run</button>
         </div>
         <div id="codeMirrorContainer"></div>
     </div>
