@@ -32,6 +32,7 @@
       border-radius: 50%;
       border: 2px solid #000;
       position: relative;
+      touch-action: none;
     }
     .stick {
       width: 50px;
@@ -190,66 +191,59 @@
       updateJoystick(null, joystickType === 'camera' ? cameraStick : blockStick, joystickType === 'camera' ? cameraJoystickData : blockJoystickData);
     }
 
-    // Add event listeners to handle joystick movement
-    cameraJoystick.addEventListener('touchstart', (e) => {
-      e.preventDefault();
-      cameraJoystickActive = true;
-      onJoystickMove(e, 'camera');
-    });
-    cameraJoystick.addEventListener('touchmove', (e) => {
-      e.preventDefault();
-      if (cameraJoystickActive) {
-        onJoystickMove(e, 'camera');
-      }
-    });
-    cameraJoystick.addEventListener('touchend', () => onJoystickEnd('camera'));
-    cameraJoystick.addEventListener('mousedown', (e) => {
-      e.preventDefault();
-      cameraJoystickActive = true;
-      onJoystickMove(e, 'camera');
-    });
-    cameraJoystick.addEventListener('mousemove', (e) => {
-      e.preventDefault();
-      if (cameraJoystickActive) {
-        onJoystickMove(e, 'camera');
-      }
-    });
-    cameraJoystick.addEventListener('mouseup', () => onJoystickEnd('camera'));
+    // Add event listeners to handle joystick movement (Touch and Mouse)
+    function setupJoystickListeners(joystick, joystickType) {
+      joystick.addEventListener('touchstart', (e) => {
+        e.preventDefault();
+        joystickType === 'camera' ? cameraJoystickActive = true : blockJoystickActive = true;
+        onJoystickMove(e, joystickType);
+      });
 
-    blockJoystick.addEventListener('touchstart', (e) => {
-      e.preventDefault();
-      blockJoystickActive = true;
-      onJoystickMove(e, 'block');
-    });
-    blockJoystick.addEventListener('touchmove', (e) => {
-      e.preventDefault();
-      if (blockJoystickActive) {
-        onJoystickMove(e, 'block');
-      }
-    });
-    blockJoystick.addEventListener('touchend', () => onJoystickEnd('block'));
-    blockJoystick.addEventListener('mousedown', (e) => {
-      e.preventDefault();
-      blockJoystickActive = true;
-      onJoystickMove(e, 'block');
-    });
-    blockJoystick.addEventListener('mousemove', (e) => {
-      e.preventDefault();
-      if (blockJoystickActive) {
-        onJoystickMove(e, 'block');
-      }
-    });
-    blockJoystick.addEventListener('mouseup', () => onJoystickEnd('block'));
+      joystick.addEventListener('touchmove', (e) => {
+        e.preventDefault();
+        if (joystickType === 'camera' ? cameraJoystickActive : blockJoystickActive) {
+          onJoystickMove(e, joystickType);
+        }
+      });
 
-    // Event listeners for UI controls
+      joystick.addEventListener('touchend', () => {
+        joystickType === 'camera' ? cameraJoystickActive = false : blockJoystickActive = false;
+        onJoystickEnd(joystickType);
+      });
+
+      joystick.addEventListener('mousedown', (e) => {
+        e.preventDefault();
+        joystickType === 'camera' ? cameraJoystickActive = true : blockJoystickActive = true;
+        onJoystickMove(e, joystickType);
+      });
+
+      joystick.addEventListener('mousemove', (e) => {
+        e.preventDefault();
+        if (joystickType === 'camera' ? cameraJoystickActive : blockJoystickActive) {
+          onJoystickMove(e, joystickType);
+        }
+      });
+
+      joystick.addEventListener('mouseup', () => {
+        joystickType === 'camera' ? cameraJoystickActive = false : blockJoystickActive = false;
+        onJoystickEnd(joystickType);
+      });
+    }
+
+    // UI Event Listeners
     document.getElementById('addBlockBtn').addEventListener('click', () => {
-      const blockPosition = new THREE.Vector3(0, 0, 0);
-      createBlock(blockShape, blockPosition);
+      createBlock(blockShape, new THREE.Vector3(0, 5, 0));
     });
 
-    document.getElementById('shapeCubeBtn').addEventListener('click', () => { blockShape = 'cube'; });
-    document.getElementById('shapeSphereBtn').addEventListener('click', () => { blockShape = 'sphere'; });
-    document.getElementById('shapePyramidBtn').addEventListener('click', () => { blockShape = 'pyramid'; });
+    document.getElementById('shapeCubeBtn').addEventListener('click', () => {
+      blockShape = 'cube';
+    });
+    document.getElementById('shapeSphereBtn').addEventListener('click', () => {
+      blockShape = 'sphere';
+    });
+    document.getElementById('shapePyramidBtn').addEventListener('click', () => {
+      blockShape = 'pyramid';
+    });
     document.getElementById('colorPicker').addEventListener('input', (e) => {
       blockMaterial.color.set(e.target.value);
     });
@@ -257,10 +251,13 @@
       blockSize = parseFloat(e.target.value);
     });
 
-    // Render loop
+    // Set up joysticks for touch and mouse interaction
+    setupJoystickListeners(cameraJoystick, 'camera');
+    setupJoystickListeners(blockJoystick, 'block');
+
+    // Main render loop
     function animate() {
       requestAnimationFrame(animate);
-
       moveCamera();
       moveBlock();
       renderer.render(scene, camera);
