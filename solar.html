@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>3D Solar System</title>
+  <link rel="manifest" href="/site.webmanifest">
+  <link rel="manifest" href="/manifest.json">
+  <style>
+    body { margin: 0; overflow: hidden; background-color: #111; }
+    #controls { position: absolute; top: 20px; right: 20px; color: #fff; font-size: 1.2em; }
+  </style>
+</head>
+<body>
+<div id="controls">
+  <label>Rotation Speed: <input type="range" id="speed" min="0" max="0.1" step="0.01" value="0.02"></label><br>
+  <label>Sun Intensity: <input type="range" id="intensity" min="0" max="5" step="0.1" value="1.5"></label>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+  let scene, camera, renderer, sun;
+  const planetData = [
+    { name: "Mercury", radius: 0.4, distance: 2, orbitalPeriod: 88, color: 0xaaaaff },
+    { name: "Venus", radius: 0.95, distance: 3, orbitalPeriod: 225, color: 0xffcc00 },
+    { name: "Earth", radius: 1, distance: 5, orbitalPeriod: 365, color: 0x0000ff },
+    { name: "Mars", radius: 0.53, distance: 7, orbitalPeriod: 687, color: 0xff4500 },
+    { name: "Jupiter", radius: 11, distance: 10, orbitalPeriod: 4333, color: 0xffaa00 },
+    { name: "Saturn", radius: 9.4, distance: 12, orbitalPeriod: 10759, color: 0xffff00 },
+    { name: "Uranus", radius: 4, distance: 15, orbitalPeriod: 30687, color: 0x00ffff },
+    { name: "Neptune", radius: 3.9, distance: 18, orbitalPeriod: 60190, color: 0x0000aa },
+    { name: "Pluto", radius: 0.2, distance: 20, orbitalPeriod: 90520, color: 0xaaaaaa },
+  ];
+  const planets = [];
+  let speed = 0.02;
+  let light, sunLight;
+  
+  function init() {
+    scene = new THREE.Scene();
+    camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    camera.position.set(0, 30, 30);
+    camera.lookAt(0, 0, 0);
+
+    renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.shadowMap.enabled = true;
+    document.body.appendChild(renderer.domElement);
+
+    const sunGeometry = new THREE.SphereGeometry(5, 32, 32);
+    const sunMaterial = new THREE.MeshPhongMaterial({ color: 0xffff00 });
+    sun = new THREE.Mesh(sunGeometry, sunMaterial);
+    sun.castShadow = true;
+    scene.add(sun);
+
+    planetData.forEach((planet, index) => {
+      createPlanet(planet, index);
+    });
+
+    const groundGeometry = new THREE.PlaneGeometry(100, 100);
+    const groundMaterial = new THREE.ShadowMaterial({ opacity: 0.5 });
+    const ground = new THREE.Mesh(groundGeometry, groundMaterial);
+    ground.rotation.x = - Math.PI / 2;
+    ground.receiveShadow = true;
+    scene.add(ground);
+
+    light = new THREE.AmbientLight(0x404040);
+    scene.add(light);
+
+    sunLight = new THREE.DirectionalLight(0xffffff, 1.5);
+    sunLight.position.set(5, 5, 5);
+    sunLight.castShadow = true;
+    scene.add(sunLight);
+
+    document.getElementById('speed').addEventListener('input', (e) => {
+      speed = parseFloat(e.target.value);
+    });
+
+    document.getElementById('intensity').addEventListener('input', (e) => {
+      sunLight.intensity = parseFloat(e.target.value);
+    });
+
+    animate();
+    window.addEventListener('resize', onWindowResize, false);
+    window.addEventListener('mousemove', onMouseMove, false);
+  }
+
+  function createPlanet(planet, index) {
+    const planetGeometry = new THREE.SphereGeometry(planet.radius, 16, 16);
+    const planetMaterial = new THREE.MeshPhongMaterial({ color: planet.color });
+    const planetMesh = new THREE.Mesh(planetGeometry, planetMaterial);
+    
+    planetMesh.castShadow = true;
+    planetMesh.receiveShadow = true;
+
+    const planetOrbit = new THREE.Object3D();
+    planetOrbit.position.set(planet.distance, 0, 0);
+    scene.add(planetOrbit);
+    
+    planetOrbit.add(planetMesh);
+    
+    planetMesh.position.set(planet.distance, 0, 0);
+
+    const orbitalSpeed = (2 * Math.PI) / planet.orbitalPeriod; // orbital speed (radians per year)
+    const scaledSpeed = orbitalSpeed * 0.01; // Increase this multiplier for faster movement
+
+    planetOrbit.userData = { 
+      mesh: planetMesh, 
+      speed: scaledSpeed, // Set the orbital speed of the planet
+      rotationSpeed: Math.random() * 0.02 + 0.005 // Random spin speed for each planet
+    };
+
+    planets.push(planetOrbit);
+  }
+
+  function animate() {
+    requestAnimationFrame(animate);
+
+    sun.rotation.y += 0.001; // Slow spin of the Sun
+
+    planets.forEach(planetOrbit => {
+      planetOrbit.rotation.y += planetOrbit.userData.speed;
+      planetOrbit.position.x = planetOrbit.userData.mesh.position.x * Math.cos(planetOrbit.rotation.y);
+      planetOrbit.position.z = planetOrbit.userData.mesh.position.x * Math.sin(planetOrbit.rotation.y);
+
+      planetOrbit.userData.mesh.rotation.y += planetOrbit.userData.rotationSpeed; // Rotate the planet on its own axis
+    });
+
+    renderer.render(scene, camera);
+  }
+
+  function onWindowResize() {
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+  }
+
+  let mouseX = 0, mouseY = 0;
+
+  function onMouseMove(event) {
+    mouseX = (event.clientX / window.innerWidth) * 2 - 1;
+    mouseY = -(event.clientY / window.innerHeight) * 2 + 1;
+    camera.position.x = mouseX * 20;
+    camera.position.y = mouseY * 20 + 10;
+    camera.lookAt(0, 0, 0);
+  }
+
+  init();
+</script>
+</body>
+</html>
