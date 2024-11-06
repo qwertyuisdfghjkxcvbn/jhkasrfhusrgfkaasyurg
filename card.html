@@ -14,31 +14,25 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
   <script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js"></script>
   <script>
-    // Створення сцени
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
     const renderer = new THREE.WebGLRenderer();
     renderer.setSize(window.innerWidth, window.innerHeight);
     document.body.appendChild(renderer.domElement);
 
-    // Розміри картки (3.5 x 2 дюйма)
     const width = 3.5;
     const height = 2;
-
-    // Тонка 3D візитка
-    const geometry = new THREE.BoxGeometry(width, height, 0.05);  // Тонка картка
+    const geometry = new THREE.BoxGeometry(width, height, 0.05);
     const material = new THREE.MeshStandardMaterial({ color: 0x2f4f4f, metalness: 0.7, roughness: 0.1 });
     const card = new THREE.Mesh(geometry, material);
     scene.add(card);
 
-    // Освітлення для реалістичності
-    const light = new THREE.AmbientLight(0x404040, 2);  // М'яке освітлення
+    const light = new THREE.AmbientLight(0x404040, 2);
     scene.add(light);
     const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
     directionalLight.position.set(5, 5, 5).normalize();
     scene.add(directionalLight);
 
-    // Текст на картці
     const loader = new THREE.FontLoader();
     loader.load('https://threejs.org/examples/fonts/helvetiker_regular.typeface.json', function(font) {
       const textGeometry = new THREE.TextGeometry('CEO of Adiasta\nSan Francisco, CA', {
@@ -48,11 +42,10 @@
       });
       const textMaterial = new THREE.MeshStandardMaterial({ color: 0xffffff });
       const textMesh = new THREE.Mesh(textGeometry, textMaterial);
-      textMesh.position.set(-1.4, 0.5, 0.03);  // Розташування тексту на самій картці
-      card.add(textMesh);  // Додаємо текст безпосередньо до картки
+      textMesh.position.set(-1.4, 0.5, 0.03);
+      card.add(textMesh);
     });
 
-    // Додавання QR-коду на картку
     const qrCanvas = document.createElement('canvas');
     const qrCode = new QRCode(qrCanvas, {
       text: "https://adiasta.com",
@@ -63,43 +56,74 @@
     const qrMaterial = new THREE.MeshBasicMaterial({ map: qrTexture, transparent: true });
     const qrGeometry = new THREE.PlaneGeometry(0.5, 0.5);
     const qrMesh = new THREE.Mesh(qrGeometry, qrMaterial);
-    qrMesh.position.set(0.8, -0.7, 0.03); // Розташування QR-коду на картці
+    qrMesh.position.set(0.8, -0.7, 0.03);
     card.add(qrMesh);
 
-    // Камера та анімація
-    camera.position.z = 4;
-    function animate() {
-      requestAnimationFrame(animate);
-      renderer.render(scene, camera);
-    }
-    animate();
+    const mapGeometry = new THREE.PlaneGeometry(10, 10);
+    const mapMaterial = new THREE.MeshBasicMaterial({ color: 0x87cefa, side: THREE.DoubleSide });
+    const map = new THREE.Mesh(mapGeometry, mapMaterial);
+    map.rotation.x = -Math.PI / 2;
+    scene.add(map);
 
-    // Додаткові змінні для контролю обертання через дотик
+    const oceanGeometry = new THREE.PlaneGeometry(100, 100);
+    const oceanMaterial = new THREE.MeshStandardMaterial({ color: 0x1e90ff, opacity: 0.6, transparent: true });
+    const ocean = new THREE.Mesh(oceanGeometry, oceanMaterial);
+    ocean.rotation.x = -Math.PI / 2;
+    ocean.position.y = -1;
+    scene.add(ocean);
+
+    const sun = new THREE.Mesh(new THREE.SphereGeometry(1, 20, 20), new THREE.MeshBasicMaterial({ color: 0xffff00 }));
+    sun.position.set(5, 5, 5);
+    scene.add(sun);
+
+    const houseGeometry = new THREE.BoxGeometry(1, 1, 1);
+    const houseMaterial = new THREE.MeshStandardMaterial({ color: 0xa0522d, roughness: 0.6 });
+    const house = new THREE.Mesh(houseGeometry, houseMaterial);
+    house.position.set(2, 0.5, -5);
+    scene.add(house);
+
+    const treeGeometry = new THREE.ConeGeometry(0.5, 1, 8);
+    const treeMaterial = new THREE.MeshStandardMaterial({ color: 0x228b22 });
+    const tree = new THREE.Mesh(treeGeometry, treeMaterial);
+    tree.position.set(4, 0.5, -5);
+    scene.add(tree);
+
+    camera.position.z = 10;
+
     let isTouching = false;
     let touchStartX = 0;
     let touchStartY = 0;
     let rotationStartX = 0;
     let rotationStartY = 0;
+    let zoomStart = 0;
+    let zoomFactor = 1;
 
-    // Обробка дотику на мобільних пристроях
     window.addEventListener('touchstart', (event) => {
       isTouching = true;
-      touchStartX = event.touches[0].clientX;
-      touchStartY = event.touches[0].clientY;
-      rotationStartX = card.rotation.x;
-      rotationStartY = card.rotation.y;
+      if (event.touches.length === 1) {
+        touchStartX = event.touches[0].clientX;
+        touchStartY = event.touches[0].clientY;
+        rotationStartX = card.rotation.x;
+        rotationStartY = card.rotation.y;
+      } else if (event.touches.length === 2) {
+        zoomStart = Math.abs(event.touches[0].clientY - event.touches[1].clientY);
+      }
     });
 
     window.addEventListener('touchmove', (event) => {
       if (isTouching) {
-        const touchMoveX = event.touches[0].clientX;
-        const touchMoveY = event.touches[0].clientY;
-        const deltaX = touchMoveX - touchStartX;
-        const deltaY = touchMoveY - touchStartY;
-
-        // Обертання картки
-        card.rotation.x = rotationStartX + deltaY * 0.01;
-        card.rotation.y = rotationStartY + deltaX * 0.01;
+        if (event.touches.length === 1) {
+          const touchMoveX = event.touches[0].clientX;
+          const touchMoveY = event.touches[0].clientY;
+          const deltaX = touchMoveX - touchStartX;
+          const deltaY = touchMoveY - touchStartY;
+          card.rotation.x = rotationStartX + deltaY * 0.01;
+          card.rotation.y = rotationStartY + deltaX * 0.01;
+        } else if (event.touches.length === 2) {
+          const zoomCurrent = Math.abs(event.touches[0].clientY - event.touches[1].clientY);
+          zoomFactor = 1 + (zoomStart - zoomCurrent) * 0.01;
+          camera.position.z = 10 * zoomFactor;
+        }
       }
     });
 
@@ -107,7 +131,18 @@
       isTouching = false;
     });
 
-    // Оновлення рендеру на мобільних пристроях
+    function animate() {
+      requestAnimationFrame(animate);
+      card.position.y = Math.sin(Date.now() * 0.001) * 0.5;
+      sun.position.x = Math.cos(Date.now() * 0.001) * 5;
+      sun.position.z = Math.sin(Date.now() * 0.001) * 5;
+
+      scene.rotation.y += 0.0005;
+      renderer.render(scene, camera);
+    }
+
+    animate();
+
     function update() {
       renderer.render(scene, camera);
       requestAnimationFrame(update);
