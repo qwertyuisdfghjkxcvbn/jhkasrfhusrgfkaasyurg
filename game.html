@@ -2,18 +2,63 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0, minimum-scale=1.0">
     <link rel="manifest" href="/site.webmanifest">
     <link rel="manifest" href="/manifest.json">
     <title>Complex 3D Mobile Game</title>
     <style>
-        body { margin: 0; overflow: hidden; }
-        canvas { display: block; }
-        #score { position: absolute; top: 10px; left: 10px; color: white; font-size: 24px; }
-        #health { position: absolute; top: 40px; left: 10px; color: white; font-size: 24px; }
-        #level { position: absolute; top: 70px; left: 10px; color: white; font-size: 24px; }
-        #controls { position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); display: flex; }
-        .button { background-color: rgba(255, 255, 255, 0.7); border: 1px solid #000; padding: 10px; margin: 5px; border-radius: 5px; cursor: pointer; }
+        body {
+            margin: 0;
+            overflow: hidden;
+            background-color: #111;
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro", "Helvetica Neue", "Segoe UI", sans-serif; /* SF Pro font for Apple devices */
+        }
+        canvas {
+            display: block;
+        }
+        #score, #health, #level {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            color: white;
+            font-size: 20px;
+            font-weight: bold;
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro", "Helvetica Neue", "Segoe UI", sans-serif;
+        }
+        #score { top: 10px; }
+        #health { top: 40px; }
+        #level { top: 70px; }
+        #controls {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+        .button {
+            background-color: rgba(255, 255, 255, 0.7);
+            border: 1px solid #000;
+            padding: 15px;
+            font-size: 18px;
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro", "Helvetica Neue", "Segoe UI", sans-serif;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .button:active {
+            background-color: rgba(255, 255, 255, 0.9);
+        }
+        @media (max-width: 600px) {
+            #score, #health, #level {
+                font-size: 18px;
+            }
+            .button {
+                font-size: 16px;
+                padding: 12px;
+            }
+        }
     </style>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 </head>
@@ -25,6 +70,7 @@
         <div class="button" id="left">← Left</div>
         <div class="button" id="right">Right →</div>
     </div>
+
     <script>
         let scene, camera, renderer;
         let player, enemies = [], items = [], powerUps = [];
