@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Complex 3D Mobile Game</title>
+    <link rel="manifest" href="/site.webmanifest">
+    <link rel="manifest" href="/manifest.json">
+    <style>
+        body { margin: 0; overflow: hidden; }
+        canvas { display: block; }
+        #score, #health, #level {
+            position: absolute; top: 10px; left: 10px; color: white; font-size: 24px; z-index: 10;
+        }
+        #controls {
+            position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); display: flex; z-index: 10;
+        }
+        .button {
+            background-color: rgba(255, 255, 255, 0.7); border: 1px solid #000;
+            padding: 10px; margin: 5px; border-radius: 5px; cursor: pointer;
+        }
+        #menu, #settings {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.8); padding: 20px; border-radius: 10px; color: white; z-index: 20;
+            display: none;
+        }
+        #menu button, #settings button {
+            margin: 10px;
+            padding: 10px;
+            border: none;
+            background: #fff;
+            color: #000;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        #cubeColorPicker {
+            margin-top: 10px;
+        }
+        #cube {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 15;
+        }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+</head>
+<body>
+    <div id="score">Score: 0</div>
+    <div id="health">Health: 3</div>
+    <div id="level">Level: 1</div>
+    <div id="controls">
+        <div class="button" id="left">← Left</div>
+        <div class="button" id="right">Right →</div>
+    </div>
+    <div id="menu">
+        <h2>Game Menu</h2>
+        <button id="startButton">Start Game</button>
+        <button id="resetButton">Reset Game</button>
+        <button id="settingsButton">Settings</button>
+        <button id="closeMenuButton">Close Menu</button>
+        <div id="cubeColorPicker">
+            <label for="colorInput">Choose Cube Color:</label>
+            <input type="color" id="colorInput" value="#0077ff">
+        </div>
+    </div>
+    <div id="settings" style="display: none;">
+        <h2>Settings</h2>
+        <label for="speed">Game Speed:</label>
+        <input type="range" id="speed" min="1" max="10" value="5">
+        <br>
+        <label for="volume">Volume:</label>
+        <input type="range" id="volume" min="0" max="100" value="50">
+        <br>
+        <button id="closeSettingsButton">Close Settings</button>
+    </div>
+    <div id="cube"></div>
+    <script>
+        let scene, camera, renderer, player, cube, enemies = [], items = [];
+        let isDragging = false, previousMousePosition = { x: 0, y: 0 };
+        let score = 0, health = 3, enemyCount = 5, itemCount = 10, enemySpeed = 0.05;
+        let isMovingLeft = false, isMovingRight = false, gameStarted = false;
+
+        function init() {
+            // Create the scene
+            scene = new THREE.Scene();
+            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            document.body.appendChild(renderer.domElement);
+
+            // Create a cube
+            const geometry = new THREE.BoxGeometry(1, 1, 1);
+            const material = new THREE.MeshBasicMaterial({ color: 0x0077ff });
+            cube = new THREE.Mesh(geometry, material);
+            scene.add(cube);
+
+            // Add cube borders
+            const borderGeometry = new THREE.BoxGeometry(1.05, 1.05, 1.05);
+            const borderMaterial = new THREE.MeshBasicMaterial({ color: 0x000000, wireframe: true });
+            const border = new THREE.Mesh(borderGeometry, borderMaterial);
+            cube.add(border);
+            cube.position.y = 0.5;
+
+            // Set camera position
+            camera.position.z = 5;
+
+            // Add event listeners
+            window.addEventListener('resize', onWindowResize, false);
+            document.addEventListener('mousedown', onMouseDown, false);
+            document.addEventListener('mouseup', onMouseUp, false);
+            document.addEventListener('mousemove', onMouseMove, false);
+            document.addEventListener('touchstart', onTouchStart, false);
+            document.addEventListener('touchend', onTouchEnd, false);
+            document.addEventListener('touchmove', onTouchMove, false);
+            document.getElementById('colorInput').addEventListener('input', changeCubeColor, false);
+            document.getElementById('startButton').addEventListener('click', startGame, false);
+            document.getElementById('resetButton').addEventListener('click', resetGame, false);
+            document.getElementById('settingsButton').addEventListener('click', openSettings, false);
+            document.getElementById('closeMenuButton').addEventListener('click', closeMenu, false);
+            document.getElementById('closeSettingsButton').addEventListener('click', closeSettings, false);
+            document.getElementById('speed').addEventListener('input', (e) => {
+                enemySpeed = e.target.value / 10;
+            });
+
+            animate();
+        }
+
+        function changeCubeColor(event) {
+            const color = event.target.value;
+            cube.material.color.set(color);
+        }
+
+        function onWindowResize() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        }
+
+        function onMouseDown(event) {
+            isDragging = true;
+        }
+
+        function onMouseUp(event) {
+            isDragging = false;
+        }
+
+        function onMouseMove(event) {
+            if (isDragging) {
+                const deltaMove = {
+                    x: event.clientX - previousMousePosition.x,
+                    y: event.clientY - previousMousePosition.y
+                };
+                cube.rotation.y += deltaMove.x * 0.01;
+                cube.rotation.x += deltaMove.y * 0.01;
+            }
+            previousMousePosition = {
+                x: event.clientX,
+                y: event.clientY
+            };
+        }
+
+        function onTouchStart(event) {
+            isDragging = true;
+            previousMousePosition = {
+                x: event.touches[0].clientX,
+                y: event.touches[0].clientY
+            };
+        }
+
+        function onTouchEnd(event) {
+            isDragging = false;
+        }
+
+        function onTouchMove(event) {
+            if (isDragging) {
+                const deltaMove = {
+                    x: event.touches[0].clientX - previousMousePosition.x,
+                    y: event.touches[0].clientY - previousMousePosition.y
+                };
+                cube.rotation.y += deltaMove.x * 0.01;
+                cube.rotation.x += deltaMove.y * 0.01;
+            }
+            previousMousePosition = {
+                x: event.touches[0].clientX,
+                y: event.touches[0].clientY
+            };
+        }
+
+        function startGame() {
+            gameStarted = true;
+            document.getElementById('menu').style.display = 'none';
+            initGameObjects();
+        }
+
+        function resetGame() {
+            score = 0; health = 3;
+            document.getElementById('score').innerText = 'Score: ' + score;
+            document.getElementById('health').innerText = 'Health: ' + health;
+            cube.position.set(0, 0.5, 0);
+            if (!gameStarted) startGame();
+        }
+
+        function initGameObjects() {
+            for (let i = 0; i < enemyCount; i++) {
+                createEnemy();
+            }
+            for (let i = 0; i < itemCount; i++) {
+                createItem();
+            }
+        }
+
+        function openSettings() {
+            document.getElementById('settings').style.display = 'block';
+        }
+
+        function closeMenu() {
+            document.getElementById('menu').style.display = 'none';
+        }
+
+        function closeSettings() {
+            document.getElementById('settings').style.display = 'none';
+        }
+
+        function animate() {
+            if (gameStarted) {
+                cube.rotation.x += 0.01; // Rotate cube for demonstration
+                cube.rotation.y += 0.01;
+            }
+            requestAnimationFrame(animate);
+            renderer.render(scene, camera);
+        }
+
+        window.addEventListener('keydown', (event) => {
+            if (event.key === 'ArrowLeft') isMovingLeft = true;
+            if (event.key === 'ArrowRight') isMovingRight = true;
+        });
+
+        window.addEventListener('keyup', (event) => {
+            if (event.key === 'ArrowLeft') isMovingLeft = false;
+            if (event.key === 'ArrowRight') isMovingRight = false;
+        });
+
+        document.getElementById('left').addEventListener('touchstart', () => isMovingLeft = true);
+        document.getElementById('left').addEventListener('touchend', () => isMovingLeft = false);
+        document.getElementById('right').addEventListener('touchstart', () => isMovingRight = true);
+        document.getElementById('right').addEventListener('touchend', () => isMovingRight = false);
+
+        init();
+    </script>
+</body>
+</html>
