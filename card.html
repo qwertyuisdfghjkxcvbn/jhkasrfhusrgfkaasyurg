@@ -5,26 +5,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>3D Business Card - Adiasta CEO</title>
     <style>
-        body { margin: 0; }
-        canvas { display: block; }
-        h1 {
-            text-align: center;
-            font-family: Arial, sans-serif;
-            margin-top: 20px;
-        }
-        .container {
-            width: 100%;
-            height: 100vh;
+        body {
+            margin: 0;
+            background-color: #f5f5f7;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
             display: flex;
             justify-content: center;
             align-items: center;
+            height: 100vh;
+        }
+        canvas {
+            display: block;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <canvas id="businessCard"></canvas>
-    </div>
+    <canvas id="businessCard"></canvas>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/controls/OrbitControls.js"></script>
@@ -39,20 +35,22 @@
 
         // Create the card geometry (box)
         const cardGeometry = new THREE.BoxGeometry(5, 3, 0.1);
-        const cardMaterialFront = new THREE.MeshBasicMaterial({
-            color: 0x1E2A47, 
-            side: THREE.FrontSide
+        const cardMaterialFront = new THREE.MeshStandardMaterial({
+            color: 0xffffff, 
+            roughness: 0.5,
+            metalness: 0.3
         });
-        const cardMaterialBack = new THREE.MeshBasicMaterial({
-            color: 0xF5F5F5, 
-            side: THREE.BackSide
+        const cardMaterialBack = new THREE.MeshStandardMaterial({
+            color: 0x333333, 
+            roughness: 0.5,
+            metalness: 0.3
         });
 
         // Create the mesh for front and back of the card
         const card = new THREE.Mesh(cardGeometry, [cardMaterialFront, cardMaterialBack]);
         scene.add(card);
 
-        // Card Front Text
+        // Card Front Text (CEO info)
         const frontText = `
             CEO: John Doe
             Adiasta Inc.
@@ -61,7 +59,7 @@
             Phone: +1 (555) 123-4567
         `;
 
-        // Create a simple text for the card front
+        // Load a clean font
         const fontLoader = new THREE.FontLoader();
         fontLoader.load('https://threejs.org/examples/fonts/helvetiker_regular.typeface.json', function(font) {
             const textGeometry = new THREE.TextGeometry(frontText, {
@@ -71,14 +69,22 @@
                 curveSegments: 10,
             });
 
-            const textMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff });
+            const textMaterial = new THREE.MeshStandardMaterial({ color: 0x333333 });
             const textMesh = new THREE.Mesh(textGeometry, textMaterial);
 
             textMesh.position.set(-2.4, 1, 0.06); // Position text on front of card
             scene.add(textMesh);
         });
 
-        // Set the camera position
+        // Add a subtle ambient light and a point light for better visibility
+        const ambientLight = new THREE.AmbientLight(0x404040, 1); // Ambient light
+        scene.add(ambientLight);
+
+        const pointLight = new THREE.PointLight(0xffffff, 1, 50);
+        pointLight.position.set(10, 10, 10);
+        scene.add(pointLight);
+
+        // Camera position
         camera.position.z = 10;
 
         // Add controls for rotating the card
@@ -94,7 +100,7 @@
 
         animate();
 
-        // Resize handling for responsiveness
+        // Handle window resizing for responsiveness
         window.addEventListener('resize', () => {
             renderer.setSize(window.innerWidth, window.innerHeight);
             camera.aspect = window.innerWidth / window.innerHeight;
