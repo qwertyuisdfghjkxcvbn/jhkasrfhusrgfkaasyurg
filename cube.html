@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Enhanced 4D Cube Simulation with Three.js</title>
+  <title>Solar System with Colors and Thinner Orbits</title>
   <style>
     body, html {
       margin: 0;
@@ -25,65 +25,101 @@
 <script>
   const scene = new THREE.Scene();
   const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-  camera.position.set(0, 10, 40);
+  camera.position.set(0, 30, 150);
   camera.lookAt(0, 0, 0);
 
   const renderer = new THREE.WebGLRenderer({ antialias: true });
   renderer.setSize(window.innerWidth, window.innerHeight);
   document.body.appendChild(renderer.domElement);
 
-  // Add lighting
-  const ambientLight = new THREE.AmbientLight(0x404040, 2);
+  // Lighting
+  const ambientLight = new THREE.AmbientLight(0x404040, 1);
   scene.add(ambientLight);
-  const directionalLight = new THREE.DirectionalLight(0xffffff, 1.2);
+  const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
   directionalLight.position.set(5, 10, 7).normalize();
   scene.add(directionalLight);
 
   // Orbit controls
   const controls = new THREE.OrbitControls(camera, renderer.domElement);
   controls.enableDamping = true;
-  controls.dampingFactor = 0.2;
-  controls.maxPolarAngle = Math.PI;
+  controls.dampingFactor = 0.25;
+  controls.maxPolarAngle = Math.PI / 2;
 
-  // Create a central glowing sphere
-  const sphereGeometry = new THREE.SphereGeometry(0.8, 32, 32);
-  const sphereMaterial = new THREE.MeshBasicMaterial({ color: 0xffff99, emissive: 0xffff99 });
-  const coreSphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
-  scene.add(coreSphere);
+  // Create a large sun (central star)
+  const sunGeometry = new THREE.SphereGeometry(8, 32, 32);
+  const sunMaterial = new THREE.MeshBasicMaterial({ color: 0xffff00 }); // Yellow color for Sun
+  const sun = new THREE.Mesh(sunGeometry, sunMaterial);
+  scene.add(sun);
 
-  // Function to create a cube with specific size, color, and transparency
-  function createCube(size, color, opacity) {
-    const geometry = new THREE.BoxGeometry(size, size, size);
-    const material = new THREE.MeshStandardMaterial({ color, transparent: true, opacity });
-    const cube = new THREE.Mesh(geometry, material);
-    return cube;
+  // Function to create planets
+  function createPlanet(size, color, distanceFromSun, orbitSpeed) {
+    const geometry = new THREE.SphereGeometry(size, 32, 32);
+    const material = new THREE.MeshStandardMaterial({ color: color });
+    const planet = new THREE.Mesh(geometry, material);
+    planet.position.x = distanceFromSun; // Set the initial position along the X axis
+    planet.orbitSpeed = orbitSpeed;
+
+    return planet;
   }
 
-  // Nested cubes for the tesseract simulation
-  const cubes = [];
-  const sizes = [8, 6.5, 5, 3.8, 2.8, 2, 1.5]; // Different sizes for nested cubes
-  const colors = [0xff0000, 0xff8c00, 0xffff00, 0x00ff00, 0x00ced1, 0x1e90ff, 0xee82ee]; // Gradient colors
-  const opacityLevels = [0.9, 0.85, 0.8, 0.75, 0.7, 0.65, 0.6]; // Higher opacity for visibility
+  // Function to create moons
+  function createMoon(size, color, distanceFromPlanet, orbitSpeed) {
+    const geometry = new THREE.SphereGeometry(size, 16, 16);
+    const material = new THREE.MeshStandardMaterial({ color: color });
+    const moon = new THREE.Mesh(geometry, material);
+    moon.position.x = distanceFromPlanet; // Set the initial position along the X axis
+    moon.orbitSpeed = orbitSpeed;
 
-  sizes.forEach((size, index) => {
-    const cube = createCube(size, colors[index], opacityLevels[index]);
-    cubes.push(cube);
-    scene.add(cube);
+    return moon;
+  }
+
+  // Create planets and moons (solar system)
+  const planets = [];
+  const moons = [];
+  const orbits = [];
+
+  const planetData = [
+    { size: 3, color: 0x00aaff, distance: 20, orbitSpeed: 0.02 }, // Example planet 1 (Blue color)
+    { size: 5, color: 0xFF5733, distance: 40, orbitSpeed: 0.015 }, // Example planet 2 (Red color)
+    { size: 4, color: 0x808080, distance: 60, orbitSpeed: 0.01 }, // Example planet 3 (Gray color)
+  ];
+
+  planetData.forEach((data, index) => {
+    const planet = createPlanet(data.size, data.color, data.distance, data.orbitSpeed);
+    planets.push(planet);
+    scene.add(planet);
+
+    // Add moons to each planet (simulating the moons orbiting)
+    const moon1 = createMoon(0.5, 0x888888, 3, 0.05); // Gray moon
+    planet.add(moon1); // Attach the moon to the planet
+
+    const moon2 = createMoon(0.7, 0xcccccc, 6, 0.03); // Lighter gray moon
+    planet.add(moon2); // Attach the moon to the planet
+
+    moons.push(moon1, moon2);
+
+    // Create orbit paths (rings) with a thinner appearance
+    const orbitGeometry = new THREE.RingGeometry(data.distance - 0.5, data.distance + 0.5, 100);
+    const orbitMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff, side: THREE.DoubleSide, opacity: 0.1, transparent: true });
+    const orbit = new THREE.Mesh(orbitGeometry, orbitMaterial);
+    orbit.rotation.x = Math.PI / 2; // Align the orbit to the XZ plane
+    scene.add(orbit);
+    orbits.push(orbit);
   });
 
-  // Reduce particle field for less distraction
+  // Add stars (particles) to the background
   const particleGeometry = new THREE.BufferGeometry();
-  const particleCount = 500; // Reduced count
+  const particleCount = 1000; // Increased count for more stars
   const particlePositions = new Float32Array(particleCount * 3);
 
   for (let i = 0; i < particleCount; i++) {
-    particlePositions[i * 3] = (Math.random() - 0.5) * 50;
-    particlePositions[i * 3 + 1] = (Math.random() - 0.5) * 50;
-    particlePositions[i * 3 + 2] = (Math.random() - 0.5) * 50;
+    particlePositions[i * 3] = (Math.random() - 0.5) * 200; // Spread particles across a larger space
+    particlePositions[i * 3 + 1] = (Math.random() - 0.5) * 200;
+    particlePositions[i * 3 + 2] = (Math.random() - 0.5) * 200;
   }
 
   particleGeometry.setAttribute('position', new THREE.BufferAttribute(particlePositions, 3));
-  const particleMaterial = new THREE.PointsMaterial({ color: 0xaaaaaa, size: 0.05 });
+  const particleMaterial = new THREE.PointsMaterial({ color: 0xffffff, size: 0.05, opacity: 0.7, transparent: true });
   const particleField = new THREE.Points(particleGeometry, particleMaterial);
   scene.add(particleField);
 
@@ -94,25 +130,28 @@
     camera.updateProjectionMatrix();
   });
 
-  // Animation loop for complex rotation, scaling, and particle movement
+  // Animate the solar system (orbital motion)
   function animate() {
     requestAnimationFrame(animate);
 
-    // Apply rotation and scaling to each cube
-    cubes.forEach((cube, index) => {
-      cube.rotation.x += 0.01 + index * 0.002;
-      cube.rotation.y += 0.008 + index * 0.003;
-      cube.rotation.z += 0.006 + index * 0.001;
+    const time = Date.now() * 0.001;
 
-      // Pulsing scale effect
-      const scale = 1 + 0.1 * Math.sin(Date.now() * 0.001 + index);
-      cube.scale.set(scale, scale, scale);
+    // Animate the planets orbiting the sun
+    planets.forEach((planet, index) => {
+      planet.rotation.y += 0.01; // Rotate the planet around its own axis
+      planet.position.x = Math.cos(time * planet.orbitSpeed + index) * planetData[index].distance;
+      planet.position.z = Math.sin(time * planet.orbitSpeed + index) * planetData[index].distance;
+
+      // Animate the moons orbiting their respective planets
+      const moonsOfPlanet = planet.children.filter(child => child instanceof THREE.Mesh);
+      moonsOfPlanet.forEach((moon) => {
+        moon.rotation.y += 0.02;
+        moon.position.x = Math.cos(time * moon.orbitSpeed) * 3;
+        moon.position.z = Math.sin(time * moon.orbitSpeed) * 3;
+      });
     });
 
-    // Rotate central sphere
-    coreSphere.rotation.y += 0.01;
-
-    // Move particles slightly for subtle effect
+    // Rotate particle field slightly for subtle movement
     particleField.rotation.y += 0.001;
     particleField.rotation.x += 0.0005;
 
