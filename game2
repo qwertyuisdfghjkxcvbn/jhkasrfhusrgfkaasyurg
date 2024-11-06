@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D Mobile Game</title>
+
+    <!-- External Libraries -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/animate.css/animate.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/hover.css/2.3.1/css/hover-min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/materialize-css@1.0.0/dist/css/materialize.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.css" rel="stylesheet">
+    
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(45deg, #2c3e50, #34495e);
+            overflow: hidden;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        canvas {
+            display: block;
+        }
+
+        .game-ui {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            color: #fff;
+            font-family: 'Roboto', sans-serif;
+            z-index: 10;
+        }
+
+        #score, #health, #level {
+            font-size: 24px;
+            margin-bottom: 10px;
+            font-weight: 700;
+            text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.8);
+        }
+
+        #controls {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            justify-content: space-between;
+            width: 250px;
+            z-index: 10;
+        }
+
+        .button {
+            background-color: rgba(0, 123, 255, 0.7);
+            border: 1px solid #ddd;
+            padding: 12px 18px;
+            font-size: 18px;
+            font-weight: 700;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .button:hover {
+            background-color: rgba(0, 123, 255, 1);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .button i {
+            margin-right: 10px;
+            font-size: 24px;
+        }
+
+        .button.left {
+            background-color: rgba(255, 99, 71, 0.8);
+        }
+
+        .button.right {
+            background-color: rgba(40, 167, 69, 0.8);
+        }
+
+        .particles-js-canvas-el {
+            z-index: -1;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="game-ui">
+        <div id="score">Score: 0</div>
+        <div id="health">Health: 3</div>
+        <div id="level">Level: 1</div>
+    </div>
+
+    <div id="controls">
+        <div class="button left hvr-float-shadow" id="left">
+            <i class="fas fa-arrow-left"></i> Left
+        </div>
+        <div class="button right hvr-float-shadow" id="right">
+            <i class="fas fa-arrow-right"></i> Right
+        </div>
+    </div>
+
+    <!-- Particles Background -->
+    <div id="particles-js"></div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/particles.js/2.0.0/particles.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/anime/3.2.1/anime.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.9.4/lottie.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize-css/1.0.0/js/materialize.min.js"></script>
+
+    <script>
+        // Particles.js configuration
+        particlesJS('particles-js', {
+            particles: {
+                number: {
+                    value: 80,
+                    density: {
+                        enable: true,
+                        value_area: 800
+                    }
+                },
+                color: {
+                    value: "#ffffff"
+                },
+                shape: {
+                    type: "circle",
+                    stroke: {
+                        width: 0,
+                        color: "#000000"
+                    },
+                    polygon: {
+                        nb_sides: 5
+                    }
+                },
+                opacity: {
+                    value: 0.5,
+                    random: true,
+                    anim: {
+                        enable: true,
+                        speed: 1,
+                        opacity_min: 0.1,
+                        sync: false
+                    }
+                },
+                size: {
+                    value: 3,
+                    random: true,
+                    anim: {
+                        enable: false,
+                        speed: 4,
+                        size_min: 0.1,
+                        sync: false
+                    }
+                },
+                move: {
+                    enable: true,
+                    speed: 1,
+                    direction: "none",
+                    random: false,
+                    straight: false,
+                    out_mode: "out",
+                    bounce: false,
+                    attract: {
+                        enable: false,
+                        rotateX: 600,
+                        rotateY: 1200
+                    }
+                }
+            },
+            interactivity: {
+                detect_on: "canvas",
+                events: {
+                    onhover: {
+                        enable: true,
+                        mode: "repulse"
+                    },
+                    onclick: {
+                        enable: true,
+                        mode: "push"
+                    }
+                },
+                modes: {
+                    repulse: {
+                        distance: 100,
+                        duration: 0.4
+                    },
+                    push: {
+                        particles_nb: 4
+                    }
+                }
+            },
+            retina_detect: true
+        });
+
+        let scene, camera, renderer;
+        let player, enemies = [], items = [], powerUps = [];
+        let score = 0;
+        let health = 3;
+        let level = 1;
+        let isMovingLeft = false, isMovingRight = false;
+        const enemyCount = 5;
+        const itemCount = 10;
+        let enemySpeed = 0.05;
+        let playerSpeed = 0.1;
+        let itemSpeed = 0.05;
+        let gameTime = 0;
+        let gameOver = false;
+
+        function init() {
+            scene = new THREE.Scene();
+            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            document.body.appendChild(renderer.domElement);
+
+            const playerGeometry = new THREE.BoxGeometry(1, 1, 1);
+            const playerMaterial = new THREE.MeshPhongMaterial({
+                color: 0x00ff00,
+                shininess: 100,
+                emissive: 0x00ff00,
+                emissiveIntensity: 0.2
+            });
+            player = new THREE.Mesh(playerGeometry, playerMaterial);
+            player.position.y = 0.5;
+            scene.add(player);
+
+            const groundGeometry = new THREE.PlaneGeometry(50, 50);
+            const groundMaterial = new THREE.ShadowMaterial({ opacity: 0.5 });
+            const ground = new THREE.Mesh(groundGeometry, groundMaterial);
+            ground.rotation.x = - Math.PI / 2;
+            ground.position.y = -0.5;
+            scene.add(ground);
+
+            for (let i = 0; i < enemyCount; i++) {
+                const enemy = createEnemy();
+                scene.add(enemy);
+                enemies.push(enemy);
+            }
+
+            for (let i = 0; i < itemCount; i++) {
+                const item = createItem();
+                scene.add(item);
+                items.push(item);
+            }
+
+            camera.position.z = 10;
+            camera.position.y = 2;
+
+            const light = new THREE.PointLight(0xffffff, 1, 100);
+            light.position.set(0, 5, 10);
+            light.castShadow = true;
+            scene.add(light);
+
+            window.addEventListener('keydown', onKeyDown, false);
+            window.addEventListener('keyup', onKeyUp, false);
+            window.addEventListener('resize', onWindowResize, false);
+
+            // UI button click
+            document.getElementById('left').addEventListener('click', () => isMovingLeft = true);
+            document.getElementById('right').addEventListener('click', () => isMovingRight = true);
+
+            animate();
+        }
+
+        function createEnemy() {
+            const geometry = new THREE.BoxGeometry(1, 1, 1);
+            const material = new THREE.MeshLambertMaterial({ color: 0xff0000 });
+            const enemy = new THREE.Mesh(geometry, material);
+            enemy.position.x = Math.random() * 50 - 25;
+            enemy.position.z = Math.random() * -50 - 5;
+            enemy.speed = enemySpeed;
+            return enemy;
+        }
+
+        function createItem() {
+            const geometry = new THREE.CylinderGeometry(0.5, 0.5, 1);
+            const material = new THREE.MeshBasicMaterial({ color: 0xffff00 });
+            const item = new THREE.Mesh(geometry, material);
+            item.position.x = Math.random() * 50 - 25;
+            item.position.z = Math.random() * -50 - 5;
+            return item;
+        }
+
+        function onKeyDown(event) {
+            if (event.key === 'ArrowLeft') isMovingLeft = true;
+            if (event.key === 'ArrowRight') isMovingRight = true;
+        }
+
+        function onKeyUp(event) {
+            if (event.key === 'ArrowLeft') isMovingLeft = false;
+            if (event.key === 'ArrowRight') isMovingRight = false;
+        }
+
+        function onWindowResize() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        }
+
+        function updatePlayerPosition() {
+            if (isMovingLeft) player.position.x -= playerSpeed;
+            if (isMovingRight) player.position.x += playerSpeed;
+            player.position.x = Math.max(-25, Math.min(25, player.position.x));
+        }
+
+        function checkCollisions() {
+            enemies.forEach(enemy => {
+                const dist = player.position.distanceTo(enemy.position);
+                if (dist < 1.5) {
+                    health -= 1;
+                    enemy.position.z = Math.random() * -50 - 5;
+                    enemy.position.x = Math.random() * 50 - 25;
+                    if (health <= 0) {
+                        gameOver = true;
+                    }
+                }
+            });
+        }
+
+        function updateEnemies() {
+            enemies.forEach(enemy => {
+                enemy.position.z += enemy.speed;
+                if (enemy.position.z > 5) {
+                    enemy.position.z = Math.random() * -50 - 5;
+                    enemy.position.x = Math.random() * 50 - 25;
+                }
+            });
+        }
+
+        function updateItems() {
+            items.forEach(item => {
+                item.position.z += itemSpeed;
+                if (item.position.z > 5) {
+                    item.position.z = Math.random() * -50 - 5;
+                    item.position.x = Math.random() * 50 - 25;
+                }
+            });
+        }
+
+        function updatePowerUps() {
+            powerUps.forEach(powerUp => {
+                powerUp.position.z += itemSpeed;
+                if (powerUp.position.z > 5) {
+                    powerUp.position.z = Math.random() * -50 - 5;
+                    powerUp.position.x = Math.random() * 50 - 25;
+                }
+            });
+        }
+
+        function increaseSpeed() {
+            gameTime++;
+            if (gameTime % 500 === 0) {
+                enemySpeed += 0.01;
+                playerSpeed += 0.01;
+                itemSpeed += 0.01;
+                level++;
+                document.getElementById('level').innerText = `Level: ${level}`;
+            }
+        }
+
+        function animate() {
+            if (gameOver) {
+                alert('Game Over');
+                return;
+            }
+            requestAnimationFrame(animate);
+            updatePlayerPosition();
+            checkCollisions();
+            updateEnemies();
+            updateItems();
+            updatePowerUps();
+            increaseSpeed();
+            document.getElementById('score').innerText = `Score: ${score}`;
+            document.getElementById('health').innerText = `Health: ${health}`;
+            renderer.render(scene, camera);
+        }
+
+        init();
+    </script>
+</body>
+</html>
