@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>3D Block Stacking Game</title>
+  <style>
+    body { margin: 0; overflow: hidden; display: flex; flex-direction: column; align-items: center; }
+    canvas { display: block; }
+    #ui {
+      position: absolute;
+      top: 10px;
+      display: flex;
+      gap: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div id="ui">
+    <button id="addBlockBtn">Add Block</button>
+    <input type="color" id="colorPicker" value="#00ff00">
+  </div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script>
+    // Scene setup
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(0xdddddd);
+
+    // Camera setup
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    camera.position.set(0, 5, 10);
+
+    // Renderer setup
+    const renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    document.body.appendChild(renderer.domElement);
+
+    // Lighting
+    const ambientLight = new THREE.AmbientLight(0x404040, 1.5); 
+    scene.add(ambientLight);
+    const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+    directionalLight.position.set(5, 10, 7.5).normalize();
+    scene.add(directionalLight);
+
+    // Block settings
+    const blockSize = 1;
+    const blocks = [];
+    let currentBlock = null;
+    let isDragging = false;
+    let touchStartPosition = { x: 0, y: 0 };
+
+    // Initial block material
+    let blockMaterial = new THREE.MeshStandardMaterial({ color: 0x00ff00 });
+
+    // Function to add a new block at a specific position
+    function addBlock(position) {
+      const color = document.getElementById("colorPicker").value;
+      blockMaterial = new THREE.MeshStandardMaterial({ color: new THREE.Color(color) });
+      const newBlock = new THREE.Mesh(
+        new THREE.BoxGeometry(blockSize, blockSize, blockSize),
+        blockMaterial
+      );
+      newBlock.position.set(position.x, position.y, position.z);
+      scene.add(newBlock);
+      blocks.push(newBlock);
+    }
+
+    // Function to check if a block is colliding with other blocks
+    function isCollidingWithOtherBlocks(newPosition) {
+      for (const block of blocks) {
+        if (block !== currentBlock) {
+          const distance = newPosition.distanceTo(block.position);
+          if (distance < blockSize) {
+            return true; // Collision detected
+          }
+        }
+      }
+      return false; // No collision
+    }
+
+    // Raycasting to determine where to place or move the block
+    const raycaster = new THREE.Raycaster();
+    const mouse = new THREE.Vector2();
+
+    function onMouseMove(event) {
+      if (isDragging && currentBlock) {
+        mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+        mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+        raycaster.setFromCamera(mouse, camera);
+        const intersects = raycaster.intersectObjects(scene.children, true);
+
+        if (intersects.length > 0) {
+          const newPosition = intersects[0].point;
+
+          if (!isCollidingWithOtherBlocks(newPosition)) {
+            currentBlock.position.set(newPosition.x, newPosition.y, newPosition.z);
+          }
+        }
+      }
+    }
+
+    function onMouseDown(event) {
+      mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+      mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+      raycaster.setFromCamera(mouse, camera);
+      const intersects = raycaster.intersectObjects(scene.children, true);
+
+      if (intersects.length > 0) {
+        const intersectedObject = intersects[0].object;
+
+        if (intersectedObject !== scene) {
+          currentBlock = intersectedObject;
+          isDragging = true;
+        }
+      }
+    }
+
+    function onMouseUp() {
+      isDragging = false;
+      currentBlock = null;
+    }
+
+    // Handle touch events
+    function onTouchStart(event) {
+      if (event.touches.length === 1) {
+        touchStartPosition = { x: event.touches[0].pageX, y: event.touches[0].pageY };
+
+        mouse.x = (event.touches[0].pageX / window.innerWidth) * 2 - 1;
+        mouse.y = -(event.touches[0].pageY / window.innerHeight) * 2 + 1;
+
+        raycaster.setFromCamera(mouse, camera);
+        const intersects = raycaster.intersectObjects(scene.children, true);
+        if (intersects.length > 0) {
+          currentBlock = intersects[0].object;
+          isDragging = true;
+        }
+      }
+    }
+
+    function onTouchMove(event) {
+      if (isDragging && currentBlock && event.touches.length === 1) {
+        const deltaX = event.touches[0].pageX - touchStartPosition.x;
+        const deltaY = event.touches[0].pageY - touchStartPosition.y;
+
+        mouse.x = (event.touches[0].pageX / window.innerWidth) * 2 - 1;
+        mouse.y = -(event.touches[0].pageY / window.innerHeight) * 2 + 1;
+
+        raycaster.setFromCamera(mouse, camera);
+        const intersects = raycaster.intersectObjects(scene.children, true);
+
+        if (intersects.length > 0) {
+          const newPosition = intersects[0].point;
+
+          if (!isCollidingWithOtherBlocks(newPosition)) {
+            currentBlock.position.set(newPosition.x, newPosition.y, newPosition.z);
+          }
+        }
+
+        touchStartPosition = { x: event.touches[0].pageX, y: event.touches[0].pageY };
+      }
+    }
+
+    function onTouchEnd() {
+      isDragging = false;
+      currentBlock = null;
+    }
+
+    // Add a new block on click or touch
+    function onMouseClick(event) {
+      mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+      mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+      raycaster.setFromCamera(mouse, camera);
+
+      const intersects = raycaster.intersectObjects(scene.children, true);
+      if (intersects.length > 0) {
+        const point = intersects[0].point;
+        addBlock(point);
+      }
+    }
+
+    // Initial block
+    addBlock(new THREE.Vector3(0, 0, 0));
+
+    // Camera control variables
+    let previousMousePosition = { x: 0, y: 0 };
+    let rotationSpeed = 0.005;
+
+    // Camera rotation function
+    function rotateCamera(deltaX, deltaY) {
+      const spherical = new THREE.Spherical();
+      spherical.setFromVector3(camera.position);
+
+      spherical.theta -= deltaX * rotationSpeed;
+      spherical.phi -= deltaY * rotationSpeed;
+
+      spherical.phi = Math.max(0.1, Math.min(Math.PI - 0.1, spherical.phi));
+      camera.position.setFromSpherical(spherical);
+      camera.lookAt(scene.position);
+    }
+
+    // Handle camera rotation with mouse movement
+    window.addEventListener('mousedown', (e) => {
+      isDragging = true;
+    });
+
+    window.addEventListener('mousemove', (e) => {
+      if (isDragging) {
+        const deltaMove = {
+          x: e.clientX - previousMousePosition.x,
+          y: e.clientY - previousMousePosition.y
+        };
+        rotateCamera(deltaMove.x, deltaMove.y);
+      }
+      previousMousePosition = { x: e.clientX, y: e.clientY };
+    });
+
+    window.addEventListener('mouseup', () => {
+      isDragging = false;
+    });
+
+    // Event listeners for touch
+    window.addEventListener('touchstart', onTouchStart, false);
+    window.addEventListener('touchmove', onTouchMove, false);
+    window.addEventListener('touchend', onTouchEnd, false);
+
+    // Add a new block on click
+    window.addEventListener('click', onMouseClick, false);
+
+    // Render loop
+    function animate() {
+      requestAnimationFrame(animate);
+      renderer.render(scene, camera);
+    }
+
+    animate();
+  </script>
+</body>
+</html>
