@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>3D Block Stacking Game</title>
+  <title>3D Block Stacking Game with Joystick</title>
   <style>
     body { margin: 0; overflow: hidden; display: flex; flex-direction: column; align-items: center; }
     canvas { display: block; }
@@ -12,14 +12,59 @@
       top: 10px;
       display: flex;
       gap: 10px;
+      flex-wrap: wrap;
+    }
+    .ui-element {
+      margin: 5px;
+    }
+    #joystickContainer {
+      position: fixed;
+      bottom: 50px;
+      left: 20px;
+      display: flex;
+      justify-content: space-between;
+      width: 200px;
+    }
+    .joystick {
+      width: 100px;
+      height: 100px;
+      background-color: rgba(255, 255, 255, 0.6);
+      border-radius: 50%;
+      border: 2px solid #000;
+      position: relative;
+    }
+    .stick {
+      width: 50px;
+      height: 50px;
+      background-color: rgba(0, 0, 0, 0.7);
+      border-radius: 50%;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
     }
   </style>
 </head>
 <body>
   <div id="ui">
-    <button id="addBlockBtn">Add Block</button>
-    <input type="color" id="colorPicker" value="#00ff00">
+    <button id="addBlockBtn" class="ui-element">Add Block</button>
+    <button id="shapeCubeBtn" class="ui-element">Cube</button>
+    <button id="shapeSphereBtn" class="ui-element">Sphere</button>
+    <button id="shapePyramidBtn" class="ui-element">Pyramid</button>
+    <input type="color" id="colorPicker" class="ui-element" value="#00ff00">
+    <input type="range" id="sizePicker" class="ui-element" min="0.5" max="3" step="0.1" value="1">
+    <label for="sizePicker" class="ui-element">Size</label>
   </div>
+
+  <div id="joystickContainer">
+    <div id="cameraJoystick" class="joystick">
+      <div id="cameraStick" class="stick"></div>
+    </div>
+    <div id="blockJoystick" class="joystick">
+      <div id="blockStick" class="stick"></div>
+    </div>
+  </div>
+
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
   <script>
     // Scene setup
@@ -36,138 +81,51 @@
     document.body.appendChild(renderer.domElement);
 
     // Lighting
-    const ambientLight = new THREE.AmbientLight(0x404040, 1.5); 
+    const ambientLight = new THREE.AmbientLight(0x404040, 1.5);
     scene.add(ambientLight);
     const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
     directionalLight.position.set(5, 10, 7.5).normalize();
     scene.add(directionalLight);
 
     // Block settings
-    const blockSize = 1;
+    let blockSize = 1;
+    let blockShape = 'cube'; // Default shape: cube
+    let blockMaterial = new THREE.MeshStandardMaterial({ color: 0x00ff00 });
     const blocks = [];
     let currentBlock = null;
-    let isDragging = false;
-    let touchStartPosition = { x: 0, y: 0 };
 
-    // Initial block material
-    let blockMaterial = new THREE.MeshStandardMaterial({ color: 0x00ff00 });
+    // Joystick controls
+    let cameraJoystick = document.getElementById('cameraJoystick');
+    let blockJoystick = document.getElementById('blockJoystick');
+    let cameraStick = document.getElementById('cameraStick');
+    let blockStick = document.getElementById('blockStick');
 
-    // Function to add a new block at a specific position
-    function addBlock(position) {
-      const color = document.getElementById("colorPicker").value;
-      blockMaterial = new THREE.MeshStandardMaterial({ color: new THREE.Color(color) });
-      const newBlock = new THREE.Mesh(
-        new THREE.BoxGeometry(blockSize, blockSize, blockSize),
-        blockMaterial
-      );
+    let cameraJoystickData = { x: 0, y: 0 };
+    let blockJoystickData = { x: 0, y: 0 };
+
+    let cameraJoystickActive = false;
+    let blockJoystickActive = false;
+
+    // Function to create a block based on selected shape and size
+    function createBlock(shape, position) {
+      let geometry;
+      if (shape === 'cube') {
+        geometry = new THREE.BoxGeometry(blockSize, blockSize, blockSize);
+      } else if (shape === 'sphere') {
+        geometry = new THREE.SphereGeometry(blockSize / 2, 32, 32);
+      } else if (shape === 'pyramid') {
+        geometry = new THREE.ConeGeometry(blockSize / 2, blockSize, 4);
+      }
+      const newBlock = new THREE.Mesh(geometry, blockMaterial);
       newBlock.position.set(position.x, position.y, position.z);
       scene.add(newBlock);
       blocks.push(newBlock);
-    }
-
-    // Function to check if a block is colliding with other blocks
-    function isCollidingWithOtherBlocks(newPosition) {
-      for (const block of blocks) {
-        if (block !== currentBlock) {
-          const distance = newPosition.distanceTo(block.position);
-          if (distance < blockSize) {
-            return true; // Collision detected
-          }
-        }
-      }
-      return false; // No collision
     }
 
     // Raycasting to determine where to place or move the block
     const raycaster = new THREE.Raycaster();
     const mouse = new THREE.Vector2();
 
-    function onMouseMove(event) {
-      if (isDragging && currentBlock) {
-        mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-        mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
-
-        raycaster.setFromCamera(mouse, camera);
-        const intersects = raycaster.intersectObjects(scene.children, true);
-
-        if (intersects.length > 0) {
-          const newPosition = intersects[0].point;
-
-          if (!isCollidingWithOtherBlocks(newPosition)) {
-            currentBlock.position.set(newPosition.x, newPosition.y, newPosition.z);
-          }
-        }
-      }
-    }
-
-    function onMouseDown(event) {
-      mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-      mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
-
-      raycaster.setFromCamera(mouse, camera);
-      const intersects = raycaster.intersectObjects(scene.children, true);
-
-      if (intersects.length > 0) {
-        const intersectedObject = intersects[0].object;
-
-        if (intersectedObject !== scene) {
-          currentBlock = intersectedObject;
-          isDragging = true;
-        }
-      }
-    }
-
-    function onMouseUp() {
-      isDragging = false;
-      currentBlock = null;
-    }
-
-    // Handle touch events
-    function onTouchStart(event) {
-      if (event.touches.length === 1) {
-        touchStartPosition = { x: event.touches[0].pageX, y: event.touches[0].pageY };
-
-        mouse.x = (event.touches[0].pageX / window.innerWidth) * 2 - 1;
-        mouse.y = -(event.touches[0].pageY / window.innerHeight) * 2 + 1;
-
-        raycaster.setFromCamera(mouse, camera);
-        const intersects = raycaster.intersectObjects(scene.children, true);
-        if (intersects.length > 0) {
-          currentBlock = intersects[0].object;
-          isDragging = true;
-        }
-      }
-    }
-
-    function onTouchMove(event) {
-      if (isDragging && currentBlock && event.touches.length === 1) {
-        const deltaX = event.touches[0].pageX - touchStartPosition.x;
-        const deltaY = event.touches[0].pageY - touchStartPosition.y;
-
-        mouse.x = (event.touches[0].pageX / window.innerWidth) * 2 - 1;
-        mouse.y = -(event.touches[0].pageY / window.innerHeight) * 2 + 1;
-
-        raycaster.setFromCamera(mouse, camera);
-        const intersects = raycaster.intersectObjects(scene.children, true);
-
-        if (intersects.length > 0) {
-          const newPosition = intersects[0].point;
-
-          if (!isCollidingWithOtherBlocks(newPosition)) {
-            currentBlock.position.set(newPosition.x, newPosition.y, newPosition.z);
-          }
-        }
-
-        touchStartPosition = { x: event.touches[0].pageX, y: event.touches[0].pageY };
-      }
-    }
-
-    function onTouchEnd() {
-      isDragging = false;
-      currentBlock = null;
-    }
-
-    // Add a new block on click or touch
     function onMouseClick(event) {
       mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
       mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
@@ -176,64 +134,137 @@
       const intersects = raycaster.intersectObjects(scene.children, true);
       if (intersects.length > 0) {
         const point = intersects[0].point;
-        addBlock(point);
+        createBlock(blockShape, point);
       }
     }
 
-    // Initial block
-    addBlock(new THREE.Vector3(0, 0, 0));
+    // Joystick movement handler
+    function updateJoystick(joystick, stick, joystickData) {
+      const maxDistance = joystick.offsetWidth / 2;
+      const stickX = joystickData.x * maxDistance;
+      const stickY = joystickData.y * maxDistance;
 
-    // Camera control variables
-    let previousMousePosition = { x: 0, y: 0 };
-    let rotationSpeed = 0.005;
+      stick.style.transform = `translate(-50%, -50%) translate(${stickX}px, ${stickY}px)`;
+    }
 
-    // Camera rotation function
-    function rotateCamera(deltaX, deltaY) {
-      const spherical = new THREE.Spherical();
-      spherical.setFromVector3(camera.position);
-
-      spherical.theta -= deltaX * rotationSpeed;
-      spherical.phi -= deltaY * rotationSpeed;
-
-      spherical.phi = Math.max(0.1, Math.min(Math.PI - 0.1, spherical.phi));
-      camera.position.setFromSpherical(spherical);
+    function moveCamera() {
+      const speed = 0.1;
+      camera.position.x += cameraJoystickData.x * speed;
+      camera.position.y -= cameraJoystickData.y * speed;
       camera.lookAt(scene.position);
     }
 
-    // Handle camera rotation with mouse movement
-    window.addEventListener('mousedown', (e) => {
-      isDragging = true;
-    });
-
-    window.addEventListener('mousemove', (e) => {
-      if (isDragging) {
-        const deltaMove = {
-          x: e.clientX - previousMousePosition.x,
-          y: e.clientY - previousMousePosition.y
-        };
-        rotateCamera(deltaMove.x, deltaMove.y);
+    function moveBlock() {
+      if (currentBlock) {
+        const speed = 0.1;
+        currentBlock.position.x += blockJoystickData.x * speed;
+        currentBlock.position.y -= blockJoystickData.y * speed;
       }
-      previousMousePosition = { x: e.clientX, y: e.clientY };
+    }
+
+    function onJoystickMove(event, joystickType) {
+      const rect = event.target.getBoundingClientRect();
+      const offsetX = event.clientX - rect.left - rect.width / 2;
+      const offsetY = event.clientY - rect.top - rect.height / 2;
+
+      const distance = Math.min(Math.sqrt(offsetX * offsetX + offsetY * offsetY), rect.width / 2);
+      const angle = Math.atan2(offsetY, offsetX);
+
+      if (joystickType === 'camera') {
+        cameraJoystickData.x = Math.cos(angle) * distance / (rect.width / 2);
+        cameraJoystickData.y = Math.sin(angle) * distance / (rect.height / 2);
+      } else if (joystickType === 'block') {
+        blockJoystickData.x = Math.cos(angle) * distance / (rect.width / 2);
+        blockJoystickData.y = Math.sin(angle) * distance / (rect.height / 2);
+      }
+
+      updateJoystick(event.target, joystickType === 'camera' ? cameraStick : blockStick, joystickType === 'camera' ? cameraJoystickData : blockJoystickData);
+    }
+
+    function onJoystickEnd(joystickType) {
+      if (joystickType === 'camera') {
+        cameraJoystickData = { x: 0, y: 0 };
+      } else if (joystickType === 'block') {
+        blockJoystickData = { x: 0, y: 0 };
+      }
+      updateJoystick(null, joystickType === 'camera' ? cameraStick : blockStick, joystickType === 'camera' ? cameraJoystickData : blockJoystickData);
+    }
+
+    // Add event listeners to handle joystick movement
+    cameraJoystick.addEventListener('touchstart', (e) => {
+      e.preventDefault();
+      cameraJoystickActive = true;
+      onJoystickMove(e, 'camera');
+    });
+    cameraJoystick.addEventListener('touchmove', (e) => {
+      e.preventDefault();
+      if (cameraJoystickActive) {
+        onJoystickMove(e, 'camera');
+      }
+    });
+    cameraJoystick.addEventListener('touchend', () => onJoystickEnd('camera'));
+    cameraJoystick.addEventListener('mousedown', (e) => {
+      e.preventDefault();
+      cameraJoystickActive = true;
+      onJoystickMove(e, 'camera');
+    });
+    cameraJoystick.addEventListener('mousemove', (e) => {
+      e.preventDefault();
+      if (cameraJoystickActive) {
+        onJoystickMove(e, 'camera');
+      }
+    });
+    cameraJoystick.addEventListener('mouseup', () => onJoystickEnd('camera'));
+
+    blockJoystick.addEventListener('touchstart', (e) => {
+      e.preventDefault();
+      blockJoystickActive = true;
+      onJoystickMove(e, 'block');
+    });
+    blockJoystick.addEventListener('touchmove', (e) => {
+      e.preventDefault();
+      if (blockJoystickActive) {
+        onJoystickMove(e, 'block');
+      }
+    });
+    blockJoystick.addEventListener('touchend', () => onJoystickEnd('block'));
+    blockJoystick.addEventListener('mousedown', (e) => {
+      e.preventDefault();
+      blockJoystickActive = true;
+      onJoystickMove(e, 'block');
+    });
+    blockJoystick.addEventListener('mousemove', (e) => {
+      e.preventDefault();
+      if (blockJoystickActive) {
+        onJoystickMove(e, 'block');
+      }
+    });
+    blockJoystick.addEventListener('mouseup', () => onJoystickEnd('block'));
+
+    // Event listeners for UI controls
+    document.getElementById('addBlockBtn').addEventListener('click', () => {
+      const blockPosition = new THREE.Vector3(0, 0, 0);
+      createBlock(blockShape, blockPosition);
     });
 
-    window.addEventListener('mouseup', () => {
-      isDragging = false;
+    document.getElementById('shapeCubeBtn').addEventListener('click', () => { blockShape = 'cube'; });
+    document.getElementById('shapeSphereBtn').addEventListener('click', () => { blockShape = 'sphere'; });
+    document.getElementById('shapePyramidBtn').addEventListener('click', () => { blockShape = 'pyramid'; });
+    document.getElementById('colorPicker').addEventListener('input', (e) => {
+      blockMaterial.color.set(e.target.value);
     });
-
-    // Event listeners for touch
-    window.addEventListener('touchstart', onTouchStart, false);
-    window.addEventListener('touchmove', onTouchMove, false);
-    window.addEventListener('touchend', onTouchEnd, false);
-
-    // Add a new block on click
-    window.addEventListener('click', onMouseClick, false);
+    document.getElementById('sizePicker').addEventListener('input', (e) => {
+      blockSize = parseFloat(e.target.value);
+    });
 
     // Render loop
     function animate() {
       requestAnimationFrame(animate);
+
+      moveCamera();
+      moveBlock();
       renderer.render(scene, camera);
     }
-
     animate();
   </script>
 </body>
