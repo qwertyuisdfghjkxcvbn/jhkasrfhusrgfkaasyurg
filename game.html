@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-        <link rel="manifest" href="/site.webmanifest">
+    <link rel="manifest" href="/site.webmanifest">
     <link rel="manifest" href="/manifest.json">
     <title>Complex 3D Mobile Game</title>
     <style>
@@ -34,48 +34,39 @@
         let isMovingLeft = false, isMovingRight = false;
         const enemyCount = 5;
         const itemCount = 10;
-        const enemySpeed = 0.05;  // Increased speed
+        const enemySpeed = 0.05;
 
         function init() {
-            // Create the scene
             scene = new THREE.Scene();
             camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
             renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
             renderer.setSize(window.innerWidth, window.innerHeight);
             document.body.appendChild(renderer.domElement);
 
-            // Create the player
             const playerGeometry = new THREE.BoxGeometry(1, 1, 1);
             const playerMaterial = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
             player = new THREE.Mesh(playerGeometry, playerMaterial);
-            player.position.y = 0.5; // Raise above ground
+            player.position.y = 0.5;
             scene.add(player);
 
-            // Create ground
             const groundGeometry = new THREE.PlaneGeometry(100, 100);
             const groundMaterial = new THREE.MeshBasicMaterial({ color: 0x555555, side: THREE.DoubleSide });
             const ground = new THREE.Mesh(groundGeometry, groundMaterial);
-            ground.rotation.x = -Math.PI / 2; // Rotate to make it horizontal
+            ground.rotation.x = -Math.PI / 2;
             scene.add(ground);
 
-            // Create enemies
             for (let i = 0; i < enemyCount; i++) {
                 createEnemy();
             }
 
-            // Create items
             for (let i = 0; i < itemCount; i++) {
                 createItem();
             }
 
-            // Create power-ups
             createPowerUps();
-
-            // Set camera position
             camera.position.z = 5;
             camera.position.y = 2;
 
-            // Add event listeners
             window.addEventListener('resize', onWindowResize, false);
             document.addEventListener('keydown', onKeyDown, false);
             document.addEventListener('keyup', onKeyUp, false);
@@ -91,10 +82,10 @@
             const enemyGeometry = new THREE.BoxGeometry(1, 1, 1);
             const enemyMaterial = new THREE.MeshBasicMaterial({ color: Math.random() * 0xffffff });
             const enemy = new THREE.Mesh(enemyGeometry, enemyMaterial);
-            enemy.position.x = Math.random() * 50 - 25; // Random x position
-            enemy.position.y = 0.5; // Above ground
-            enemy.position.z = Math.random() * -50 - 5; // Start behind the player
-            enemy.speed = enemySpeed + Math.random() * 0.02; // Randomized speed
+            enemy.position.x = Math.random() * 50 - 25;
+            enemy.position.y = 0.5;
+            enemy.position.z = Math.random() * -50 - 5;
+            enemy.speed = enemySpeed + Math.random() * 0.02;
             enemies.push(enemy);
             scene.add(enemy);
         }
@@ -103,9 +94,9 @@
             const itemGeometry = new THREE.SphereGeometry(0.3, 32, 32);
             const itemMaterial = new THREE.MeshBasicMaterial({ color: 0xffff00 });
             const item = new THREE.Mesh(itemGeometry, itemMaterial);
-            item.position.x = Math.random() * 50 - 25; // Random x position
-            item.position.y = 0.3; // Slightly above ground
-            item.position.z = Math.random() * -50 - 5; // Start behind the player
+            item.position.x = Math.random() * 50 - 25;
+            item.position.y = 0.3;
+            item.position.z = Math.random() * -50 - 5;
             items.push(item);
             scene.add(item);
         }
@@ -147,29 +138,26 @@
 
         function updatePlayerPosition() {
             if (isMovingLeft && player.position.x > -4.5) {
-                player.position.x -= 0.2; // Increased movement speed
+                player.position.x -= 0.2;
             }
             if (isMovingRight && player.position.x < 4.5) {
-                player.position.x += 0.2; // Increased movement speed
+                player.position.x += 0.2;
             }
         }
 
         function updateEnemies() {
             for (let enemy of enemies) {
-                enemy.position.z += enemy.speed; // Move towards the player
+                enemy.position.z += enemy.speed;
                 if (enemy.position.z > 5) {
-                    // Reset enemy to the back
                     enemy.position.z = Math.random() * -50 - 5;
                     enemy.position.x = Math.random() * 50 - 25;
-                    score += 1; // Increase score for avoiding enemy
+                    score += 1;
                     document.getElementById('score').innerText = 'Score: ' + score;
                 }
-                // Check for collisions
                 if (enemy.position.z > player.position.z - 1 &&
                     enemy.position.z < player.position.z + 1 &&
                     enemy.position.x > player.position.x - 1 &&
                     enemy.position.x < player.position.x + 1) {
-                    // Decrease health on collision
                     health--;
                     document.getElementById('health').innerText = 'Health: ' + health;
                     if (health <= 0) {
@@ -183,46 +171,38 @@
         function updateItems() {
             for (let i = items.length - 1; i >= 0; i--) {
                 const item = items[i];
-                item.position.z += enemySpeed; // Move towards the player
+                item.position.z += enemySpeed;
                 if (item.position.z > 5) {
-                    // Reset item to the back
                     item.position.z = Math.random() * -50 - 5;
                     item.position.x = Math.random() * 50 - 25;
                 }
-                // Check for collection
                 if (item.position.z > player.position.z - 0.5 &&
                     item.position.z < player.position.z + 0.5 &&
                     item.position.x > player.position.x - 0.5 &&
                     item.position.x < player.position.x + 0.5) {
-                    // Increase score
-                    score += 10; // Increase score for collecting item
+                    score += 10;
                     document.getElementById('score').innerText = 'Score: ' + score;
-                    // Reset item
-                    item.position.z = Math.random() * -50 - 5; // Reset item to the back
-                    item.position.x = Math.random() * 50 - 25; // Random x position
+                    item.position.z = Math.random() * -50 - 5;
+                    item.position.x = Math.random() * 50 - 25;
                 }
             }
         }
 
         function updatePowerUps() {
             for (let powerUp of powerUps) {
-                powerUp.position.z += enemySpeed; // Move towards the player
+                powerUp.position.z += enemySpeed;
                 if (powerUp.position.z > 5) {
-                    // Reset power-up to the back
                     powerUp.position.z = Math.random() * -50 - 5;
                     powerUp.position.x = Math.random() * 50 - 25;
                 }
-                // Check for collection
                 if (powerUp.position.z > player.position.z - 0.5 &&
                     powerUp.position.z < player.position.z + 0.5 &&
                     powerUp.position.x > player.position.x - 0.5 &&
                     powerUp.position.x < player.position.x + 0.5) {
-                    // Apply power-up effect
                     health++;
                     document.getElementById('health').innerText = 'Health: ' + health;
-                    // Reset power-up
-                    powerUp.position.z = Math.random() * -50 - 5; // Reset item to the back
-                    powerUp.position.x = Math.random() * 50 - 25; // Random x position
+                    powerUp.position.z = Math.random() * -50 - 5;
+                    powerUp.position.x = Math.random() * 50 - 25;
                 }
             }
         }
@@ -231,10 +211,10 @@
             if (score % 50 === 0 && score > 0) {
                 level++;
                 document.getElementById('level').innerText = 'Level: ' + level;
-                if (level % 2 === 0) { // Increase difficulty every 2 levels
+                if (level % 2 === 0) {
                     enemies.forEach(enemy => enemy.speed += 0.01);
                 }
-                if (level % 5 === 0) { // Add new enemies every 5 levels
+                if (level % 5 === 0) {
                     createEnemy();
                 }
             }
@@ -247,9 +227,7 @@
             document.getElementById('score').innerText = 'Score: ' + score;
             document.getElementById('health').innerText = 'Health: ' + health;
             document.getElementById('level').innerText = 'Level: ' + level;
-            // Reset player position
             player.position.set(0, 0.5, 0);
-            // Reset enemies and items
             enemies.forEach(enemy => {
                 enemy.position.z = Math.random() * -50 - 5;
                 enemy.position.x = Math.random() * 50 - 25;
