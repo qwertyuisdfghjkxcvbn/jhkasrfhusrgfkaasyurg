@@ -1,31 +1,82 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Blazka3D Business Card</title>
-  <link rel="manifest" href="/manifest.json">
+  <title>Adiasta</title>
   <style>
-    body { margin: 0; overflow: hidden; background: #f0f0f0; }
-    canvas { display: block; }
+    * { 
+      box-sizing: border-box; 
+      margin: 0; 
+      padding: 0; 
+    }
+    body, html {
+      height: 100%;
+      width: 100%;
+      font-family: "Helvetica Neue", Arial, sans-serif;
+      margin: 0;
+      overflow: hidden;
+      background-color: #f0f0f0;
+    }
+    .header {
+      position: absolute;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 20px;
+      z-index: 2;
+    }
+    .button {
+      padding: 12px 18px;
+      font-size: 1rem;
+      color: #007bff;
+      background-color: transparent;
+      border: 2px solid #007bff;
+      border-radius: 5px;
+      text-decoration: none;
+      transition: all 0.3s;
+    }
+    .button:hover {
+      background-color: #007bff;
+      color: white;
+    }
+    #container {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 80vw;
+      height: 80vh;
+    }
+
+    canvas {
+      display: block;
+    }
+
   </style>
 </head>
 <body>
+  <div class="header">
+    <a href="https://adiasta.com/dev" class="button">HTML Code Tester</a>
+    <a href="https://adiasta.com/voc" class="button">Vocabulary</a>
+    <a href="https://adiasta.com/game" class="button">Game</a>
+    <a href="https://adiasta.com/game2" class="button">Test</a>
+  </div>
+
+  <div id="container"></div>
+
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-  <script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js"></script>
   <script>
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
     const renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.setPixelRatio(window.devicePixelRatio);
-    renderer.shadowMap.enabled = true;
-    document.body.appendChild(renderer.domElement);
+    document.getElementById('container').appendChild(renderer.domElement);
 
-    // Створення карти (великого розміру)
-    const width = 5;
-    const height = 3;
-    const geometry = new THREE.BoxGeometry(width, height, 0.05);
+    // Створення візитки
+    const geometry = new THREE.BoxGeometry(3, 2, 0.05);
     const material = new THREE.MeshStandardMaterial({ color: 0x2f4f4f, metalness: 0.7, roughness: 0.1 });
     const card = new THREE.Mesh(geometry, material);
     card.castShadow = true;
@@ -45,108 +96,56 @@
     loader.load('https://threejs.org/examples/fonts/helvetiker_regular.typeface.json', function(font) {
       const textGeometry = new THREE.TextGeometry('CEO of Adiasta\nSan Francisco, CA', {
         font: font,
-        size: 0.2,  // Трохи збільшено
+        size: 0.15,
         height: 0.02,
       });
       const textMaterial = new THREE.MeshStandardMaterial({ color: 0xffffff });
       const textMesh = new THREE.Mesh(textGeometry, textMaterial);
-      textMesh.position.set(-1.7, 1, 0.03);
+      textMesh.position.set(-1.4, 0.5, 0.03);
       card.add(textMesh);
     });
 
-    // QR-код
-    const qrCanvas = document.createElement('canvas');
-    const qrCode = new QRCode(qrCanvas, {
-      text: "https://adiasta.com",
-      width: 128,
-      height: 128,
-    });
-    const qrTexture = new THREE.CanvasTexture(qrCanvas);
-    const qrMaterial = new THREE.MeshBasicMaterial({ map: qrTexture, transparent: true });
-    const qrGeometry = new THREE.PlaneGeometry(0.6, 0.6);  // Трохи збільшено
-    const qrMesh = new THREE.Mesh(qrGeometry, qrMaterial);
-    qrMesh.position.set(1.2, -1, 0.03);
-    card.add(qrMesh);
-
-    // Створення океану з хвилями
-    const oceanGeometry = new THREE.PlaneGeometry(100, 100, 50, 50);  // Додано розбиття для хвиль
-    const oceanMaterial = new THREE.MeshStandardMaterial({ color: 0x1e90ff, opacity: 0.6, transparent: true, side: THREE.DoubleSide });
-    const ocean = new THREE.Mesh(oceanGeometry, oceanMaterial);
-    ocean.rotation.x = -Math.PI / 2;
-    ocean.position.y = -1;
-    scene.add(ocean);
-
-    // Додаємо хвилі до океану
-    let oceanTime = 0;
-    function animateOcean() {
-      oceanTime += 0.05;
-      const positionAttribute = ocean.geometry.attributes.position;
-      for (let i = 0; i < positionAttribute.count; i++) {
-        const x = positionAttribute.getX(i);
-        const y = positionAttribute.getY(i);
-        positionAttribute.setZ(i, Math.sin(x * 0.2 + oceanTime) * 0.2); // Хвилі
-      }
-      positionAttribute.needsUpdate = true; // Оновлення геометрії
-    }
-
-    // Сонце для тіней
-    const sun = new THREE.Mesh(new THREE.SphereGeometry(1, 20, 20), new THREE.MeshBasicMaterial({ color: 0xffff00 }));
-    sun.position.set(5, 5, 5);
-    scene.add(sun);
-
     // Камера та позиція
-    camera.position.z = 12;
+    camera.position.z = 10;
 
-    let isTouching = false;
-    let touchStartX = 0;
-    let touchStartY = 0;
-    let rotationStartX = 0;
-    let rotationStartY = 0;
-    let zoomStart = 0;
-    let zoomFactor = 1;
+    // Мишка для обертання візитки
+    let isMouseDown = false;
+    let mouseStartX = 0;
+    let mouseStartY = 0;
+    let cardStartRotationX = 0;
+    let cardStartRotationY = 0;
 
-    window.addEventListener('touchstart', (event) => {
-      isTouching = true;
-      if (event.touches.length === 1) {
-        touchStartX = event.touches[0].clientX;
-        touchStartY = event.touches[0].clientY;
-        rotationStartX = card.rotation.x;
-        rotationStartY = card.rotation.y;
-      } else if (event.touches.length === 2) {
-        zoomStart = Math.abs(event.touches[0].clientY - event.touches[1].clientY);
+    window.addEventListener('mousedown', (event) => {
+      isMouseDown = true;
+      mouseStartX = event.clientX;
+      mouseStartY = event.clientY;
+      cardStartRotationX = card.rotation.x;
+      cardStartRotationY = card.rotation.y;
+    });
+
+    window.addEventListener('mousemove', (event) => {
+      if (isMouseDown) {
+        const deltaX = event.clientX - mouseStartX;
+        const deltaY = event.clientY - mouseStartY;
+        card.rotation.x = cardStartRotationX + deltaY * 0.01;
+        card.rotation.y = cardStartRotationY + deltaX * 0.01;
       }
     });
 
-    window.addEventListener('touchmove', (event) => {
-      if (isTouching) {
-        if (event.touches.length === 1) {
-          const touchMoveX = event.touches[0].clientX;
-          const touchMoveY = event.touches[0].clientY;
-          const deltaX = touchMoveX - touchStartX;
-          const deltaY = touchMoveY - touchStartY;
-          card.rotation.x = rotationStartX + deltaY * 0.01;
-          card.rotation.y = rotationStartY + deltaX * 0.01;
-        } else if (event.touches.length === 2) {
-          const zoomCurrent = Math.abs(event.touches[0].clientY - event.touches[1].clientY);
-          zoomFactor = 1 + (zoomStart - zoomCurrent) * 0.01;
-          camera.position.z = 12 * zoomFactor;
-        }
-      }
+    window.addEventListener('mouseup', () => {
+      isMouseDown = false;
     });
 
-    window.addEventListener('touchend', () => {
-      isTouching = false;
-    });
-
+    // Анімація сцени
     function animate() {
       requestAnimationFrame(animate);
-      card.position.y = Math.sin(Date.now() * 0.001) * 0.5;
-      sun.position.x = Math.cos(Date.now() * 0.001) * 5;
-      sun.position.z = Math.sin(Date.now() * 0.001) * 5;
 
-      animateOcean();  // Оновлення хвиль
+      // Крутіння сонця та візитки
+      directionalLight.position.x = Math.cos(Date.now() * 0.0005) * 5;
+      directionalLight.position.z = Math.sin(Date.now() * 0.0005) * 5;
 
-      scene.rotation.y += 0.0005;
+      card.rotation.y += 0.001;
+
       renderer.render(scene, camera);
     }
 
