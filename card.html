@@ -22,9 +22,9 @@
     renderer.shadowMap.enabled = true;
     document.body.appendChild(renderer.domElement);
 
-    // Створення карти
-    const width = 3.5;
-    const height = 2;
+    // Створення карти (великого розміру)
+    const width = 5;
+    const height = 3;
     const geometry = new THREE.BoxGeometry(width, height, 0.05);
     const material = new THREE.MeshStandardMaterial({ color: 0x2f4f4f, metalness: 0.7, roughness: 0.1 });
     const card = new THREE.Mesh(geometry, material);
@@ -45,12 +45,12 @@
     loader.load('https://threejs.org/examples/fonts/helvetiker_regular.typeface.json', function(font) {
       const textGeometry = new THREE.TextGeometry('CEO of Adiasta\nSan Francisco, CA', {
         font: font,
-        size: 0.15,
+        size: 0.2,  // Трохи збільшено
         height: 0.02,
       });
       const textMaterial = new THREE.MeshStandardMaterial({ color: 0xffffff });
       const textMesh = new THREE.Mesh(textGeometry, textMaterial);
-      textMesh.position.set(-1.4, 0.5, 0.03);
+      textMesh.position.set(-1.7, 1, 0.03);
       card.add(textMesh);
     });
 
@@ -63,18 +63,28 @@
     });
     const qrTexture = new THREE.CanvasTexture(qrCanvas);
     const qrMaterial = new THREE.MeshBasicMaterial({ map: qrTexture, transparent: true });
-    const qrGeometry = new THREE.PlaneGeometry(0.5, 0.5);
+    const qrGeometry = new THREE.PlaneGeometry(0.6, 0.6);  // Трохи збільшено
     const qrMesh = new THREE.Mesh(qrGeometry, qrMaterial);
-    qrMesh.position.set(0.8, -0.7, 0.03);
+    qrMesh.position.set(1.2, -1, 0.03);
     card.add(qrMesh);
 
-    // Створення океану (планета)
-    const oceanGeometry = new THREE.PlaneGeometry(100, 100);
-    const oceanMaterial = new THREE.MeshStandardMaterial({ color: 0x1e90ff, opacity: 0.6, transparent: true });
+    // Створення океану з хвилями
+    const oceanGeometry = new THREE.PlaneGeometry(100, 100, 50, 50);  // Додано розбиття для хвиль
+    const oceanMaterial = new THREE.MeshStandardMaterial({ color: 0x1e90ff, opacity: 0.6, transparent: true, side: THREE.DoubleSide });
     const ocean = new THREE.Mesh(oceanGeometry, oceanMaterial);
     ocean.rotation.x = -Math.PI / 2;
     ocean.position.y = -1;
     scene.add(ocean);
+
+    // Додаємо хвилі до океану
+    let oceanTime = 0;
+    function animateOcean() {
+      oceanTime += 0.05;
+      ocean.geometry.vertices.forEach((vertex) => {
+        vertex.z = Math.sin(vertex.x * 0.2 + oceanTime) * 0.2; // Хвилі
+      });
+      ocean.geometry.verticesNeedUpdate = true;
+    }
 
     // Сонце для тіней
     const sun = new THREE.Mesh(new THREE.SphereGeometry(1, 20, 20), new THREE.MeshBasicMaterial({ color: 0xffff00 }));
@@ -82,7 +92,7 @@
     scene.add(sun);
 
     // Камера та позиція
-    camera.position.z = 10;
+    camera.position.z = 12;
 
     let isTouching = false;
     let touchStartX = 0;
@@ -116,7 +126,7 @@
         } else if (event.touches.length === 2) {
           const zoomCurrent = Math.abs(event.touches[0].clientY - event.touches[1].clientY);
           zoomFactor = 1 + (zoomStart - zoomCurrent) * 0.01;
-          camera.position.z = 10 * zoomFactor;
+          camera.position.z = 12 * zoomFactor;
         }
       }
     });
@@ -130,6 +140,8 @@
       card.position.y = Math.sin(Date.now() * 0.001) * 0.5;
       sun.position.x = Math.cos(Date.now() * 0.001) * 5;
       sun.position.z = Math.sin(Date.now() * 0.001) * 5;
+
+      animateOcean();  // Оновлення хвиль
 
       scene.rotation.y += 0.0005;
       renderer.render(scene, camera);
