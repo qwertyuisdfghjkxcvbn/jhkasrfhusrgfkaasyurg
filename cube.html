@@ -3,13 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>4D Cube (Tesseract Simulation) with Three.js</title>
+  <title>Enhanced 4D Cube Simulation with Three.js</title>
   <style>
     body, html {
       margin: 0;
       padding: 0;
       height: 100%;
       overflow: hidden;
+      background: linear-gradient(120deg, #0f2027, #203a43, #2c5364);
     }
     canvas {
       display: block;
@@ -24,61 +25,96 @@
 <script>
   const scene = new THREE.Scene();
   const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-  camera.position.set(0, 10, 30);
+  camera.position.set(0, 10, 40);
   camera.lookAt(0, 0, 0);
 
   const renderer = new THREE.WebGLRenderer({ antialias: true });
   renderer.setSize(window.innerWidth, window.innerHeight);
   document.body.appendChild(renderer.domElement);
 
-  const ambientLight = new THREE.AmbientLight(0x404040);
+  // Add lighting
+  const ambientLight = new THREE.AmbientLight(0x404040, 2);
   scene.add(ambientLight);
-  const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+  const directionalLight = new THREE.DirectionalLight(0xffffff, 1.2);
   directionalLight.position.set(5, 10, 7).normalize();
   scene.add(directionalLight);
 
+  // Orbit controls
   const controls = new THREE.OrbitControls(camera, renderer.domElement);
   controls.enableDamping = true;
-  controls.dampingFactor = 0.25;
-  controls.screenSpacePanning = false;
-  controls.maxPolarAngle = Math.PI / 2;
+  controls.dampingFactor = 0.2;
+  controls.maxPolarAngle = Math.PI;
 
-  // Function to create a cube with specific size and color
-  function createCube(size, color) {
+  // Create a central glowing sphere
+  const sphereGeometry = new THREE.SphereGeometry(0.8, 32, 32);
+  const sphereMaterial = new THREE.MeshBasicMaterial({ color: 0xffff99, emissive: 0xffff99 });
+  const coreSphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
+  scene.add(coreSphere);
+
+  // Function to create a cube with specific size, color, and transparency
+  function createCube(size, color, opacity) {
     const geometry = new THREE.BoxGeometry(size, size, size);
-    const material = new THREE.MeshStandardMaterial({ color, wireframe: true });
+    const material = new THREE.MeshStandardMaterial({ color, transparent: true, opacity });
     const cube = new THREE.Mesh(geometry, material);
     return cube;
   }
 
-  // Array of cubes to simulate a tesseract (4D hypercube)
+  // Nested cubes for the tesseract simulation
   const cubes = [];
-  const sizes = [5, 4, 3, 2, 1]; // Different sizes for nested cubes
-  const colors = [0xff0000, 0xffa500, 0xffff00, 0x00ff00, 0x0000ff]; // Gradient colors
-  
+  const sizes = [8, 6.5, 5, 3.8, 2.8, 2, 1.5]; // Different sizes for nested cubes
+  const colors = [0xff0000, 0xff8c00, 0xffff00, 0x00ff00, 0x00ced1, 0x1e90ff, 0xee82ee]; // Gradient colors
+  const opacityLevels = [0.9, 0.85, 0.8, 0.75, 0.7, 0.65, 0.6]; // Higher opacity for visibility
+
   sizes.forEach((size, index) => {
-    const cube = createCube(size, colors[index]);
+    const cube = createCube(size, colors[index], opacityLevels[index]);
     cubes.push(cube);
     scene.add(cube);
   });
 
-  // Responsive design on window resize
+  // Reduce particle field for less distraction
+  const particleGeometry = new THREE.BufferGeometry();
+  const particleCount = 500; // Reduced count
+  const particlePositions = new Float32Array(particleCount * 3);
+
+  for (let i = 0; i < particleCount; i++) {
+    particlePositions[i * 3] = (Math.random() - 0.5) * 50;
+    particlePositions[i * 3 + 1] = (Math.random() - 0.5) * 50;
+    particlePositions[i * 3 + 2] = (Math.random() - 0.5) * 50;
+  }
+
+  particleGeometry.setAttribute('position', new THREE.BufferAttribute(particlePositions, 3));
+  const particleMaterial = new THREE.PointsMaterial({ color: 0xaaaaaa, size: 0.05 });
+  const particleField = new THREE.Points(particleGeometry, particleMaterial);
+  scene.add(particleField);
+
+  // Resize renderer on window resize
   window.addEventListener('resize', () => {
     renderer.setSize(window.innerWidth, window.innerHeight);
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
   });
 
-  // Animation loop to create a 4D rotation effect
+  // Animation loop for complex rotation, scaling, and particle movement
   function animate() {
     requestAnimationFrame(animate);
 
-    // Apply rotation to each cube at slightly different speeds
+    // Apply rotation and scaling to each cube
     cubes.forEach((cube, index) => {
       cube.rotation.x += 0.01 + index * 0.002;
-      cube.rotation.y += 0.01 + index * 0.002;
-      cube.rotation.z += 0.005 + index * 0.002;
+      cube.rotation.y += 0.008 + index * 0.003;
+      cube.rotation.z += 0.006 + index * 0.001;
+
+      // Pulsing scale effect
+      const scale = 1 + 0.1 * Math.sin(Date.now() * 0.001 + index);
+      cube.scale.set(scale, scale, scale);
     });
+
+    // Rotate central sphere
+    coreSphere.rotation.y += 0.01;
+
+    // Move particles slightly for subtle effect
+    particleField.rotation.y += 0.001;
+    particleField.rotation.x += 0.0005;
 
     controls.update();
     renderer.render(scene, camera);
