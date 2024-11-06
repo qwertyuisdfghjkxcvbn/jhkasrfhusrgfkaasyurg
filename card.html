@@ -18,7 +18,7 @@
     const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
     const renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.setPixelRatio(window.devicePixelRatio);  // Покращення чіткості для мобільних пристроїв
+    renderer.setPixelRatio(window.devicePixelRatio);
     renderer.shadowMap.enabled = true;
     document.body.appendChild(renderer.domElement);
 
@@ -80,10 +80,13 @@
     let oceanTime = 0;
     function animateOcean() {
       oceanTime += 0.05;
-      ocean.geometry.vertices.forEach((vertex) => {
-        vertex.z = Math.sin(vertex.x * 0.2 + oceanTime) * 0.2; // Хвилі
-      });
-      ocean.geometry.verticesNeedUpdate = true;
+      const positionAttribute = ocean.geometry.attributes.position;
+      for (let i = 0; i < positionAttribute.count; i++) {
+        const x = positionAttribute.getX(i);
+        const y = positionAttribute.getY(i);
+        positionAttribute.setZ(i, Math.sin(x * 0.2 + oceanTime) * 0.2); // Хвилі
+      }
+      positionAttribute.needsUpdate = true; // Оновлення геометрії
     }
 
     // Сонце для тіней
