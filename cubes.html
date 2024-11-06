@@ -3,265 +3,79 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>3D Block Stacking Game with Joystick</title>
+  <title>Mini Minecraft</title>
   <style>
-    body { margin: 0; overflow: hidden; display: flex; flex-direction: column; align-items: center; }
+    body { margin: 0; overflow: hidden; display: flex; align-items: center; justify-content: center; height: 100vh; background: #87CEEB; }
     canvas { display: block; }
-    #ui {
-      position: absolute;
-      top: 10px;
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-    .ui-element {
-      margin: 5px;
-    }
-    #joystickContainer {
-      position: fixed;
-      bottom: 50px;
-      left: 20px;
-      display: flex;
-      justify-content: space-between;
-      width: 200px;
-    }
-    .joystick {
-      width: 100px;
-      height: 100px;
-      background-color: rgba(255, 255, 255, 0.6);
-      border-radius: 50%;
-      border: 2px solid #000;
-      position: relative;
-      touch-action: none;
-    }
-    .stick {
-      width: 50px;
-      height: 50px;
-      background-color: rgba(0, 0, 0, 0.7);
-      border-radius: 50%;
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-    }
+    #ui { position: absolute; top: 10px; display: flex; gap: 10px; }
+    .ui { margin: 5px; }
   </style>
 </head>
 <body>
   <div id="ui">
-    <button id="addBlockBtn" class="ui-element">Add Block</button>
-    <button id="shapeCubeBtn" class="ui-element">Cube</button>
-    <button id="shapeSphereBtn" class="ui-element">Sphere</button>
-    <button id="shapePyramidBtn" class="ui-element">Pyramid</button>
-    <input type="color" id="colorPicker" class="ui-element" value="#00ff00">
-    <input type="range" id="sizePicker" class="ui-element" min="0.5" max="3" step="0.1" value="1">
-    <label for="sizePicker" class="ui-element">Size</label>
-  </div>
-
-  <div id="joystickContainer">
-    <div id="cameraJoystick" class="joystick">
-      <div id="cameraStick" class="stick"></div>
-    </div>
-    <div id="blockJoystick" class="joystick">
-      <div id="blockStick" class="stick"></div>
-    </div>
+    <button id="bAdd" class="ui">Add</button>
+    <button id="bCube" class="ui">Cube</button>
+    <button id="bSphere" class="ui">Sphere</button>
+    <button id="bPyramid" class="ui">Pyramid</button>
+    <input type="color" id="color" class="ui" value="#00ff00">
+    <input type="range" id="size" class="ui" min="0.5" max="3" step="0.1" value="1">
   </div>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
   <script>
-    // Scene setup
-    const scene = new THREE.Scene();
-    scene.background = new THREE.Color(0xdddddd);
+    let scene = new THREE.Scene(), cam = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000), renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.setSize(window.innerWidth, window.innerHeight); document.body.appendChild(renderer.domElement);
+    let ambLight = new THREE.AmbientLight(0x404040, 1.5), dirLight = new THREE.DirectionalLight(0xffffff, 1); dirLight.position.set(5, 10, 7.5).normalize(); scene.add(ambLight, dirLight);
+    cam.position.set(0, 5, 10);
+    
+    let blockMat = new THREE.MeshStandardMaterial({ color: 0x00ff00 }), blockSize = 1, blockShape = 'cube', blocks = [];
+    const raycaster = new THREE.Raycaster(), mouse = new THREE.Vector2();
 
-    // Camera setup
-    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-    camera.position.set(0, 5, 10);
+    let isMoving = { camera: false, block: false }, joystickData = { camera: { x: 0, y: 0 }, block: { x: 0, y: 0 } };
 
-    // Renderer setup
-    const renderer = new THREE.WebGLRenderer({ antialias: true });
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    document.body.appendChild(renderer.domElement);
-
-    // Lighting
-    const ambientLight = new THREE.AmbientLight(0x404040, 1.5);
-    scene.add(ambientLight);
-    const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
-    directionalLight.position.set(5, 10, 7.5).normalize();
-    scene.add(directionalLight);
-
-    // Block settings
-    let blockSize = 1;
-    let blockShape = 'cube'; // Default shape: cube
-    let blockMaterial = new THREE.MeshStandardMaterial({ color: 0x00ff00 });
-    const blocks = [];
-    let currentBlock = null;
-
-    // Joystick controls
-    let cameraJoystick = document.getElementById('cameraJoystick');
-    let blockJoystick = document.getElementById('blockJoystick');
-    let cameraStick = document.getElementById('cameraStick');
-    let blockStick = document.getElementById('blockStick');
-
-    let cameraJoystickData = { x: 0, y: 0 };
-    let blockJoystickData = { x: 0, y: 0 };
-
-    let cameraJoystickActive = false;
-    let blockJoystickActive = false;
-
-    // Function to create a block based on selected shape and size
-    function createBlock(shape, position) {
-      let geometry;
-      if (shape === 'cube') {
-        geometry = new THREE.BoxGeometry(blockSize, blockSize, blockSize);
-      } else if (shape === 'sphere') {
-        geometry = new THREE.SphereGeometry(blockSize / 2, 32, 32);
-      } else if (shape === 'pyramid') {
-        geometry = new THREE.ConeGeometry(blockSize / 2, blockSize, 4);
-      }
-      const newBlock = new THREE.Mesh(geometry, blockMaterial);
-      newBlock.position.set(position.x, position.y, position.z);
-      scene.add(newBlock);
-      blocks.push(newBlock);
+    function createBlock(shape, pos) {
+      let geo;
+      if (shape === 'cube') geo = new THREE.BoxGeometry(blockSize, blockSize, blockSize);
+      else if (shape === 'sphere') geo = new THREE.SphereGeometry(blockSize / 2, 32, 32);
+      else geo = new THREE.ConeGeometry(blockSize / 2, blockSize, 4);
+      let b = new THREE.Mesh(geo, blockMat); b.position.set(pos.x, pos.y, pos.z); scene.add(b); blocks.push(b);
     }
 
-    // Raycasting to determine where to place or move the block
-    const raycaster = new THREE.Raycaster();
-    const mouse = new THREE.Vector2();
-
-    function onMouseClick(event) {
-      mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-      mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
-      raycaster.setFromCamera(mouse, camera);
-
-      const intersects = raycaster.intersectObjects(scene.children, true);
-      if (intersects.length > 0) {
-        const point = intersects[0].point;
-        createBlock(blockShape, point);
-      }
+    function moveObj() {
+      let spd = 0.1;
+      if (isMoving.block) blocks[blocks.length - 1].position.add(new THREE.Vector3(joystickData.block.x * spd, -joystickData.block.y * spd, 0));
+      if (isMoving.camera) cam.position.add(new THREE.Vector3(joystickData.camera.x * spd, -joystickData.camera.y * spd, 0)); cam.lookAt(scene.position);
     }
 
-    // Joystick movement handler
-    function updateJoystick(joystick, stick, joystickData) {
-      const maxDistance = joystick.offsetWidth / 2;
-      const stickX = joystickData.x * maxDistance;
-      const stickY = joystickData.y * maxDistance;
-
-      stick.style.transform = `translate(-50%, -50%) translate(${stickX}px, ${stickY}px)`;
+    function onMove(e, type) {
+      const r = e.target.getBoundingClientRect(), offsetX = e.clientX - r.left - r.width / 2, offsetY = e.clientY - r.top - r.height / 2;
+      let dist = Math.min(Math.sqrt(offsetX * offsetX + offsetY * offsetY), r.width / 2), angle = Math.atan2(offsetY, offsetX);
+      joystickData[type].x = Math.cos(angle) * dist / (r.width / 2);
+      joystickData[type].y = Math.sin(angle) * dist / (r.height / 2);
     }
 
-    function moveCamera() {
-      const speed = 0.1;
-      camera.position.x += cameraJoystickData.x * speed;
-      camera.position.y -= cameraJoystickData.y * speed;
-      camera.lookAt(scene.position);
-    }
+    function endMove(type) { joystickData[type] = { x: 0, y: 0 }; }
 
-    function moveBlock() {
-      if (currentBlock) {
-        const speed = 0.1;
-        currentBlock.position.x += blockJoystickData.x * speed;
-        currentBlock.position.y -= blockJoystickData.y * speed;
-      }
-    }
-
-    function onJoystickMove(event, joystickType) {
-      const rect = event.target.getBoundingClientRect();
-      const offsetX = event.clientX - rect.left - rect.width / 2;
-      const offsetY = event.clientY - rect.top - rect.height / 2;
-
-      const distance = Math.min(Math.sqrt(offsetX * offsetX + offsetY * offsetY), rect.width / 2);
-      const angle = Math.atan2(offsetY, offsetX);
-
-      if (joystickType === 'camera') {
-        cameraJoystickData.x = Math.cos(angle) * distance / (rect.width / 2);
-        cameraJoystickData.y = Math.sin(angle) * distance / (rect.height / 2);
-      } else if (joystickType === 'block') {
-        blockJoystickData.x = Math.cos(angle) * distance / (rect.width / 2);
-        blockJoystickData.y = Math.sin(angle) * distance / (rect.height / 2);
-      }
-
-      updateJoystick(event.target, joystickType === 'camera' ? cameraStick : blockStick, joystickType === 'camera' ? cameraJoystickData : blockJoystickData);
-    }
-
-    function onJoystickEnd(joystickType) {
-      if (joystickType === 'camera') {
-        cameraJoystickData = { x: 0, y: 0 };
-      } else if (joystickType === 'block') {
-        blockJoystickData = { x: 0, y: 0 };
-      }
-      updateJoystick(null, joystickType === 'camera' ? cameraStick : blockStick, joystickType === 'camera' ? cameraJoystickData : blockJoystickData);
-    }
-
-    // Add event listeners to handle joystick movement (Touch and Mouse)
-    function setupJoystickListeners(joystick, joystickType) {
-      joystick.addEventListener('touchstart', (e) => {
-        e.preventDefault();
-        joystickType === 'camera' ? cameraJoystickActive = true : blockJoystickActive = true;
-        onJoystickMove(e, joystickType);
-      });
-
-      joystick.addEventListener('touchmove', (e) => {
-        e.preventDefault();
-        if (joystickType === 'camera' ? cameraJoystickActive : blockJoystickActive) {
-          onJoystickMove(e, joystickType);
-        }
-      });
-
-      joystick.addEventListener('touchend', () => {
-        joystickType === 'camera' ? cameraJoystickActive = false : blockJoystickActive = false;
-        onJoystickEnd(joystickType);
-      });
-
-      joystick.addEventListener('mousedown', (e) => {
-        e.preventDefault();
-        joystickType === 'camera' ? cameraJoystickActive = true : blockJoystickActive = true;
-        onJoystickMove(e, joystickType);
-      });
-
-      joystick.addEventListener('mousemove', (e) => {
-        e.preventDefault();
-        if (joystickType === 'camera' ? cameraJoystickActive : blockJoystickActive) {
-          onJoystickMove(e, joystickType);
-        }
-      });
-
-      joystick.addEventListener('mouseup', () => {
-        joystickType === 'camera' ? cameraJoystickActive = false : blockJoystickActive = false;
-        onJoystickEnd(joystickType);
+    function addListeners() {
+      ['camera', 'block'].forEach(type => {
+        let joystick = document.getElementById(`${type}Joystick`);
+        joystick.addEventListener('touchstart', (e) => { e.preventDefault(); isMoving[type] = true; onMove(e, type); });
+        joystick.addEventListener('touchmove', (e) => { e.preventDefault(); if (isMoving[type]) onMove(e, type); });
+        joystick.addEventListener('touchend', () => { isMoving[type] = false; endMove(type); });
+        joystick.addEventListener('mousedown', (e) => { e.preventDefault(); isMoving[type] = true; onMove(e, type); });
+        joystick.addEventListener('mousemove', (e) => { e.preventDefault(); if (isMoving[type]) onMove(e, type); });
+        joystick.addEventListener('mouseup', () => { isMoving[type] = false; endMove(type); });
       });
     }
 
-    // UI Event Listeners
-    document.getElementById('addBlockBtn').addEventListener('click', () => {
-      createBlock(blockShape, new THREE.Vector3(0, 5, 0));
-    });
+    document.getElementById('bAdd').addEventListener('click', () => { let pos = new THREE.Vector3(0, 5, 0); createBlock(blockShape, pos); });
+    document.getElementById('bCube').addEventListener('click', () => { blockShape = 'cube'; });
+    document.getElementById('bSphere').addEventListener('click', () => { blockShape = 'sphere'; });
+    document.getElementById('bPyramid').addEventListener('click', () => { blockShape = 'pyramid'; });
+    document.getElementById('color').addEventListener('input', (e) => { blockMat.color.set(e.target.value); });
+    document.getElementById('size').addEventListener('input', (e) => { blockSize = parseFloat(e.target.value); });
 
-    document.getElementById('shapeCubeBtn').addEventListener('click', () => {
-      blockShape = 'cube';
-    });
-    document.getElementById('shapeSphereBtn').addEventListener('click', () => {
-      blockShape = 'sphere';
-    });
-    document.getElementById('shapePyramidBtn').addEventListener('click', () => {
-      blockShape = 'pyramid';
-    });
-    document.getElementById('colorPicker').addEventListener('input', (e) => {
-      blockMaterial.color.set(e.target.value);
-    });
-    document.getElementById('sizePicker').addEventListener('input', (e) => {
-      blockSize = parseFloat(e.target.value);
-    });
-
-    // Set up joysticks for touch and mouse interaction
-    setupJoystickListeners(cameraJoystick, 'camera');
-    setupJoystickListeners(blockJoystick, 'block');
-
-    // Main render loop
-    function animate() {
-      requestAnimationFrame(animate);
-      moveCamera();
-      moveBlock();
-      renderer.render(scene, camera);
-    }
+    const animate = () => { requestAnimationFrame(animate); moveObj(); renderer.render(scene, cam); };
     animate();
   </script>
 </body>
