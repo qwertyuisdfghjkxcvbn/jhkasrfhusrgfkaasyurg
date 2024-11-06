@@ -3,133 +3,103 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>3D Business Card</title>
+    <title>3D Business Card - Adiasta CEO</title>
     <style>
-        body {
-            background-color: #f0f0f0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            font-family: 'Arial', sans-serif;
-        }
-
-        .card-container {
-            perspective: 1000px; /* Adds perspective for 3D effect */
-        }
-
-        .card {
-            width: 300px;
-            height: 200px;
-            transform-style: preserve-3d;
-            transition: transform 0.6s; /* Smooth flip animation */
-        }
-
-        .card:hover {
-            transform: rotateY(180deg); /* Flip the card on hover */
-        }
-
-        /* Front and back of the card */
-        .card-inner {
-            position: relative;
-            width: 100%;
-            height: 100%;
-            transform: rotateY(0deg);
-            transition: transform 0.6s;
-            transform-style: preserve-3d;
-        }
-
-        .card-face {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            backface-visibility: hidden; /* Hide the back side when flipped */
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            color: white;
-            font-size: 24px;
+        body { margin: 0; }
+        canvas { display: block; }
+        h1 {
             text-align: center;
-            border-radius: 10px;
+            font-family: Arial, sans-serif;
+            margin-top: 20px;
         }
-
-        /* Front side (with Name and Title) */
-        .front {
-            background: linear-gradient(135deg, #2c3e50, #3498db);
+        .container {
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
-
-        /* Back side (with Contact Info) */
-        .back {
-            background: linear-gradient(135deg, #8e44ad, #f39c12);
-            transform: rotateY(180deg); /* Position back side behind the front */
-        }
-
-        /* Text style for the front and back */
-        .name {
-            font-size: 30px;
-            font-weight: bold;
-        }
-
-        .title {
-            font-size: 20px;
-            font-weight: lighter;
-        }
-
-        .contact-info {
-            font-size: 18px;
-        }
-
-        /* For responsiveness */
-        @media (max-width: 768px) {
-            .card {
-                width: 250px;
-                height: 170px;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .card {
-                width: 200px;
-                height: 150px;
-            }
-        }
-
     </style>
 </head>
 <body>
-
-    <div class="card-container">
-        <div class="card">
-            <div class="card-inner">
-                <!-- Front of the Card -->
-                <div class="card-face front">
-                    <div>
-                        <div class="name">Adiasta</div>
-                        <div class="title">CEO</div>
-                    </div>
-                </div>
-
-                <!-- Back of the Card -->
-                <div class="card-face back">
-                    <div class="contact-info">
-                        <p>Email: adiasta@example.com</p>
-                        <p>Phone: +1234567890</p>
-                    </div>
-                </div>
-            </div>
-        </div>
+    <div class="container">
+        <canvas id="businessCard"></canvas>
     </div>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/controls/OrbitControls.js"></script>
+
     <script>
-        // Optionally, add JavaScript for additional interactivity or animations if needed
-        // For example, you can animate the card on page load:
-        window.onload = () => {
-            const card = document.querySelector('.card');
-            setTimeout(() => {
-                card.style.transform = "rotateY(180deg)"; // Flip the card after 2 seconds (example animation)
-            }, 2000);
-        };
+        // Basic setup
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ canvas: document.getElementById("businessCard") });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
+
+        // Create the card geometry (box)
+        const cardGeometry = new THREE.BoxGeometry(5, 3, 0.1);
+        const cardMaterialFront = new THREE.MeshBasicMaterial({
+            color: 0x1E2A47, 
+            side: THREE.FrontSide
+        });
+        const cardMaterialBack = new THREE.MeshBasicMaterial({
+            color: 0xF5F5F5, 
+            side: THREE.BackSide
+        });
+
+        // Create the mesh for front and back of the card
+        const card = new THREE.Mesh(cardGeometry, [cardMaterialFront, cardMaterialBack]);
+        scene.add(card);
+
+        // Card Front Text
+        const frontText = `
+            CEO: John Doe
+            Adiasta Inc.
+            123 Market St, San Francisco, CA
+            Email: ceo@adiasta.com
+            Phone: +1 (555) 123-4567
+        `;
+
+        // Create a simple text for the card front
+        const fontLoader = new THREE.FontLoader();
+        fontLoader.load('https://threejs.org/examples/fonts/helvetiker_regular.typeface.json', function(font) {
+            const textGeometry = new THREE.TextGeometry(frontText, {
+                font: font,
+                size: 0.3,
+                height: 0.05,
+                curveSegments: 10,
+            });
+
+            const textMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff });
+            const textMesh = new THREE.Mesh(textGeometry, textMaterial);
+
+            textMesh.position.set(-2.4, 1, 0.06); // Position text on front of card
+            scene.add(textMesh);
+        });
+
+        // Set the camera position
+        camera.position.z = 10;
+
+        // Add controls for rotating the card
+        const controls = new THREE.OrbitControls(camera, renderer.domElement);
+        controls.enableZoom = false;  // Disable zooming
+
+        // Animation loop
+        function animate() {
+            requestAnimationFrame(animate);
+            card.rotation.y += 0.01;  // Continuous rotation
+            renderer.render(scene, camera);
+        }
+
+        animate();
+
+        // Resize handling for responsiveness
+        window.addEventListener('resize', () => {
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+        });
     </script>
 </body>
 </html>
