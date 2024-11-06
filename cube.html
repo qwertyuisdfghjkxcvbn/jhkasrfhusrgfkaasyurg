@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Solar System with Colors and Thinner Orbits</title>
+  <title>Solar System with Interactive Controls</title>
   <style>
     body, html {
       margin: 0;
@@ -15,9 +15,62 @@
     canvas {
       display: block;
     }
+    #controls {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      z-index: 10;
+      font-family: Arial, sans-serif;
+    }
+    button {
+      margin: 5px;
+      padding: 10px;
+      background-color: #444;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #666;
+    }
+    #menu {
+      position: fixed;
+      top: 10px;
+      left: 10px;
+      z-index: 10;
+      cursor: pointer;
+      font-size: 24px;
+      color: white;
+    }
+    #menu-content {
+      display: none;
+      position: absolute;
+      top: 40px;
+      left: 0;
+      background-color: rgba(0, 0, 0, 0.7);
+      padding: 15px;
+      border-radius: 5px;
+    }
+    #menu-content button {
+      display: block;
+    }
   </style>
 </head>
 <body>
+
+<div id="menu" onclick="toggleMenu()">☰</div>
+<div id="menu-content">
+  <button onclick="zoomToPlanet('earth')">Zoom to Earth</button>
+  <button onclick="zoomToPlanet('mars')">Zoom to Mars</button>
+  <button onclick="zoomToPlanet('venus')">Zoom to Venus</button>
+  <button onclick="increasePlanetSpeed()">Increase Speed</button>
+  <button onclick="decreasePlanetSpeed()">Decrease Speed</button>
+  <button onclick="toggleShadows()">Toggle Shadows</button>
+  <button onclick="toggleOrbits()">Toggle Orbits</button>
+  <button onclick="changePlanetColor()">Change Planet Color</button>
+  <button onclick="resetCamera()">Reset Camera</button>
+  <button onclick="toggleTexture()">Toggle Textures</button>
+</div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
@@ -30,130 +83,136 @@
 
   const renderer = new THREE.WebGLRenderer({ antialias: true });
   renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.shadowMap.enabled = true;
   document.body.appendChild(renderer.domElement);
 
-  // Lighting
-  const ambientLight = new THREE.AmbientLight(0x404040, 1);
-  scene.add(ambientLight);
-  const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
-  directionalLight.position.set(5, 10, 7).normalize();
-  scene.add(directionalLight);
-
-  // Orbit controls
   const controls = new THREE.OrbitControls(camera, renderer.domElement);
   controls.enableDamping = true;
   controls.dampingFactor = 0.25;
   controls.maxPolarAngle = Math.PI / 2;
 
-  // Create a large sun (central star)
-  const sunGeometry = new THREE.SphereGeometry(8, 32, 32);
-  const sunMaterial = new THREE.MeshBasicMaterial({ color: 0xffff00 }); // Yellow color for Sun
-  const sun = new THREE.Mesh(sunGeometry, sunMaterial);
-  scene.add(sun);
+  const ambientLight = new THREE.AmbientLight(0x404040, 0.5);
+  scene.add(ambientLight);
 
-  // Function to create planets
-  function createPlanet(size, color, distanceFromSun, orbitSpeed) {
-    const geometry = new THREE.SphereGeometry(size, 32, 32);
-    const material = new THREE.MeshStandardMaterial({ color: color });
-    const planet = new THREE.Mesh(geometry, material);
-    planet.position.x = distanceFromSun; // Set the initial position along the X axis
-    planet.orbitSpeed = orbitSpeed;
+  const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+  directionalLight.position.set(50, 100, 50).normalize();
+  directionalLight.castShadow = true;
+  scene.add(directionalLight);
 
-    return planet;
-  }
+  const colors = {
+    sun: 0xffdd33,
+    mercury: 0xaaaaaa,
+    venus: 0xff9900,
+    earth: 0x00aaff,
+    mars: 0xff5733,
+    jupiter: 0xffcc00,
+    saturn: 0x00ff99,
+    uranus: 0x0088ff,
+    neptune: 0x0000cc,
+    pluto: 0xaaaaaa
+  };
 
-  // Function to create moons
-  function createMoon(size, color, distanceFromPlanet, orbitSpeed) {
-    const geometry = new THREE.SphereGeometry(size, 16, 16);
-    const material = new THREE.MeshStandardMaterial({ color: color });
-    const moon = new THREE.Mesh(geometry, material);
-    moon.position.x = distanceFromPlanet; // Set the initial position along the X axis
-    moon.orbitSpeed = orbitSpeed;
-
-    return moon;
-  }
-
-  // Create planets and moons (solar system)
-  const planets = [];
-  const moons = [];
-  const orbits = [];
-
-  const planetData = [
-    { size: 3, color: 0x00aaff, distance: 20, orbitSpeed: 0.02 }, // Example planet 1 (Blue color)
-    { size: 5, color: 0xFF5733, distance: 40, orbitSpeed: 0.015 }, // Example planet 2 (Red color)
-    { size: 4, color: 0x808080, distance: 60, orbitSpeed: 0.01 }, // Example planet 3 (Gray color)
+  const planetsData = [
+    { name: 'mercury', size: 3, color: colors.mercury, distance: 20, orbitSpeed: 1 / 88 },
+    { name: 'venus', size: 4, color: colors.venus, distance: 30, orbitSpeed: 1 / 225 },
+    { name: 'earth', size: 5, color: colors.earth, distance: 40, orbitSpeed: 1 / 365 },
+    { name: 'mars', size: 4, color: colors.mars, distance: 60, orbitSpeed: 1 / 687 },
+    { name: 'jupiter', size: 10, color: colors.jupiter, distance: 100, orbitSpeed: 1 / 4333 },
+    { name: 'saturn', size: 8, color: colors.saturn, distance: 150, orbitSpeed: 1 / 10759 },
+    { name: 'uranus', size: 7, color: colors.uranus, distance: 200, orbitSpeed: 1 / 30660 },
+    { name: 'neptune', size: 6, color: colors.neptune, distance: 250, orbitSpeed: 1 / 60150 },
+    { name: 'pluto', size: 4, color: colors.pluto, distance: 300, orbitSpeed: 1 / 90520 }
   ];
 
-  planetData.forEach((data, index) => {
-    const planet = createPlanet(data.size, data.color, data.distance, data.orbitSpeed);
-    planets.push(planet);
+  const planets = [];
+  const orbits = [];
+
+  planetsData.forEach(data => {
+    const planetGeometry = new THREE.SphereGeometry(data.size, 32, 32);
+    const planetMaterial = new THREE.MeshStandardMaterial({ color: data.color });
+    const planet = new THREE.Mesh(planetGeometry, planetMaterial);
+    planet.position.x = data.distance;
+    planet.orbitSpeed = data.orbitSpeed;
+    planet.castShadow = true;
     scene.add(planet);
 
-    // Add moons to each planet (simulating the moons orbiting)
-    const moon1 = createMoon(0.5, 0x888888, 3, 0.05); // Gray moon
-    planet.add(moon1); // Attach the moon to the planet
+    planets.push(planet);
 
-    const moon2 = createMoon(0.7, 0xcccccc, 6, 0.03); // Lighter gray moon
-    planet.add(moon2); // Attach the moon to the planet
-
-    moons.push(moon1, moon2);
-
-    // Create orbit paths (rings) with a thinner appearance
     const orbitGeometry = new THREE.RingGeometry(data.distance - 0.5, data.distance + 0.5, 100);
     const orbitMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff, side: THREE.DoubleSide, opacity: 0.1, transparent: true });
     const orbit = new THREE.Mesh(orbitGeometry, orbitMaterial);
-    orbit.rotation.x = Math.PI / 2; // Align the orbit to the XZ plane
+    orbit.rotation.x = Math.PI / 2;
     scene.add(orbit);
     orbits.push(orbit);
   });
 
-  // Add stars (particles) to the background
-  const particleGeometry = new THREE.BufferGeometry();
-  const particleCount = 1000; // Increased count for more stars
-  const particlePositions = new Float32Array(particleCount * 3);
+  let currentZoomPlanet = null;
+  let planetSpeed = 1.0;
+  let shadowsEnabled = true;
+  let orbitsEnabled = true;
+  let texturesEnabled = true;
 
-  for (let i = 0; i < particleCount; i++) {
-    particlePositions[i * 3] = (Math.random() - 0.5) * 200; // Spread particles across a larger space
-    particlePositions[i * 3 + 1] = (Math.random() - 0.5) * 200;
-    particlePositions[i * 3 + 2] = (Math.random() - 0.5) * 200;
+  function zoomToPlanet(planetName) {
+    const planet = planets.find(p => p.name === planetName);
+    if (planet) {
+      controls.target.set(planet.position.x, planet.position.y, planet.position.z);
+      camera.position.set(planet.position.x, planet.position.y + 10, planet.position.z + 30);
+    }
   }
 
-  particleGeometry.setAttribute('position', new THREE.BufferAttribute(particlePositions, 3));
-  const particleMaterial = new THREE.PointsMaterial({ color: 0xffffff, size: 0.05, opacity: 0.7, transparent: true });
-  const particleField = new THREE.Points(particleGeometry, particleMaterial);
-  scene.add(particleField);
+  function increasePlanetSpeed() {
+    planetSpeed *= 1.1;
+  }
 
-  // Resize renderer on window resize
-  window.addEventListener('resize', () => {
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    camera.aspect = window.innerWidth / window.innerHeight;
-    camera.updateProjectionMatrix();
-  });
+  function decreasePlanetSpeed() {
+    planetSpeed *= 0.9;
+  }
 
-  // Animate the solar system (orbital motion)
+  function toggleShadows() {
+    shadowsEnabled = !shadowsEnabled;
+    planets.forEach(planet => planet.castShadow = shadowsEnabled);
+  }
+
+  function toggleOrbits() {
+    orbitsEnabled = !orbitsEnabled;
+    orbits.forEach(orbit => orbit.visible = orbitsEnabled);
+  }
+
+  function changePlanetColor() {
+    planets.forEach(planet => {
+      planet.material.color.setHex(Math.random() * 0xffffff);
+    });
+  }
+
+  function resetCamera() {
+    camera.position.set(0, 30, 150);
+    controls.target.set(0, 0, 0);
+  }
+
+  function toggleTexture() {
+    texturesEnabled = !texturesEnabled;
+    planets.forEach(planet => {
+      if (texturesEnabled) {
+        planet.material.color.setHex(colors[planet.name]);
+      } else {
+        planet.material.color.setHex(Math.random() * 0xffffff);
+      }
+    });
+  }
+
+  function toggleMenu() {
+    const menuContent = document.getElementById("menu-content");
+    menuContent.style.display = menuContent.style.display === "none" ? "block" : "none";
+  }
+
   function animate() {
     requestAnimationFrame(animate);
 
-    const time = Date.now() * 0.001;
-
-    // Animate the planets orbiting the sun
     planets.forEach((planet, index) => {
-      planet.rotation.y += 0.01; // Rotate the planet around its own axis
-      planet.position.x = Math.cos(time * planet.orbitSpeed + index) * planetData[index].distance;
-      planet.position.z = Math.sin(time * planet.orbitSpeed + index) * planetData[index].distance;
-
-      // Animate the moons orbiting their respective planets
-      const moonsOfPlanet = planet.children.filter(child => child instanceof THREE.Mesh);
-      moonsOfPlanet.forEach((moon) => {
-        moon.rotation.y += 0.02;
-        moon.position.x = Math.cos(time * moon.orbitSpeed) * 3;
-        moon.position.z = Math.sin(time * moon.orbitSpeed) * 3;
-      });
+      planet.rotation.y += 0.001 * planetSpeed;
+      planet.position.x = planetsData[index].distance * Math.cos(Date.now() * planet.orbitSpeed * planetSpeed);
+      planet.position.z = planetsData[index].distance * Math.sin(Date.now() * planet.orbitSpeed * planetSpeed);
     });
-
-    // Rotate particle field slightly for subtle movement
-    particleField.rotation.y += 0.001;
-    particleField.rotation.x += 0.0005;
 
     controls.update();
     renderer.render(scene, camera);
