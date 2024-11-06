@@ -48,8 +48,8 @@
       });
       const textMaterial = new THREE.MeshStandardMaterial({ color: 0xffffff });
       const textMesh = new THREE.Mesh(textGeometry, textMaterial);
-      textMesh.position.set(-1.4, 0.4, 0.03);  // Позиція тексту на картці
-      scene.add(textMesh);
+      textMesh.position.set(-1.4, 0.5, 0.03);  // Розташування тексту на самій картці
+      card.add(textMesh);  // Додаємо текст безпосередньо до картки
     });
 
     // Додавання QR-коду на картку
@@ -63,36 +63,53 @@
     const qrMaterial = new THREE.MeshBasicMaterial({ map: qrTexture, transparent: true });
     const qrGeometry = new THREE.PlaneGeometry(0.5, 0.5);
     const qrMesh = new THREE.Mesh(qrGeometry, qrMaterial);
-    qrMesh.position.set(0.8, -0.7, 0.03); // Розташування QR-коду
+    qrMesh.position.set(0.8, -0.7, 0.03); // Розташування QR-коду на картці
     card.add(qrMesh);
 
     // Камера та анімація
     camera.position.z = 4;
     function animate() {
       requestAnimationFrame(animate);
-      card.rotation.x += 0.01;  // Обертання картки по осі X
-      card.rotation.y += 0.01;  // Обертання картки по осі Y
       renderer.render(scene, camera);
     }
     animate();
 
-    // Події для мобільного (крутити картку за допомогою свайпів)
-    let mouseX = 0, mouseY = 0;
-    window.addEventListener('mousemove', (event) => {
-      mouseX = (event.clientX / window.innerWidth) * 2 - 1;
-      mouseY = -(event.clientY / window.innerHeight) * 2 + 1;
+    // Додаткові змінні для контролю обертання через дотик
+    let isTouching = false;
+    let touchStartX = 0;
+    let touchStartY = 0;
+    let rotationStartX = 0;
+    let rotationStartY = 0;
+
+    // Обробка дотику на мобільних пристроях
+    window.addEventListener('touchstart', (event) => {
+      isTouching = true;
+      touchStartX = event.touches[0].clientX;
+      touchStartY = event.touches[0].clientY;
+      rotationStartX = card.rotation.x;
+      rotationStartY = card.rotation.y;
     });
 
-    // Оновлення рендеру
-    function render() {
-      card.rotation.x = mouseY * Math.PI;
-      card.rotation.y = mouseX * Math.PI;
-      renderer.render(scene, camera);
-    }
+    window.addEventListener('touchmove', (event) => {
+      if (isTouching) {
+        const touchMoveX = event.touches[0].clientX;
+        const touchMoveY = event.touches[0].clientY;
+        const deltaX = touchMoveX - touchStartX;
+        const deltaY = touchMoveY - touchStartY;
+
+        // Обертання картки
+        card.rotation.x = rotationStartX + deltaY * 0.01;
+        card.rotation.y = rotationStartY + deltaX * 0.01;
+      }
+    });
+
+    window.addEventListener('touchend', () => {
+      isTouching = false;
+    });
 
     // Оновлення рендеру на мобільних пристроях
     function update() {
-      render();
+      renderer.render(scene, camera);
       requestAnimationFrame(update);
     }
     update();
