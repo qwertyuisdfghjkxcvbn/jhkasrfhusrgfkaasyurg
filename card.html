@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>San Francisco 3D Simulation</title>
+  <title>Swiss Town Basel 3D Simulation</title>
   <style>
     body, html {
       margin: 0;
@@ -58,7 +58,7 @@
     scene.add(ground);
   }
 
-  // Create building with windows that may have light
+  // Create building with windows on all sides
   function createBuilding(x, z, width, height, depth) {
     const buildingGeometry = new THREE.BoxGeometry(width, height, depth);
     const buildingMaterial = new THREE.MeshStandardMaterial({ color: 0x8B8B8B });
@@ -68,22 +68,56 @@
     building.receiveShadow = true;
     scene.add(building);
 
-    // Add windows with some having lights
+    // Add windows with some having lights, on all sides
     const windowGeometry = new THREE.PlaneGeometry(1, 2);
     const windowMaterial = new THREE.MeshBasicMaterial({ color: 0x87CEEB, transparent: true, opacity: 0.7 });
+    
+    // Add windows on all four sides
     for (let i = -width / 2 + 1; i < width / 2; i += 3) {
       for (let j = 0; j < height; j += 3) {
-        const windowMesh = new THREE.Mesh(windowGeometry, windowMaterial);
-        windowMesh.position.set(x + i, j, z + depth / 2 + 0.1);
-        scene.add(windowMesh);
-
-        // Randomly decide to light up some windows
-        if (Math.random() > 0.7) {
-          const litWindowMaterial = new THREE.MeshBasicMaterial({ color: 0xFFFF00, transparent: true, opacity: 0.5 });
-          windowMesh.material = litWindowMaterial;
-        }
+        // Front side
+        createWindow(x + i, j, z + depth / 2 + 0.1);
+        // Back side
+        createWindow(x + i, j, z - depth / 2 - 0.1);
+        // Left side
+        createWindow(x - width / 2 - 0.1, j, z + i);
+        // Right side
+        createWindow(x + width / 2 + 0.1, j, z + i);
       }
     }
+
+    function createWindow(xPos, yPos, zPos) {
+      const windowMesh = new THREE.Mesh(windowGeometry, windowMaterial);
+      windowMesh.position.set(xPos, yPos, zPos);
+      scene.add(windowMesh);
+
+      // Randomly decide to light up some windows
+      if (Math.random() > 0.7) {
+        const litWindowMaterial = new THREE.MeshBasicMaterial({ color: 0xFFFF00, transparent: true, opacity: 0.5 });
+        windowMesh.material = litWindowMaterial;
+      }
+    }
+  }
+
+  // Create Roche Towers (as an example of iconic Basel architecture)
+  function createRocheTowers(x, z) {
+    const towerMaterial = new THREE.MeshStandardMaterial({ color: 0xC0C0C0 });
+    
+    // Main building (Roche Tower 1)
+    const towerGeometry = new THREE.CylinderGeometry(5, 5, 100, 32);
+    const tower1 = new THREE.Mesh(towerGeometry, towerMaterial);
+    tower1.position.set(x, 50, z);
+    tower1.castShadow = true;
+    tower1.receiveShadow = true;
+    scene.add(tower1);
+
+    // Secondary building (Roche Tower 2)
+    const tower2Geometry = new THREE.CylinderGeometry(4, 4, 80, 32);
+    const tower2 = new THREE.Mesh(tower2Geometry, towerMaterial);
+    tower2.position.set(x + 15, 40, z + 10);
+    tower2.castShadow = true;
+    tower2.receiveShadow = true;
+    scene.add(tower2);
   }
 
   // Create trees to simulate city parks
@@ -103,40 +137,6 @@
     foliage.castShadow = true;
     foliage.receiveShadow = true;
     scene.add(foliage);
-  }
-
-  // Create cars with movement
-  const cars = [];
-  function createCar(x, z) {
-    const carGeometry = new THREE.BoxGeometry(3, 2, 6);
-    const carMaterial = new THREE.MeshStandardMaterial({ color: Math.random() * 0xffffff });
-    const car = new THREE.Mesh(carGeometry, carMaterial);
-    car.position.set(x, 1, z);
-    car.castShadow = true;
-    cars.push(car);
-    scene.add(car);
-  }
-
-  function moveCars() {
-    cars.forEach(car => {
-      car.position.x += 0.2; // Moves the car along x-axis
-      if (car.position.x > 100) car.position.x = -100; // Reset position for continuous loop
-    });
-  }
-
-  // Create simple people models
-  function createPerson(x, z) {
-    const bodyGeometry = new THREE.CylinderGeometry(0.5, 0.5, 3);
-    const bodyMaterial = new THREE.MeshStandardMaterial({ color: 0xffd700 });
-    const body = new THREE.Mesh(bodyGeometry, bodyMaterial);
-    body.position.set(x, 1.5, z);
-    scene.add(body);
-
-    const headGeometry = new THREE.SphereGeometry(0.5);
-    const headMaterial = new THREE.MeshStandardMaterial({ color: 0xffe4b5 });
-    const head = new THREE.Mesh(headGeometry, headMaterial);
-    head.position.set(x, 3.5, z);
-    scene.add(head);
   }
 
   // Create a simple park with benches
@@ -163,11 +163,12 @@
     const height = Math.random() * 30 + 20;
     const depth = Math.random() * 10 + 10;
     createBuilding(Math.random() * 100 - 50, Math.random() * 100 - 50, width, height, depth);
-    createCar(Math.random() * 100 - 50, Math.random() * 100 - 50);
-    createPerson(Math.random() * 100 - 50, Math.random() * 100 - 50);
   }
 
-  // Adding Fog to mimic the San Francisco atmosphere
+  // Adding Roche Towers
+  createRocheTowers(50, 50);
+
+  // Adding Fog to mimic the Swiss atmosphere
   scene.fog = new THREE.FogExp2(0x87CEEB, 0.01);
 
   // Resize handler for responsiveness
@@ -180,7 +181,6 @@
   // Animation loop
   function animate() {
     requestAnimationFrame(animate);
-    moveCars(); // Move cars in the scene
     controls.update();
     renderer.render(scene, camera);
   }
