@@ -3,45 +3,32 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Solar System with Interactive Controls</title>
+  <title>Solar System Interactive</title>
   <style>
     body, html {
       margin: 0;
       padding: 0;
       height: 100%;
       overflow: hidden;
-      background: linear-gradient(120deg, #0f2027, #203a43, #2c5364);
+      background: #1a1a1a;
+      font-family: Arial, sans-serif;
     }
+
     canvas {
       display: block;
     }
-    #controls {
+
+    #menu {
       position: absolute;
       top: 10px;
       left: 10px;
-      z-index: 10;
-      font-family: Arial, sans-serif;
-    }
-    button {
-      margin: 5px;
-      padding: 10px;
-      background-color: #444;
-      color: white;
-      border: none;
-      cursor: pointer;
-    }
-    button:hover {
-      background-color: #666;
-    }
-    #menu {
-      position: fixed;
-      top: 10px;
-      left: 10px;
-      z-index: 10;
+      z-index: 100;
       cursor: pointer;
       font-size: 24px;
       color: white;
+      font-weight: bold;
     }
+
     #menu-content {
       display: none;
       position: absolute;
@@ -51,14 +38,63 @@
       padding: 15px;
       border-radius: 5px;
     }
+
     #menu-content button {
       display: block;
+      background-color: #444;
+      margin: 5px 0;
+      padding: 10px;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+
+    #menu-content button:hover {
+      background-color: #666;
+    }
+
+    #planet-info {
+      position: absolute;
+      top: 10px;
+      left: 250px;
+      width: 300px;
+      color: white;
+      font-size: 16px;
+      background-color: rgba(0, 0, 0, 0.7);
+      padding: 15px;
+      border-radius: 5px;
+      display: none;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.8);
+    }
+
+    #planet-info h3 {
+      font-size: 18px;
+      margin-bottom: 10px;
+    }
+
+    #planet-info p {
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    #planet-info button {
+      background-color: #00bcd4;
+      color: white;
+      margin-top: 10px;
+      padding: 8px 15px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    #planet-info button:hover {
+      background-color: #0097a7;
     }
   </style>
 </head>
 <body>
 
-<div id="menu" onclick="toggleMenu()">☰</div>
+<div id="menu" onclick="toggleMenu()">☰ Menu</div>
 <div id="menu-content">
   <button onclick="zoomToPlanet('earth')">Zoom to Earth</button>
   <button onclick="zoomToPlanet('mars')">Zoom to Mars</button>
@@ -70,6 +106,12 @@
   <button onclick="changePlanetColor()">Change Planet Color</button>
   <button onclick="resetCamera()">Reset Camera</button>
   <button onclick="toggleTexture()">Toggle Textures</button>
+</div>
+
+<div id="planet-info">
+  <h3 id="planet-name">Planet Info</h3>
+  <p id="planet-details">Select a planet to view details.</p>
+  <button onclick="closeInfo()">Close Info</button>
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -113,19 +155,25 @@
   };
 
   const planetsData = [
-    { name: 'mercury', size: 3, color: colors.mercury, distance: 20, orbitSpeed: 1 / 88 },
-    { name: 'venus', size: 4, color: colors.venus, distance: 30, orbitSpeed: 1 / 225 },
-    { name: 'earth', size: 5, color: colors.earth, distance: 40, orbitSpeed: 1 / 365 },
-    { name: 'mars', size: 4, color: colors.mars, distance: 60, orbitSpeed: 1 / 687 },
-    { name: 'jupiter', size: 10, color: colors.jupiter, distance: 100, orbitSpeed: 1 / 4333 },
-    { name: 'saturn', size: 8, color: colors.saturn, distance: 150, orbitSpeed: 1 / 10759 },
-    { name: 'uranus', size: 7, color: colors.uranus, distance: 200, orbitSpeed: 1 / 30660 },
-    { name: 'neptune', size: 6, color: colors.neptune, distance: 250, orbitSpeed: 1 / 60150 },
-    { name: 'pluto', size: 4, color: colors.pluto, distance: 300, orbitSpeed: 1 / 90520 }
+    { name: 'mercury', size: 3, color: colors.mercury, distance: 20, orbitSpeed: 1 / 88, info: "Mercury is the closest planet to the Sun." },
+    { name: 'venus', size: 4, color: colors.venus, distance: 30, orbitSpeed: 1 / 225, info: "Venus is the hottest planet in our solar system." },
+    { name: 'earth', size: 5, color: colors.earth, distance: 40, orbitSpeed: 1 / 365, info: "Earth is the only planet known to support life." },
+    { name: 'mars', size: 4, color: colors.mars, distance: 60, orbitSpeed: 1 / 687, info: "Mars is known as the Red Planet due to its iron oxide surface." },
+    { name: 'jupiter', size: 10, color: colors.jupiter, distance: 100, orbitSpeed: 1 / 4333, info: "Jupiter is the largest planet in the solar system." },
+    { name: 'saturn', size: 8, color: colors.saturn, distance: 150, orbitSpeed: 1 / 10759, info: "Saturn is famous for its beautiful rings." },
+    { name: 'uranus', size: 7, color: colors.uranus, distance: 200, orbitSpeed: 1 / 30660, info: "Uranus has a unique sideways rotation." },
+    { name: 'neptune', size: 6, color: colors.neptune, distance: 250, orbitSpeed: 1 / 60150, info: "Neptune is the most distant planet in our solar system." },
+    { name: 'pluto', size: 4, color: colors.pluto, distance: 300, orbitSpeed: 1 / 90520, info: "Pluto is classified as a dwarf planet." }
   ];
 
   const planets = [];
   const orbits = [];
+
+  // Add Sun
+  const sunGeometry = new THREE.SphereGeometry(15, 32, 32);
+  const sunMaterial = new THREE.MeshBasicMaterial({ color: colors.sun });
+  const sun = new THREE.Mesh(sunGeometry, sunMaterial);
+  scene.add(sun);
 
   planetsData.forEach(data => {
     const planetGeometry = new THREE.SphereGeometry(data.size, 32, 32);
@@ -134,6 +182,8 @@
     planet.position.x = data.distance;
     planet.orbitSpeed = data.orbitSpeed;
     planet.castShadow = true;
+    planet.name = data.name;
+    planet.userData = data;  // Store planet info in the mesh
     scene.add(planet);
 
     planets.push(planet);
@@ -146,65 +196,44 @@
     orbits.push(orbit);
   });
 
-  let currentZoomPlanet = null;
   let planetSpeed = 1.0;
   let shadowsEnabled = true;
   let orbitsEnabled = true;
   let texturesEnabled = true;
 
-  function zoomToPlanet(planetName) {
-    const planet = planets.find(p => p.name === planetName);
-    if (planet) {
-      controls.target.set(planet.position.x, planet.position.y, planet.position.z);
-      camera.position.set(planet.position.x, planet.position.y + 10, planet.position.z + 30);
-    }
-  }
-
-  function increasePlanetSpeed() {
-    planetSpeed *= 1.1;
-  }
-
-  function decreasePlanetSpeed() {
-    planetSpeed *= 0.9;
-  }
-
-  function toggleShadows() {
-    shadowsEnabled = !shadowsEnabled;
-    planets.forEach(planet => planet.castShadow = shadowsEnabled);
-  }
-
-  function toggleOrbits() {
-    orbitsEnabled = !orbitsEnabled;
-    orbits.forEach(orbit => orbit.visible = orbitsEnabled);
-  }
-
-  function changePlanetColor() {
-    planets.forEach(planet => {
-      planet.material.color.setHex(Math.random() * 0xffffff);
-    });
-  }
-
-  function resetCamera() {
-    camera.position.set(0, 30, 150);
-    controls.target.set(0, 0, 0);
-  }
-
-  function toggleTexture() {
-    texturesEnabled = !texturesEnabled;
-    planets.forEach(planet => {
-      if (texturesEnabled) {
-        planet.material.color.setHex(colors[planet.name]);
-      } else {
-        planet.material.color.setHex(Math.random() * 0xffffff);
-      }
-    });
-  }
-
+  // Menu toggle
   function toggleMenu() {
     const menuContent = document.getElementById("menu-content");
     menuContent.style.display = menuContent.style.display === "none" ? "block" : "none";
   }
 
+  // Display planet info
+  function updatePlanetInfo(planetName) {
+    const planet = planets.find(p => p.name === planetName);
+    if (planet) {
+      const planetData = planet.userData;
+      document.getElementById('planet-info').style.display = 'block';
+      document.getElementById('planet-name').innerText = planetData.name.charAt(0).toUpperCase() + planetData.name.slice(1);
+      document.getElementById('planet-details').innerText = planetData.info;
+    }
+  }
+
+  // Close planet info
+  function closeInfo() {
+    document.getElementById('planet-info').style.display = 'none';
+  }
+
+  // Zoom to planet
+  function zoomToPlanet(planetName) {
+    const planet = planets.find(p => p.name === planetName);
+    if (planet) {
+      controls.target.set(planet.position.x, planet.position.y, planet.position.z);
+      camera.position.set(planet.position.x, planet.position.y + 10, planet.position.z + 30);
+      updatePlanetInfo(planetName);
+    }
+  }
+
+  // Animation loop
   function animate() {
     requestAnimationFrame(animate);
 
