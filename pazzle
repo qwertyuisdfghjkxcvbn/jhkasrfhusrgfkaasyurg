@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Пазл з Підйомом Плиток</title>
+    <style>
+        #grid {
+            display: grid;
+            grid-template-columns: repeat(5, 70px);
+            grid-template-rows: repeat(7, 70px);
+            gap: 3px;
+            margin: 20px auto;
+            width: max-content;
+            perspective: 1000px;
+        }
+
+        .tile {
+            width: 70px;
+            height: 70px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            color: white;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+            cursor: pointer;
+            transition: transform 0.1s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.1s ease;
+            touch-action: none;
+            transform-style: preserve-3d;
+            border-radius: 6px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .tile.lifted {
+            box-shadow: 0px 15px 20px rgba(0, 0, 0, 0.2);
+            transform: scale(1.1);
+            z-index: 10;
+        }
+
+        .fixed {
+            pointer-events: none;
+            cursor: default;
+            opacity: 0.8;
+        }
+    </style>
+</head>
+<body>
+    <h2>Пазл з Підйомом Плиток</h2>
+    <div id="grid"></div>
+
+    <script>
+        const rows = 7;
+        const cols = 5;
+        const gridElement = document.getElementById('grid');
+        let tiles = [];
+        let draggedTile = null;
+        let targetTile = null;
+
+        const baseColors = [
+            { r: 70, g: 10, b: 10 },
+            { r: 10, g: 70, b: 10 },
+            { r: 10, g: 10, b: 70 },
+            { r: 70, g: 70, b: 10 },
+            { r: 70, g: 10, b: 70 }
+        ];
+
+        function createGradientTile(row, col) {
+            const baseColor = baseColors[col];
+            const colorVariance = 120;
+
+            const red = baseColor.r + Math.floor(colorVariance * (row / rows));
+            const green = baseColor.g + Math.floor(colorVariance * (row / rows));
+            const blue = baseColor.b + Math.floor(colorVariance * (row / rows));
+
+            const tile = document.createElement('div');
+            tile.classList.add('tile');
+            tile.style.background = `rgb(${red}, ${green}, ${blue})`;
+            tile.dataset.index = row * cols + col;
+
+            if (row === 0 || row === rows - 1) {
+                tile.classList.add('fixed');
+            } else {
+                tile.addEventListener('touchstart', handleTouchStart);
+                tile.addEventListener('touchend', handleTouchEnd);
+            }
+
+            return tile;
+        }
+
+        function initializeTiles() {
+            for (let row = 0; row < rows; row++) {
+                for (let col = 0; col < cols; col++) {
+                    const tile = createGradientTile(row, col);
+                    tiles.push(tile);
+                }
+            }
+
+            tiles.forEach(tile => gridElement.appendChild(tile));
+
+            setTimeout(() => {
+                shuffleTiles();
+                updateGrid();
+            }, 1000);
+        }
+
+        function shuffleTiles() {
+            const movableTiles = tiles.filter(tile => !tile.classList.contains('fixed'));
+            for (let i = movableTiles.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [movableTiles[i], movableTiles[j]] = [movableTiles[j], movableTiles[i]];
+            }
+
+            let index = 0;
+            tiles.forEach((tile, i) => {
+                if (!tile.classList.contains('fixed')) {
+                    tiles[i] = movableTiles[index++];
+                }
+            });
+        }
+
+        function updateGrid() {
+            gridElement.innerHTML = '';
+            tiles.forEach(tile => gridElement.appendChild(tile));
+        }
+
+        function handleTouchStart(e) {
+            draggedTile = e.target;
+            draggedTile.classList.add('lifted');
+        }
+
+        function handleTouchEnd(e) {
+            const touch = e.changedTouches[0];
+            targetTile = document.elementFromPoint(touch.clientX, touch.clientY);
+
+            if (targetTile && targetTile.classList.contains('tile') && !targetTile.classList.contains('fixed') && targetTile !== draggedTile) {
+                const draggedIndex = tiles.indexOf(draggedTile);
+                const targetIndex = tiles.indexOf(targetTile);
+
+                tiles[draggedIndex] = targetTile;
+                tiles[targetIndex] = draggedTile;
+
+                updateGrid();
+                checkWin();
+            }
+
+            draggedTile.classList.remove('lifted');
+            draggedTile = null;
+        }
+
+        function checkWin() {
+            const isSolved = tiles.every((tile, index) => parseInt(tile.dataset.index) === index);
+            if (isSolved) {
+                setTimeout(() => alert('Вітаємо! Ви зібрали пазл!'), 100);
+            }
+        }
+
+        initializeTiles();
+    </script>
+</body>
+</html>
