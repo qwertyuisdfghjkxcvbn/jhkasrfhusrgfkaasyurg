@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Java Code Explanation - NumberGuessingGame.java</title>
+    <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; margin: 20px; background-color: white ;}
+        h1, h2 { color: #2c3e50; }
+        h1 { font-size: 24px; }
+        h2 { font-size: 20px; margin-top: 20px; }
+        pre { background-color: #ffffff; border: 1px solid #dcdcdc; padding: 10px; border-radius: 5px; overflow: auto; }
+        .question { color: #8e44ad; }
+        .answer { color: #16a085; }
+        .code { font-weight: bold; color: #2980b9; }
+    </style>
+</head>
+<body>
+    <h1>Java Code Explanation - NumberGuessingGame.java</h1>
+    
+    <h2>Code:</h2>
+    <pre>
+package Pet;
+
+import java.util.Random;
+import java.util.Scanner;
+
+public class NumberGuessingGame implements MiniGame {
+    @Override
+    public int play() {
+        Random random = new Random();
+        Scanner scanner = new Scanner(System.in);
+        int numberToGuess = random.nextInt(100) + 1;
+        int attempts = 7;
+
+        for (int i = 1; i <= attempts; i++) {
+            System.out.println("Attempt " + i + ": Enter your guess (0-100):");
+            int guess = scanner.nextInt();
+
+            if (guess == numberToGuess) {
+                return 8 - i;
+            } else if (guess < numberToGuess) {
+                System.out.println("Too low!");
+            } else {
+                System.out.println("Too high!");
+            }
+        }
+        return 0;
+    }
+}
+    </pre>
+    
+    <h2>Line-by-Line Explanation</h2>
+    
+    <p><span class="code">package Pet;</span> - Defines the package `Pet`, which organizes the related classes for better structure.</p>
+    <p><span class="code">import java.util.Random;</span> - Imports the `Random` class to generate a random number for the player to guess.</p>
+    <p><span class="code">import java.util.Scanner;</span> - Imports the `Scanner` class to read user input (the player's guesses) from the console.</p>
+    <p><span class="code">public class NumberGuessingGame implements MiniGame {</span> - Declares the `NumberGuessingGame` class which implements the `MiniGame` interface. This class represents a mini-game where the player tries to guess a random number.</p>
+    
+    <p><span class="code">public int play() {</span> - The main method of the game. It is responsible for handling the logic of the number guessing game.</p>
+    
+    <p><span class="code">Random random = new Random();</span> - Creates an instance of the `Random` class to generate a random number.</p>
+    <p><span class="code">Scanner scanner = new Scanner(System.in);</span> - Creates a `Scanner` object to capture the player's input.</p>
+    <p><span class="code">int numberToGuess = random.nextInt(100) + 1;</span> - Generates a random number between 1 and 100, which the player needs to guess.</p>
+    <p><span class="code">int attempts = 7;</span> - Sets the number of attempts the player has to guess the correct number.</p>
+    
+    <p><span class="code">for (int i = 1; i <= attempts; i++) {</span> - Starts a loop that will run for a maximum of 7 attempts. The player gets 7 guesses to try and find the correct number.</p>
+    
+    <p><span class="code">System.out.println("Attempt " + i + ": Enter your guess (0-100):");</span> - Prompts the player to enter a guess and informs them of the current attempt number.</p>
+    <p><span class="code">int guess = scanner.nextInt();</span> - Reads the player's guess from the console.</p>
+    
+    <p><span class="code">if (guess == numberToGuess) {</span> - Checks if the player's guess is correct. If true, the player has won.</p>
+    <p><span class="code">return 8 - i;</span> - If the guess is correct, it returns a reward based on the number of attempts left (8 minus the current attempt number). A lower number of attempts results in a higher reward.</p>
+    
+    <p><span class="code">else if (guess < numberToGuess) {</span> - If the guess is too low, the player is informed.</p>
+    <p><span class="code">System.out.println("Too low!");</span> - Displays a message that the guess is too low.</p>
+    
+    <p><span class="code">else {</span> - If the guess is too high, the player is informed.</p>
+    <p><span class="code">System.out.println("Too high!");</span> - Displays a message that the guess is too high.</p>
+    
+    <p><span class="code">return 0;</span> - If the player does not guess the correct number within the allowed attempts, the game returns 0, indicating that they did not win.</p>
+    
+    <h2>Questions and Answers</h2>
+    
+    <p><span class="question">Q1: What is the purpose of the `NumberGuessingGame` class?</span></p>
+    <p><span class="answer">A1: The `NumberGuessingGame` class represents a mini-game in which the player attempts to guess a randomly generated number within a set number of attempts (7 attempts in this case).</span></p>
+    
+    <p><span class="question">Q2: How does the game generate a random number for the player to guess?</span></p>
+    <p><span class="answer">A2: The game uses the `Random` class to generate a random number between 1 and 100 using `random.nextInt(100) + 1`.</span></p>
+    
+    <p><span class="question">Q3: What does the `play()` method return if the player guesses the number correctly on the first attempt?</span></p>
+    <p><span class="answer">A3: If the player guesses correctly on the first attempt, the `play()` method returns 7 (since 8 - 1 = 7), which is the highest possible reward.</span></p>
+    
+    <p><span class="question">Q4: How does the game respond when the player's guess is too low?</span></p>
+    <p><span class="answer">A4: If the player's guess is too low, the game prints "Too low!" to indicate that the player needs to guess a higher number.</span></p>
+    
+    <p><span class="question">Q5: What happens if the player exhausts all 7 attempts without guessing the correct number?</span></p>
+    <p><span class="answer">A5: If the player does not guess the correct number within 7 attempts, the game returns 0, indicating no reward was earned.</span></p>
+    
+    <p><span class="question">Q6: How is the number of attempts the player has determined in the game?</span></p>
+    <p><span class="answer">A6: The number of attempts is set to 7 by the line `int attempts = 7;`, which is fixed throughout the game.</span></p>
+    
+    <p><span class="question">Q7: What would happen if the player enters an invalid input (e.g., a non-numeric input)?</span></p>
+    <p><span class="answer">A7: The current implementation does not handle invalid input. If the player enters a non-numeric value, the program will throw an `InputMismatchException` and terminate.</span></p>
+    
+    <p><span class="question">Q8: What role does the `Scanner` object play in this game?</span></p>
+    <p><span class="answer">A8: The `Scanner` object is used to read the player's input from the console, specifically their guesses during each attempt.</span></p>
+    
+    <p><span class="question">Q9: Why does the method return `8 - i` when the player guesses the number correctly?</span></p>
+    <p><span class="answer">A9: The method returns `8 - i` to reward the player based on how quickly they guessed the correct number. The fewer attempts used, the higher the reward.</span></p>
+    
+    <p><span class="question">Q10: Can the number of attempts be changed in the game?</span></p>
+    <p><span class="answer">A10: Yes, the number of attempts can be changed by modifying the value of `int attempts = 7;` to any other integer.</span></p>
+</body>
+</html>
