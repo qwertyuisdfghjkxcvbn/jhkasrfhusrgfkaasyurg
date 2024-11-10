@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Java Code Explanation - GameManager.java</title>
+    <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; margin: 20px; background-color: white ;}
+        h1, h2 { color: #2c3e50; }
+        h1 { font-size: 24px; }
+        h2 { font-size: 20px; margin-top: 20px; }
+        pre { background-color: #ffffff; border: 1px solid #dcdcdc; padding: 10px; border-radius: 5px; overflow: auto; }
+        .question { color: #8e44ad; }
+        .answer { color: #16a085; }
+        .code { font-weight: bold; color: #2980b9; }
+    </style>
+</head>
+<body>
+    <h1>Java Code Explanation - GameManager.java</h1>
+    
+    <h2>Code:</h2>
+    <pre>
+package Pet;
+
+import java.util.Scanner;
+
+public class GameManager {
+    private Player player;
+    private int turnCount;
+
+    public GameManager(Player player) {
+        this.player = player;
+        this.turnCount = 0;
+    }
+
+    public void startGame() {
+        Scanner scanner = new Scanner(System.in);
+        boolean gameRunning = true;
+
+        while (gameRunning) {
+            turnCount++;
+            System.out.println("Turn " + turnCount);
+            System.out.println("1. Create a pet");
+            System.out.println("2. Feed a pet");
+            System.out.println("3. Play with a pet");
+            System.out.println("4. Let a pet rest");
+            System.out.println("5. Play a mini-game");
+            System.out.println("6. Display status");
+            System.out.println("7. Exit game");
+
+            int choice = scanner.nextInt();
+            scanner.nextLine();
+
+            switch (choice) {
+                case 1 -> createPet();
+                case 2 -> feedPet();
+                case 3 -> playWithPet();
+                case 4 -> restPet();
+                case 5 -> playMiniGame();
+                case 6 -> System.out.println(player.getStatus());
+                case 7 -> gameRunning = false;
+                default -> System.out.println("Invalid choice.");
+            }
+            updatePetsStatus();
+            checkGameOver();
+        }
+    }
+
+    private void createPet() {
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Enter pet name:");
+        String name = scanner.nextLine();
+        player.addPet(new Pet(name, 100, 50, 50));
+    }
+
+    private void feedPet() {
+        System.out.println(player.getStatus());
+        System.out.println("Choose a pet to feed (enter the pet number):");
+        Scanner scanner = new Scanner(System.in);
+        int petIndex = scanner.nextInt();
+
+        if (player.feedPet(petIndex)) {
+            System.out.println("Pet has been fed.");
+        } else {
+            System.out.println("Insufficient food or invalid choice.");
+        }
+    }
+
+    private void playWithPet() {
+        System.out.println(player.getStatus());
+        System.out.println("Choose a pet to play with (enter the pet number):");
+        Scanner scanner = new Scanner(System.in);
+        int petIndex = scanner.nextInt();
+        player.playWithPet(petIndex);
+        System.out.println("You played with the pet.");
+    }
+
+    private void restPet() {
+        System.out.println(player.getStatus());
+        System.out.println("Choose a pet to let rest (enter the pet number):");
+        Scanner scanner = new Scanner(System.in);
+        int petIndex = scanner.nextInt();
+        player.restPet(petIndex);
+        System.out.println("The pet is resting.");
+    }
+
+    private void playMiniGame() {
+        System.out.println("Choose a mini-game:" +  "\n1. Number Guessing" + "\n2. Word Scramble");
+        Scanner scanner = new Scanner(System.in);
+        int gameChoice = scanner.nextInt();
+        MiniGame game = switch (gameChoice) {
+            case 1 -> new NumberGuessingGame();
+            case 2 -> new WordScrambleGame();
+            default -> null;
+        };
+
+        if (game != null) {
+            int reward = game.play();
+            player.addFood(reward);
+            System.out.println("You earned " + reward + " units of food!");
+        } else {
+            System.out.println("Invalid game choice.");
+        }
+    }
+
+    private void updatePetsStatus() {
+        player.getPets().forEach(Pet::updateStatus);
+    }
+
+    private void checkGameOver() {
+        if (player.getFoodSupply() <= 0 && player.getPets().stream().allMatch(p -> p.getHunger() > 80)) {
+            System.out.println("Game Over! All pets are starving and you've run out of food.");
+            System.exit(0);
+        }
+    }
+}
+    </pre>
+    
+    <h2>Line-by-Line Explanation</h2>
+    
+    <p><span class="code">package Pet;</span> - Defines the package `Pet`, grouping related classes for easier management and organization.</p>
+    <p><span class="code">import java.util.Scanner;</span> - Imports the Scanner class to read user input from the console.</p>
+    <p><span class="code">public class GameManager {</span> - Declares the `GameManager` class, which manages the gameplay, player actions, and pet interactions.</p>
+    
+    <p><span class="code">private Player player;</span> - Declares a `player` object, which holds the player's information, including their pets and food supply.</p>
+    <p><span class="code">private int turnCount;</span> - A variable to keep track of the number of turns that have passed in the game.</p>
+    
+    <p><span class="code">public GameManager(Player player) {</span> - The constructor that initializes the `player` object and sets the initial turn count to 0.</p>
+    
+    <p><span class="code">public void startGame() {</span> - Starts the game and runs a loop, displaying options for the player to interact with their pets and play mini-games.</p>
+    
+    <p><span class="code">private void createPet() {</span> - Prompts the player for a pet name and creates a new pet with initial stats.</p>
+    <p><span class="code">private void feedPet() {</span> - Lets the player feed a pet by selecting its number from the list of pets.</p>
+    <p><span class="code">private void playWithPet() {</span> - Allows the player to play with a selected pet, which increases its happiness, decreases its energy, and increases hunger.</p>
+    <p><span class="code">private void restPet() {</span> - Lets the player rest a pet, which restores its energy and increases hunger.</p>
+    <p><span class="code">private void playMiniGame() {</span> - Starts a mini-game where the player can choose between number guessing or word scramble to earn food.</p>
+    <p><span class="code">private void updatePetsStatus() {</span> - Updates the status of each pet, adjusting their happiness, hunger, and energy based on their actions.</p>
+    <p><span class="code">private void checkGameOver() {</span> - Checks whether the game is over if the player has run out of food and all pets are starving, ending the game if true.</p>
+    
+    <h2>Questions and Answers</h2>
+    
+    <p><span class="question">Q1: What is the purpose of the `GameManager` class in this code?</span></p>
+    <p><span class="answer">A1: The `GameManager` class is responsible for managing the game flow, interacting with the player, and handling the pets' actions such as feeding, playing, and resting.</span></p>
+    
+    <p><span class="question">Q2: What happens when the player selects the 'create pet' option in the game?</span></p>
+    <p><span class="answer">A2: The player is prompted to enter a pet name, and a new `Pet` object is created and added to the player's collection with initial stats of 100 health, 50 hunger, and 50 happiness.</span></p>
+    
+    <p><span class="question">Q3: How does the program allow the player to feed a pet?</span></p>
+    <p><span class="answer">A3: The player selects a pet by number, and if there is enough food, the pet's hunger level is reduced, and the pet's health or happiness might increase. If there's insufficient food, an error message is shown.</span></p>
+    
+    <p><span class="question">Q4: What happens when a player plays with a pet?</span></p>
+    <p><span class="answer">A4: The player selects a pet to play with. Playing with the pet increases its happiness but also decreases its energy and increases its hunger.</span></p>
+    
+    <p><span class="question">Q5: What effect does letting a pet rest have in the game?</span></p>
+    <p><span class="answer">A5: Resting a pet restores its energy and decreases its hunger, making it more likely to perform better in future interactions.</span></p>
+    
+    <p><span class="question">Q6: How are mini-games integrated into the game, and what do they provide as rewards?</span></p>
+    <p><span class="answer">A6: Mini-games (like Number Guessing or Word Scramble) provide an interactive way for the player to earn food, which is added to their food supply upon winning.</span></p>
+    
+    <p><span class="question">Q7: What happens if the player runs out of food in the game?</span></p>
+    <p><span class="answer">A7: If the player runs out of food and all their pets have a hunger level above 80, the game ends, indicating a "Game Over" situation.</span></p>
+    
+    <p><span class="question">Q8: Explain the role of the `turnCount` variable in this game.</span></p>
+    <p><span class="answer">A8: The `turnCount` variable keeps track of the number of turns the game has taken, incrementing each time the game loop runs.</span></p>
+    
+    <p><span class="question">Q9: What does the `updatePetsStatus()` method do in the game?</span></p>
+    <p><span class="answer">A9: The `updatePetsStatus()` method updates the status of all pets, likely adjusting their hunger, happiness, and energy levels based on the actions they've taken.</span></p>
+    
+    <p><span class="question">Q10: Why does the `checkGameOver()` method call `System.exit(0)` when the game is over?</span></p>
+    <p><span class="answer">A10: The `checkGameOver()` method checks if the player has run out of food and all pets are starving. If these conditions are met, it ends the game by calling `System.exit(0)`, which halts the program.</span></p>
+</body>
+</html>
