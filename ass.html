@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="manifest" href="/site.webmanifest">
+  <link rel="manifest" href="/manifest.json">
+  <title>Adiasta</title>
+  <style>
+    * { 
+      box-sizing: border-box; 
+      margin: 0; 
+      padding: 0; 
+    }
+    html, body {
+      height: 100%; 
+      width: 100%;
+      font-family: "Helvetica Neue", Arial, sans-serif;
+      display: flex; 
+      justify-content: center; 
+      align-items: center;
+      text-align: center; 
+      background-color: #f9f9f9; 
+      color: #333;
+      transition: background-color 0.3s, color 0.3s;
+    }
+    .container {
+      max-width: 400px;
+      padding: 40px;
+      border-radius: 8px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      background: #fff;
+      width: 90%;
+    }
+    .button-container {
+      display: flex; 
+      flex-direction: column; 
+      gap: 15px;
+    }
+    .button {
+      padding: 16px; 
+      font-size: 1.0rem; 
+      font-weight: 600;
+      text-decoration: none;
+      border: 1px solid #007bff; 
+      display: inline-block;
+      color: #007bff; 
+      background-color: transparent; 
+      border-radius: 5px;
+      letter-spacing: 0.05rem; 
+      transition: background-color 0.3s, color 0.3s, transform 0.2s;
+    }
+    .button:hover {
+      background-color: #007bff; 
+      color: #fff; 
+      transform: scale(1.05);
+    }
+    @media (prefers-color-scheme: dark) {
+      body {
+        background-color: #222; 
+        color: #ddd;
+      }
+      .container {
+        background-color: #333;
+        box-shadow: none;
+      }
+      .button {
+        border-color: #fff;
+        color: #fff;
+      }
+      .button:hover {
+        background-color: #444;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="button-container">
+      <a href="https://adiasta.com/java01" class="button">Main</a>
+      <a href="https://adiasta.com/java02" class="button">Pet</a>
+      <a href="https://adiasta.com/java03" class="button">GameMnager</a>
+       <a href="https://adiasta.com/java04" class="button">NumberGame</a>
+        <a href="https://adiasta.com/java04" class="button">MiniGames</a>
+       <a href="https://adiasta.com/java05" class="button">Player</a>
+      
+      
+    </div>
+  </div>
+
+  <script>
+    function applyTheme() {
+      const prefersDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      document.body.classList.toggle('dark-mode', prefersDarkMode);
+      document.body.classList.toggle('light-mode', !prefersDarkMode);
+    }
+    applyTheme();
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', applyTheme);
+  </script>
+</body>
+</html>
