@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Java Code Explanation - Pet.java</title>
+    <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; margin: 20px; background-color: white ;}
+        h1, h2 { color: #2c3e50; }
+        h1 { font-size: 24px; }
+        h2 { font-size: 20px; margin-top: 20px; }
+        pre { background-color: #ffffff; border: 1px solid #dcdcdc; padding: 10px; border-radius: 5px; overflow: auto; }
+        .question { color: #8e44ad; }
+        .answer { color: #16a085; }
+        .code { font-weight: bold; color: #2980b9; }
+    </style>
+</head>
+<body>
+    <h1>Java Code Explanation - Pet.java</h1>
+    
+    <h2>Code:</h2>
+    <pre>
+package Pet;
+
+public class Pet {
+    private static int nextId = 2;
+    private final int id;
+    private String name;
+    private int happiness;
+    private int hunger;
+    private int energy;
+
+    private static final int MAX_STAT = 100;
+    private static final int MIN_STAT = 0;
+
+    public Pet(String name, int happiness, int hunger, int energy) {
+        this.id = getNextId();
+        this.name = name;
+        setHappiness(happiness);
+        setHunger(hunger);
+        setEnergy(energy);
+    }
+
+    public static int getNextId() {
+        return nextId++;
+    }
+
+    public int getHappiness() {
+        return happiness;
+    }
+
+    private void setHappiness(int happiness) {
+        this.happiness = Math.max(MIN_STAT, Math.min(MAX_STAT, happiness));
+        printHappinessStatus();
+    }
+
+    public int getHunger() {
+        return hunger;
+    }
+
+    private void setHunger(int hunger) {
+        this.hunger = Math.max(MIN_STAT, Math.min(MAX_STAT, hunger));
+        printHungerStatus();
+    }
+
+    public int getEnergy() {
+        return energy;
+    }
+
+    private void setEnergy(int energy) {
+        this.energy = Math.max(MIN_STAT, Math.min(MAX_STAT, energy));
+        printEnergyStatus();
+    }
+
+    public void updateStatus() {
+        setHappiness(happiness - 3);
+        setHunger(hunger + 5);
+        setEnergy(energy - 2);
+    }
+
+    public void feed() {
+        setHappiness(happiness + 10);
+        setHunger(hunger - 20);
+    }
+
+    public void play() {
+        setHappiness(happiness + 15);
+        setHunger(hunger + 10);
+        setEnergy(energy - 15);
+    }
+
+    public void rest() {
+        setHunger(hunger + 5);
+        setEnergy(energy + 20);
+    }
+
+    public String getStatus() {
+        return "Pet: " + name + " | Happiness: " + happiness + " | Hunger: " + hunger + " | Energy: " + energy;
+    }
+
+    private void printHappinessStatus() {
+        if (happiness == 100) System.out.println("Happiness Status: Very happy");
+        else if (happiness > 75) System.out.println("Happiness Status: Happy");
+        else if (happiness > 50) System.out.println("Happiness Status: Little happy");
+        else if (happiness > 25) System.out.println("Happiness Status: Little sad");
+        else if (happiness > 0) System.out.println("Happiness Status: Sad");
+        else System.out.println("Happiness Status: Very sad");
+    }
+
+    private void printHungerStatus() {
+        if (hunger == 100) System.out.println("Hunger Status: Starving");
+        else if (hunger > 75) System.out.println("Hunger Status: Very hungry");
+        else if (hunger > 50) System.out.println("Hunger Status: Hungry");
+        else if (hunger > 25) System.out.println("Hunger Status: Little hungry");
+        else if (hunger > 0) System.out.println("Hunger Status: Fine");
+        else System.out.println("Hunger Status: Full");
+    }
+
+    private void printEnergyStatus() {
+        if (energy == 100) System.out.println("Energy Status: Full of energy");
+        else if (energy > 75) System.out.println("Energy Status: Very energized");
+        else if (energy > 50) System.out.println("Energy Status: Energized");
+        else if (energy > 25) System.out.println("Energy Status: Little tired");
+        else if (energy > 0) System.out.println("Energy Status: Out of energy");
+    }
+}
+    </pre>
+    
+    <h2>Line-by-Line Explanation</h2>
+    
+    <p><span class="code">package Pet;</span> - Defines the package `Pet`, grouping related classes for easier management and organization.</p>
+    <p><span class="code">public class Pet {</span> - Declares the `Pet` class, which represents a virtual pet with attributes and methods.</p>
+    
+    <p><span class="code">private static int nextId = 2;</span> - A static variable that keeps track of unique pet IDs, incremented with each new pet.</p>
+    <p><span class="code">private final int id;</span> - A unique identifier for each pet, assigned at creation and unchangeable (`final`).</p>
+    
+    <p><span class="code">private String name;</span> - Stores the pet’s name.</p>
+    <p><span class="code">private int happiness, hunger, energy;</span> - Attributes representing the pet’s current happiness, hunger, and energy levels.</p>
+    
+    <p><span class="code">private static final int MAX_STAT = 100;</span> - Defines the maximum limit for happiness, hunger, and energy.</p>
+    <p><span class="code">private static final int MIN_STAT = 0;</span> - Defines the minimum limit for happiness, hunger, and energy.</p>
+    
+    <p><span class="code">public Pet(String name, int happiness, int hunger, int energy)</span> - Constructor that initializes the pet’s ID, name, and stats.</p>
+    <p><span class="code">public static int getNextId()</span> - Generates a unique ID for each pet by incrementing `nextId`.</p>
+    
+    <p><span class="code">public int getHappiness()</span> - Getter method that returns the pet’s happiness level.</p>
+    <p><span class="code">private void setHappiness(int happiness)</span> - Setter for happiness, adjusting it within limits and calling `printHappinessStatus()`.</p>
+    
+    <p><span class="code">public void updateStatus()</span> - Reduces happiness, increases hunger, and decreases energy to simulate pet needs over time.</p>
+    <p><span class="code">public void feed()</span> - Increases happiness and decreases hunger when the pet is fed.</p>
+    
+    <p><span class="code">public void play()</span> - Increases happiness and hunger but decreases energy as the pet plays.</p>
+    <p><span class="code">public void rest()</span> - Increases hunger and energy as the pet rests.</p>
+    
+    <h2>Questions and Answers</h2>
+    
+    <p><span class="question">Q1: What does `nextId` do?</span></p>
+    <p><span class="answer">A1: `nextId` is a static variable that increments for each new pet, ensuring unique IDs.</span></p>
+    
+    <p><span class="question">Q2: Why is `id` declared `final`?</span></p>
+    <p><span class="answer">A2: `final` makes `id` unchangeable once assigned, ensuring each pet’s ID remains unique and constant.</span></p>
+    
+    <p><span class="question">Q3: What is the purpose of `MAX_STAT` and `MIN_STAT`?</span></p>
+    <p><span class="answer">A3: These constants set the bounds for happiness, hunger, and energy values.</span></p>
+    
+    <p><span class="question">Q4: Why do `setHappiness`, `setHunger`, and `setEnergy` use `Math.max` and `Math.min`?</span></p>
+    <p><span class="answer">A4: To keep stat values within 0 and 100, preventing values outside the allowed range.</span></p>
+    
+    <p><span class="question">Q5: What does `updateStatus` simulate?</span></p>
+    <p><span class="answer">A5: It reduces happiness, increases hunger, and decreases energy, simulating changes over time.</span></p>
+    
+    <p><span class="question">Q6: How does `feed()` affect the pet’s stats?</span></p>
+    <p><span class="answer">A6: It increases happiness by 10 and decreases hunger by 20, representing the pet being fed.</span></p>
+    
+    <p><span class="question">Q7: What happens in `play()`?</span></p>
+    <p><span class="answer">A7: Happiness increases by 15, hunger by 10, and energy decreases by 15 as the pet plays.</span></p>
+    
+    <p><span class="question">Q8: What is the purpose of `printHappinessStatus()`?</span></p>
+    <p><span class="answer">A8: It provides a description of the pet's happiness level based on its current value.</span></p>
+    
+    <p><span class="question">Q9: Why does `getNextId()` use `nextId++`?</span></p>
+    <p><span class="answer">A9: It returns the current `nextId` and then increments it for the next pet.</span></p>
+    
+    <p><span class="question">Q10: Why are happiness, hunger, and energy private?</span></p>
+    <p><span class="answer">A10: To control how these attributes are modified, preventing direct changes and allowing validation through methods.</span></p>
+
+</body>
+</html>
