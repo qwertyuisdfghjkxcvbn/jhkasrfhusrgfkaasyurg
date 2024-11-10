@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Java Code Explanation - Main.java</title>
+    <style>
+      body { background-color: white; }
+        body { font-family: Arial, sans-serif; line-height: 1.6; margin: 20px; }
+        h1, h2 { color: #2c3e50; }
+        h1 { font-size: 24px; }
+        h2 { font-size: 20px; margin-top: 20px; }
+        pre { background-color: white; border: 1px solid #dcdcdc; padding: 10px; border-radius: 5px; overflow: auto; }
+        .question { color: #8e44ad; }
+        .answer { color: #16a085; }
+        .code { font-weight: bold; color: #2980b9; }
+    </style>
+</head>
+<body>
+    <h1>Java Code Explanation - Main.java</h1>
+    
+    <h2>Code:</h2>
+    <pre>
+package Pet;
+
+import java.util.Scanner;
+
+public class Main {
+
+    public static void main(String[] args) {
+        
+        Scanner scanner = new Scanner(System.in);
+        
+        System.out.println("Enter your name:");
+        
+        String playerName = scanner.nextLine();
+        
+        Player player = new Player(playerName);
+        
+        GameManager gameManager = new GameManager(player);
+        
+        gameManager.startGame();
+    }
+}
+    </pre>
+    
+    <h2>Line-by-Line Explanation</h2>
+    
+    <p><span class="code">package Pet;</span> - Defines the package name `Pet`, which organizes classes into a specific namespace.</p>
+    <p><span class="code">import java.util.Scanner;</span> - Imports the Scanner class, allowing user input to be read from the console.</p>
+    
+    <p><span class="code">public class Main {</span> - Declares the `Main` class, which is public and can be accessed from any other package.</p>
+    
+    <p><span class="code">public static void main(String[] args) {</span> - Defines the `main` method, the entry point for the Java program. `public` makes it accessible, `static` allows it to run without creating an instance, and `String[] args` is an array for command-line arguments.</p>
+    
+    <p><span class="code">Scanner scanner = new Scanner(System.in);</span> - Creates a Scanner instance to read user input from the console.</p>
+    
+    <p><span class="code">System.out.println("Enter your name:");</span> - Prompts the user to enter their name.</p>
+    
+    <p><span class="code">String playerName = scanner.nextLine();</span> - Reads the user's input and stores it in the variable `playerName` as a `String`.</p>
+    
+    <p><span class="code">Player player = new Player(playerName);</span> - Creates an instance of the `Player` class with `playerName` as an argument, initializing the `player` object.</p>
+    
+    <p><span class="code">GameManager gameManager = new GameManager(player);</span> - Creates an instance of `GameManager` with `player` as a parameter, linking the player to the game management.</p>
+    
+    <p><span class="code">gameManager.startGame();</span> - Calls the `startGame` method from the `GameManager` object, initiating the game.</p>
+    
+    <h2>Questions and Answers</h2>
+    
+    <p><span class="question">Q1: Why is the `main` method static?</span></p>
+    <p><span class="answer">A1: The `static` keyword allows the main method to be called without creating an instance of the `Main` class, making it suitable as the program entry point.</span></p>
+    
+    <p><span class="question">Q2: What does the `Scanner` class do?</span></p>
+    <p><span class="answer">A2: The `Scanner` class reads input from various sources, in this case, `System.in` reads user input from the console.</span></p>
+    
+    <p><span class="question">Q3: Why do we use `System.out.println` here?</span></p>
+    <p><span class="answer">A3: `System.out.println` prints text to the console and moves to the next line, providing a user prompt.</span></p>
+    
+    <p><span class="question">Q4: What type of data does `scanner.nextLine()` return?</span></p>
+    <p><span class="answer">A4: `scanner.nextLine()` returns a `String`, capturing all characters input until the Enter key is pressed.</span></p>
+    
+    <p><span class="question">Q5: Why do we pass `playerName` to the `Player` constructor?</span></p>
+    <p><span class="answer">A5: This assigns the player’s name to the `Player` object, so it can be used throughout the game for reference.</span></p>
+    
+    <p><span class="question">Q6: What is the purpose of `GameManager`?</span></p>
+    <p><span class="answer">A6: `GameManager` manages the game flow, including player interactions and game logic.</span></p>
+    
+    <p><span class="question">Q7: Why is the `startGame()` method called here?</span></p>
+    <p><span class="answer">A7: Calling `startGame()` initiates the game, using the setup provided by `Player` and `GameManager` objects.</span></p>
+    
+    <p><span class="question">Q8: What would happen if we didn't close the Scanner?</span></p>
+    <p><span class="answer">A8: Not closing the Scanner can lead to resource leaks, although in small programs it may not be noticeable.</span></p>
+    
+    <p><span class="question">Q9: Can we have more than one `main` method in a Java program?</span></p>
+    <p><span class="answer">A9: Yes, multiple classes can each have their own `main` method, but only one can be the entry point when the program starts.</span></p>
+    
+    <p><span class="question">Q10: How can we use `String[] args` in `main`?</span></p>
+    <p><span class="answer">A10: `String[] args` allows command-line arguments to be passed into the program, providing input directly at startup.</span></p>
+    
+</body>
+</html>
