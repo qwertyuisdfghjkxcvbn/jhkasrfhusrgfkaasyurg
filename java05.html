@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Java Code Explanation - MiniGame.java</title>
+    <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; margin: 20px; background-color: white ;}
+        h1, h2 { color: #2c3e50; }
+        h1 { font-size: 24px; }
+        h2 { font-size: 20px; margin-top: 20px; }
+        pre { background-color: #ffffff; border: 1px solid #dcdcdc; padding: 10px; border-radius: 5px; overflow: auto; }
+        .question { color: #8e44ad; }
+        .answer { color: #16a085; }
+        .code { font-weight: bold; color: #2980b9; }
+    </style>
+</head>
+<body>
+    <h1>Java Code Explanation - MiniGame.java</h1>
+    
+    <h2>Code:</h2>
+    <pre>
+package Pet;
+
+public interface MiniGame {
+    int play();
+}
+    </pre>
+    
+    <h2>Line-by-Line Explanation</h2>
+    
+    <p><span class="code">package Pet;</span> - Defines the package `Pet`, which groups related classes, in this case, the `MiniGame` interface.</p>
+    
+    <p><span class="code">public interface MiniGame {</span> - This declares an interface named `MiniGame`. Interfaces in Java define abstract methods that implementing classes must provide.</p>
+    
+    <p><span class="code">int play();</span> - This is the method signature for the `play` method. Any class that implements the `MiniGame` interface must provide its own implementation for this method. The method returns an `int` value, which could represent a game score, result, or other relevant information.</p>
+    
+    <h2>Questions and Answers</h2>
+    
+    <p><span class="question">Q1: What is the purpose of the `MiniGame` interface?</span></p>
+    <p><span class="answer">A1: The `MiniGame` interface defines a contract for any mini-game, requiring a `play()` method that returns an integer. It allows various game types to be structured in the same way, even though their internal logic may differ.</span></p>
+    
+    <p><span class="question">Q2: What type of method is declared in the `MiniGame` interface?</span></p>
+    <p><span class="answer">A2: The `MiniGame` interface declares an abstract method `play()` that returns an integer. Abstract methods have no body in interfaces and must be implemented by any class that implements the interface.</span></p>
+    
+    <p><span class="question">Q3: How does the `MiniGame` interface relate to the `NumberGuessingGame` class?</span></p>
+    <p><span class="answer">A3: The `NumberGuessingGame` class implements the `MiniGame` interface, meaning it provides its own implementation of the `play()` method, defining the logic for the number guessing game.</p>
+    
+    <p><span class="question">Q4: Why would you use an interface like `MiniGame` in an application?</span></p>
+    <p><span class="answer">A4: Using an interface like `MiniGame` allows you to define a common structure for different mini-games. It enables polymorphism, where different game types can be treated uniformly, despite having different implementations.</p>
+    
+    <p><span class="question">Q5: Can you instantiate the `MiniGame` interface directly in Java?</span></p>
+    <p><span class="answer">A5: No, you cannot instantiate an interface in Java. You can only instantiate a class that implements the interface and provides an implementation for its methods.</p>
+    
+    <p><span class="question">Q6: Can multiple classes implement the `MiniGame` interface?</span></p>
+    <p><span class="answer">A6: Yes, multiple classes can implement the `MiniGame` interface, each providing a different implementation of the `play()` method. For example, you could have `NumberGuessingGame`, `TicTacToe`, and `QuizGame` all implementing the same interface.</p>
+    
+    <p><span class="question">Q7: What would happen if a class implements `MiniGame` but does not provide an implementation for the `play()` method?</span></p>
+    <p><span class="answer">A7: If a class implements the `MiniGame` interface but does not provide an implementation for the `play()` method, it will result in a compile-time error. A class that implements an interface must provide concrete implementations for all abstract methods in that interface.</p>
+    
+    <p><span class="question">Q8: What is the significance of the `int` return type for the `play()` method?</span></p>
+    <p><span class="answer">A8: The `int` return type allows the `play()` method to return a numeric result, such as a score or outcome of the game. This provides a flexible way to represent different types of game results, which can then be used by the calling code.</p>
+    
+    <p><span class="question">Q9: Can you extend an interface like `MiniGame`?</span></p>
+    <p><span class="answer">A9: Yes, in Java, an interface can extend another interface. For example, you could create a more specific interface, such as `TimedMiniGame`, that extends `MiniGame` and adds additional methods for handling time-based gameplay mechanics.</p>
+    
+    <p><span class="question">Q10: Why is the `play()` method abstract in the `MiniGame` interface?</span></p>
+    <p><span class="answer">A10: The `play()` method is abstract because the `MiniGame` interface is designed to define a common behavior for all mini-games, but the specific details of how the game is played will vary between different classes. The method must be implemented in the classes that implement the interface.</p>
+</body>
+</html>
