@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2048</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f4f4f4;
+            font-family: "Arial", sans-serif;
+        }
+
+        .container {
+            position: relative;
+            width: 400px;
+            height: 400px;
+            background-color: #bbada0;
+            border-radius: 10px;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            grid-template-rows: repeat(4, 1fr);
+            gap: 10px;
+            padding: 10px;
+        }
+
+        .cell {
+            width: 100%;
+            height: 100%;
+            background-color: #ccc0b3;
+            border-radius: 5px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 32px;
+            color: white;
+            font-weight: bold;
+            transition: transform 0.2s ease;
+        }
+
+        .num2 { background-color: #eee4da; color: #776e65; }
+        .num4 { background-color: #ede0c8; color: #776e65; }
+        .num8 { background-color: #f2b179; color: white; }
+        .num16 { background-color: #f59563; color: white; }
+        .num32 { background-color: #f67c5f; color: white; }
+        .num64 { background-color: #f65e3b; color: white; }
+        .num128 { background-color: #edcf72; color: white; }
+        .num256 { background-color: #edcc61; color: white; }
+        .num512 { background-color: #edc850; color: white; }
+        .num1024 { background-color: #edc53f; color: white; }
+        .num2048 { background-color: #edc22e; color: white; }
+
+        #score {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 24px;
+            color: #776e65;
+        }
+    </style>
+</head>
+<body>
+    <div id="score">Score: 0</div>
+    <div class="container" id="stage"></div>
+
+    <script>
+        const stage = document.getElementById('stage');
+        const scoreElement = document.getElementById('score');
+        let score = 0;
+
+        const gameObj = {
+            board: Array(4).fill().map(() => Array(4).fill(null)),
+            initBoard() {
+                this.board = Array(4).fill().map(() => Array(4).fill(null));
+                this.addNewTile();
+                this.addNewTile();
+                this.updateBoard();
+            },
+            addNewTile() {
+                const emptyCells = [];
+                for (let row = 0; row < 4; row++) {
+                    for (let col = 0; col < 4; col++) {
+                        if (this.board[row][col] === null) {
+                            emptyCells.push({ row, col });
+                        }
+                    }
+                }
+                if (emptyCells.length) {
+                    const { row, col } = emptyCells[Math.floor(Math.random() * emptyCells.length)];
+                    this.board[row][col] = Math.random() > 0.9 ? 4 : 2;
+                }
+            },
+            moveLeft() {
+                let moved = false;
+                for (let row = 0; row < 4; row++) {
+                    const newRow = this.board[row].filter(val => val !== null);
+                    const mergedRow = [];
+                    let skip = false;
+                    for (let i = 0; i < newRow.length; i++) {
+                        if (skip) {
+                            skip = false;
+                            continue;
+                        }
+                        if (i < newRow.length - 1 && newRow[i] === newRow[i + 1]) {
+                            mergedRow.push(newRow[i] * 2);
+                            score += newRow[i] * 2;
+                            skip = true;
+                        } else {
+                            mergedRow.push(newRow[i]);
+                        }
+                    }
+                    while (mergedRow.length < 4) {
+                        mergedRow.push(null);
+                    }
+                    if (!this.arraysEqual(this.board[row], mergedRow)) {
+                        moved = true;
+                        this.board[row] = mergedRow;
+                    }
+                }
+                return moved;
+            },
+            moveRight() {
+                this.board = this.board.map(row => row.reverse());
+                const moved = this.moveLeft();
+                this.board = this.board.map(row => row.reverse());
+                return moved;
+            },
+            moveUp() {
+                this.board = this.transpose(this.board);
+                const moved = this.moveLeft();
+                this.board = this.transpose(this.board);
+                return moved;
+            },
+            moveDown() {
+                this.board = this.transpose(this.board);
+                const moved = this.moveRight();
+                this.board = this.transpose(this.board);
+                return moved;
+            },
+            transpose(board) {
+                return board[0].map((_, colIndex) => board.map(row => row[colIndex]));
+            },
+            arraysEqual(a, b) {
+                return JSON.stringify(a) === JSON.stringify(b);
+            },
+            updateBoard() {
+                stage.innerHTML = '';
+                for (let row = 0; row < 4; row++) {
+                    for (let col = 0; col < 4; col++) {
+                        const value = this.board[row][col];
+                        const cell = document.createElement('div');
+                        cell.classList.add('cell');
+                        if (value !== null) {
+                            cell.classList.add('num' + value);
+                            cell.innerText = value;
+                        }
+                        stage.appendChild(cell);
+                    }
+                }
+                scoreElement.innerText = `Score: ${score}`;
+            },
+            isGameOver() {
+                if (this.board.some(row => row.includes(null))) return false;
+                for (let row = 0; row < 4; row++) {
+                    for (let col = 0; col < 4; col++) {
+                        if (
+                            (col < 3 && this.board[row][col] === this.board[row][col + 1]) ||
+                            (row < 3 && this.board[row][col] === this.board[row + 1][col])
+                        ) {
+                            return false;
+                        }
+                    }
+                }
+                return true;
+            },
+            restart() {
+                score = 0;
+                this.initBoard();
+            }
+        };
+
+        gameObj.initBoard();
+
+        function handleSwipe(startX, startY, endX, endY) {
+            const deltaX = endX - startX;
+            const deltaY = endY - startY;
+            if (Math.abs(deltaX) > Math.abs(deltaY)) {
+                if (deltaX > 0) gameObj.moveRight();
+                else gameObj.moveLeft();
+            } else {
+                if (deltaY > 0) gameObj.moveDown();
+                else gameObj.moveUp();
+            }
+            gameObj.addNewTile();
+            gameObj.updateBoard();
+            if (gameObj.isGameOver()) {
+                alert("Game Over!");
+                gameObj.restart();
+            }
+        }
+
+        let touchStartX = 0, touchStartY = 0;
+        stage.addEventListener('touchstart', (e) => {
+            const touch = e.touches[0];
+            touchStartX = touch.clientX;
+            touchStartY = touch.clientY;
+        });
+
+        stage.addEventListener('touchend', (e) => {
+            const touch = e.changedTouches[0];
+            handleSwipe(touchStartX, touchStartY, touch.clientX, touch.clientY);
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowLeft') gameObj.moveLeft();
+            if (e.key === 'ArrowRight') gameObj.moveRight();
+            if (e.key === 'ArrowUp') gameObj.moveUp();
+            if (e.key === 'ArrowDown') gameObj.moveDown();
+            gameObj.addNewTile();
+            gameObj.updateBoard();
+            if (gameObj.isGameOver()) {
+                alert("Game Over!");
+                gameObj.restart();
+            }
+        });
+
+    </script>
+</body>
+</html>
