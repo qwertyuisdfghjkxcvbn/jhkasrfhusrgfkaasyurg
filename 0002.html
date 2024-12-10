@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+  <title>Translator</title>
+  <link rel="manifest" href="/site.webmanifest">
+  <link rel="manifest" href="/manifest.json">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Translator">
+  <style>
+    :root {
+      --font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      --bg-gradient: linear-gradient(to bottom right, #e0f7fa, #ffffff);
+      --card-bg: #ffffff;
+      --text-color: #333;
+      --input-bg: #f9f9f9;
+      --btn-bg: #28a745;
+      --btn-text: #fff;
+      --btn-hover-bg: #218838;
+      --transition: 0.2s ease-in-out;
+      --swap-size: 50px;
+      --divider-color: #ccc;
+      --select-padding: 12px 15px;
+      --copy-success-color: #28a745;
+    }
+  
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg-gradient: linear-gradient(to bottom right, #1c1c1c, #2c2c2c);
+        --card-bg: #2f2f2f;
+        --text-color: #eee;
+        --input-bg: #3a3a3a;
+        --btn-bg: #28a745;
+        --btn-text: #fff;
+        --btn-hover-bg: #218838;
+        --divider-color: #555;
+        --copy-success-color: #28a745;
+      }
+    }
+  
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: var(--font-family);
+      background: var(--bg-gradient);
+      color: var(--text-color);
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+  
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      background: rgba(0,0,0,0.6);
+      z-index: 999;
+    }
+  
+    header {
+      padding: 15px 20px;
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      background: transparent;
+    }
+  
+    header .about-link {
+      font-size: 1em;
+      text-decoration: none;
+      color: var(--text-color);
+      opacity: 0.8;
+      transition: var(--transition);
+      cursor: pointer;
+      border: none;
+      background: none;
+      padding: 10px 15px;
+    }
+  
+    header .about-link:hover {
+      opacity: 1;
+    }
+  
+    main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+      position: relative;
+      max-width: 800px;
+      margin: 0 auto;
+      width: 100%;
+    }
+  
+    .translator-card {
+      width: 100%;
+      background: var(--card-bg);
+      border-radius: 12px;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      overflow: hidden;
+      border: 1px solid var(--divider-color);
+      box-shadow: none;
+    }
+  
+    .language-selectors {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: flex-start;
+      margin-bottom: 10px;
+    }
+  
+    select {
+      padding: var(--select-padding);
+      border: 1px solid transparent;
+      border-radius: 8px;
+      background: var(--input-bg);
+      color: var(--text-color);
+      font-size: 1em;
+      min-width: 120px;
+      transition: var(--transition);
+      appearance: none;
+      background-image: url('data:image/svg+xml;charset=US-ASCII,<svg xmlns="http://www.w3.org/2000/svg" width="10" height="7"><path fill="%23333" d="M0 0l5 5 5-5z"/></svg>');
+      background-repeat: no-repeat;
+      background-position: right 10px center;
+      background-size: 10px 7px;
+    }
+  
+    select:hover, select:focus {
+      transform: translateY(-1px);
+      outline: none;
+      border-color: var(--btn-bg);
+    }
+  
+    .divider {
+      position: relative;
+      width: 100%;
+      height: 1px;
+      background: var(--divider-color);
+      display: flex;
+      margin-top: 35px;
+      margin-bottom: 35px;
+      align-items: center;
+      justify-content: center;
+    }
+  
+    .divider::before,
+    .divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--divider-color);
+    }
+  
+    .swap-button {
+      position: absolute;
+      background: var(--btn-bg);
+      border: none;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.6s;
+      width: var(--swap-size);
+      height: var(--swap-size);
+      z-index: 1;
+      transform-style: preserve-3d;
+      font-size: 1em;
+    }
+  
+    .swap-button:hover {
+      background: var(--btn-hover-bg);
+    }
+  
+    .swap-button.flip {
+      animation: flip 0.6s;
+    }
+  
+    @keyframes flip {
+      from {
+        transform: rotateY(0deg);
+      }
+      to {
+        transform: rotateY(360deg);
+      }
+    }
+  
+    .swap-button svg {
+      fill: var(--btn-text);
+      width: 24px;
+      height: 24px;
+    }
+  
+    .panel {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      box-sizing: border-box;
+      padding: 15px;
+      border: 1px solid transparent;
+      border-radius: 8px;
+      margin: 0;
+      position: relative;
+    }
+  
+    .input-panel {
+      padding-bottom: 0;
+    }
+  
+    .output-panel {
+      padding-top: 0;
+      position: relative;
+    }
+  
+    .textarea-container {
+      position: relative;
+      border: none;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+  
+    .textarea-container::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(270deg, var(--btn-bg), #00c6ff, var(--btn-bg));
+      background-size: 600% 600%;
+      border-radius: 8px;
+      filter: blur(2px);
+      opacity: 0;
+      transition: opacity 0.3s;
+      z-index: -1;
+    }
+  
+    .textarea-container.active::before {
+      opacity: 1;
+      animation: gradientAnimation 8s ease infinite;
+    }
+  
+    @keyframes gradientAnimation {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+  
+    textarea {
+      width: 100%;
+      border: 1px solid transparent;
+      border-radius: 6px;
+      background: var(--input-bg);
+      color: var(--text-color);
+      font-size: 1em;
+      padding: 12px;
+      resize: none;
+      box-sizing: border-box;
+      height: 25vh;
+      line-height: 1.5;
+      transition: border-color var(--transition);
+    }
+  
+    textarea:focus {
+      outline: none;
+      border-color: var(--btn-bg);
+    }
+  
+    .copy-btn {
+      position: absolute;
+      bottom: 15px;
+      right: 15px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--btn-bg);
+      display: flex;
+      align-items: center;
+      padding: 5px;
+      transition: color var(--transition);
+      font-size: 1em;
+    }
+  
+    .copy-btn:hover {
+      color: var(--btn-hover-bg);
+    }
+  
+    .copy-btn svg {
+      width: 20px;
+      height: 20px;
+      fill: currentColor;
+    }
+  
+    .modal {
+      background: var(--card-bg);
+      padding: 25px;
+      border-radius: 12px;
+      max-width: 350px;
+      width: 100%;
+      text-align: center;
+      border: 1px solid var(--divider-color);
+    }
+  
+    .modal h2 {
+      margin-top: 0;
+      margin-bottom: 15px;
+      font-size: 1.4em;
+    }
+  
+    .modal p {
+      font-size: 1em;
+      line-height: 1.5;
+      margin-bottom: 25px;
+    }
+  
+    .close-btn {
+      background: var(--btn-bg);
+      color: var(--btn-text);
+      border: none;
+      padding: 10px 18px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 1em;
+      transition: background var(--transition);
+    }
+  
+    .close-btn:hover {
+      background: var(--btn-hover-bg);
+    }
+  
+    @media (max-width: 600px) {
+      .translator-card {
+        border-radius: 8px;
+      }
+      .language-selectors {
+        gap: 15px;
+        margin-bottom: 10px;
+      }
+      select {
+        font-size: 1em;
+        min-width: 100px;
+        padding: 10px 12px;
+      }
+      textarea {
+        font-size: 1em;
+        height: 20vh;
+        padding: 10px;
+      }
+      .swap-button {
+        width: 40px;
+        height: 40px;
+        font-size: 1em;
+      }
+      .swap-button svg {
+        width: 20px;
+        height: 20px;
+      }
+      .copy-btn svg {
+        width: 18px;
+        height: 18px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <button class="about-link" id="aboutLink">About</button>
+  </header>
+
+  <main>
+    <div class="translator-card">
+      
+      <div class="panel input-panel">
+        <div class="language-selectors">
+          <select id="sourceLang">
+            <option value="af">Afrikaans</option>
+            <option value="ar">Arabic</option>
+            <option value="bg">Bulgarian</option>
+            <option value="ca">Catalan</option>
+            <option value="zh-CN">Chinese (Simplified)</option>
+            <option value="zh-TW">Chinese (Traditional)</option>
+            <option value="hr">Croatian</option>
+            <option value="cs">Czech</option>
+            <option value="da">Danish</option>
+            <option value="nl">Dutch</option>
+            <option value="en" selected>English</option>
+            <option value="et">Estonian</option>
+            <option value="fi">Finnish</option>
+            <option value="fr">French</option>
+            <option value="de">German</option>
+            <option value="el">Greek</option>
+            <option value="he">Hebrew</option>
+            <option value="hi">Hindi</option>
+            <option value="hu">Hungarian</option>
+            <option value="id">Indonesian</option>
+            <option value="it">Italian</option>
+            <option value="ja">Japanese</option>
+            <option value="ko">Korean</option>
+            <option value="lv">Latvian</option>
+            <option value="lt">Lithuanian</option>
+            <option value="no">Norwegian</option>
+            <option value="pl">Polish</option>
+            <option value="pt">Portuguese</option>
+            <option value="ro">Romanian</option>
+            <option value="ru">Russian</option>
+            <option value="sk">Slovak</option>
+            <option value="sl">Slovenian</option>
+            <option value="es">Spanish</option>
+            <option value="sv">Swedish</option>
+            <option value="th">Thai</option>
+            <option value="tr">Turkish</option>
+            <option value="uk">Ukrainian</option>
+            <option value="vi">Vietnamese</option>
+          </select>
+        </div>
+        <div class="textarea-container">
+          <textarea id="inputText" placeholder="Type text..."></textarea>
+        </div>
+      </div>
+      
+      <div class="divider">
+        <button class="swap-button" id="swapBtn" title="Swap Languages" aria-label="Swap Languages">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M16 17v-2h-4l4-4-4-4h4v-2h-6v2h4l-4 4 4 4h-4v2h6zm-8-4l4 4-4 4V17z"/>
+          </svg>
+        </button>
+      </div>
+  
+      <div class="panel output-panel">
+        <div class="language-selectors">
+          <select id="targetLang">
+            <option value="af">Afrikaans</option>
+            <option value="ar">Arabic</option>
+            <option value="bg">Bulgarian</option>
+            <option value="ca">Catalan</option>
+            <option value="zh-CN">Chinese (Simplified)</option>
+            <option value="zh-TW">Chinese (Traditional)</option>
+            <option value="hr">Croatian</option>
+            <option value="cs">Czech</option>
+            <option value="da">Danish</option>
+            <option value="nl">Dutch</option>
+            <option value="en">English</option>
+            <option value="et">Estonian</option>
+            <option value="fi">Finnish</option>
+            <option value="fr">French</option>
+            <option value="de" selected>German</option>
+            <option value="el">Greek</option>
+            <option value="he">Hebrew</option>
+            <option value="hi">Hindi</option>
+            <option value="hu">Hungarian</option>
+            <option value="id">Indonesian</option>
+            <option value="it">Italian</option>
+            <option value="ja">Japanese</option>
+            <option value="ko">Korean</option>
+            <option value="lv">Latvian</option>
+            <option value="lt">Lithuanian</option>
+            <option value="no">Norwegian</option>
+            <option value="pl">Polish</option>
+            <option value="pt">Portuguese</option>
+            <option value="ro">Romanian</option>
+            <option value="ru">Russian</option>
+            <option value="sk">Slovak</option>
+            <option value="sl">Slovenian</option>
+            <option value="es">Spanish</option>
+            <option value="sv">Swedish</option>
+            <option value="th">Thai</option>
+            <option value="tr">Turkish</option>
+            <option value="uk">Ukrainian</option>
+            <option value="vi">Vietnamese</option>
+          </select>
+        </div>
+        <div class="textarea-container">
+          <textarea id="outputText" readonly placeholder="Translation..."></textarea>
+        </div>
+        <button class="copy-btn" id="copyBtn" title="Copy" aria-label="Copy">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </main>
+
+  <div class="modal-overlay" id="modalOverlay">
+    <div class="modal">
+      <h2>About</h2>
+      <p>This translator uses the MyMemory Translation API</p>
+      <button class="close-btn" id="closeModalBtn">Close</button>
+    </div>
+  </div>
+
+  <script>
+    const inputText = document.getElementById('inputText');
+    const outputText = document.getElementById('outputText');
+    const copyBtn = document.getElementById('copyBtn');
+    const aboutLink = document.getElementById('aboutLink');
+    const modalOverlay = document.getElementById('modalOverlay');
+    const closeModalBtn = document.getElementById('closeModalBtn');
+    const sourceLangSelect = document.getElementById('sourceLang');
+    const targetLangSelect = document.getElementById('targetLang');
+    const swapBtn = document.getElementById('swapBtn');
+    
+    let typingTimer;
+    const debounceDelay = 500;
+    
+    async function translateText() {
+      const text = inputText.value.trim();
+      outputText.value = '';
+      toggleActiveClass(outputText, outputText.parentElement);
+      if (!text) return;
+      const sourceLang = sourceLangSelect.value;
+      const targetLang = targetLangSelect.value;
+      const direction = `${sourceLang}|${targetLang}`;
+      const apiUrl = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=${direction}`;
+      try {
+        const response = await fetch(apiUrl);
+        const data = await response.json();
+        if (data?.responseData?.translatedText) {
+          outputText.value = data.responseData.translatedText;
+        } else {
+          outputText.value = 'No translation found.';
+        }
+        toggleActiveClass(outputText, outputText.parentElement);
+      } catch (error) {
+        console.error(error);
+        outputText.value = 'Error fetching translation. Try again later.';
+        toggleActiveClass(outputText, outputText.parentElement);
+      }
+    }
+    
+    function toggleActiveClass(textarea, container) {
+      if (textarea.value.trim()) {
+        container.classList.add('active');
+      } else {
+        container.classList.remove('active');
+      }
+    }
+    
+    inputText.addEventListener('input', () => {
+      clearTimeout(typingTimer);
+      typingTimer = setTimeout(() => {
+        translateText();
+        toggleActiveClass(inputText, inputText.parentElement);
+      }, debounceDelay);
+    });
+    
+    outputText.addEventListener('input', () => {
+      toggleActiveClass(outputText, outputText.parentElement);
+    });
+    
+    sourceLangSelect.addEventListener('change', () => {
+      if (inputText.value.trim()) {
+        translateText();
+      }
+    });
+    
+    targetLangSelect.addEventListener('change', () => {
+      if (inputText.value.trim()) {
+        translateText();
+      }
+    });
+    
+    swapBtn.addEventListener('click', () => {
+      swapBtn.classList.add('flip');
+      const tempText = inputText.value;
+      inputText.value = outputText.value;
+      outputText.value = tempText;
+      const tempLang = sourceLangSelect.value;
+      sourceLangSelect.value = targetLangSelect.value;
+      targetLangSelect.value = tempLang;
+      if (inputText.value.trim()) {
+        translateText();
+        toggleActiveClass(inputText, inputText.parentElement);
+      } else {
+        outputText.value = '';
+        toggleActiveClass(outputText, outputText.parentElement);
+      }
+      swapBtn.addEventListener('animationend', () => {
+        swapBtn.classList.remove('flip');
+      }, { once: true });
+    });
+    
+    copyBtn.addEventListener('click', () => {
+      const translationText = outputText.value.trim();
+      if (translationText) {
+        navigator.clipboard.writeText(translationText).then(() => {
+          copyBtn.style.color = 'var(--copy-success-color)';
+          setTimeout(() => {
+            copyBtn.style.color = 'var(--btn-bg)';
+          }, 1500);
+        }).catch(e => console.error('Copy failed', e));
+      }
+    });
+    
+    aboutLink.addEventListener('click', () => {
+      modalOverlay.style.display = 'flex';
+    });
+    
+    closeModalBtn.addEventListener('click', () => {
+      modalOverlay.style.display = 'none';
+    });
+    
+    modalOverlay.addEventListener('click', (e) => {
+      if (e.target === modalOverlay) {
+        modalOverlay.style.display = 'none';
+      }
+    });
+  </script>
+
+</body>
+</html>
