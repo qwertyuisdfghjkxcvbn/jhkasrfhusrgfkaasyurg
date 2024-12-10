@@ -1,60 +1,89 @@
 // wordsData.js
 
-const wordsData = [];
-
-// Function to generate placeholder words
-function generatePlaceholderWords(level, count) {
-  const words = [];
-  for (let i = 1; i <= count; i++) {
-    words.push({
-      german: `Wort${i}_Level${level}`,
-      english: `Word${i}_Level${level}`
-    });
-  }
-  return words;
-}
-
-// Define difficulty levels based on CEFR
-const difficultyLevels = {
-  A1: { start: 1, end: 20 },
-  A2: { start: 21, end: 40 },
-  B1: { start: 41, end: 60 },
-  B2: { start: 61, end: 80 },
-  C1: { start: 81, end: 100 }
-};
-
-// Populate wordsData with 100 levels
-for (let level = 1; level <= 100; level++) {
-  let difficulty = '';
-
-  // Determine difficulty based on level number
-  if (level >= difficultyLevels.A1.start && level <= difficultyLevels.A1.end) {
-    difficulty = 'A1';
-  } else if (level >= difficultyLevels.A2.start && level <= difficultyLevels.A2.end) {
-    difficulty = 'A2';
-  } else if (level >= difficultyLevels.B1.start && level <= difficultyLevels.B1.end) {
-    difficulty = 'B1';
-  } else if (level >= difficultyLevels.B2.start && level <= difficultyLevels.B2.end) {
-    difficulty = 'B2';
-  } else if (level >= difficultyLevels.C1.start && level <= difficultyLevels.C1.end) {
-    difficulty = 'C1';
-  }
-
-  // Generate 20 placeholder words for each level
-  const words = generatePlaceholderWords(level, 20);
-
-  // Push the level data into wordsData array
-  wordsData.push({
-    level: level,
-    difficulty: difficulty,
-    words: words
-  });
-}
-
-/*
-  To populate the actual words, replace the placeholder entries in wordsData.
-  For example:
-  wordsData[0].words[0] = { german: 'Hallo', english: 'Hello' };
-  wordsData[0].words[1] = { german: 'Tschüss', english: 'Goodbye' };
-  // Continue for all words in all levels
-*/
+const wordsData = [
+  // Level 1: A1 Beginner
+  { 
+    level: 1, 
+    difficulty: 'A1', 
+    words: [
+      { german: 'Hallo', english: 'Hello' },
+      { german: 'Tschüss', english: 'Goodbye' },
+      { german: 'Bitte', english: 'Please' },
+      { german: 'Danke', english: 'Thank you' },
+      { german: 'Ja', english: 'Yes' },
+      { german: 'Nein', english: 'No' },
+      { german: 'Entschuldigung', english: 'Excuse me' },
+      { german: 'Wie geht\'s?', english: 'How are you?' },
+      { german: 'Gut', english: 'Good' },
+      { german: 'Schlecht', english: 'Bad' },
+      { german: 'Ich', english: 'I' },
+      { german: 'Du', english: 'You' },
+      { german: 'Er', english: 'He' },
+      { german: 'Sie', english: 'She' },
+      { german: 'Es', english: 'It' },
+      { german: 'Wir', english: 'We' },
+      { german: 'Ihr', english: 'You (plural)' },
+      { german: 'Sie', english: 'They' },
+      { german: 'Haus', english: 'House' },
+      { german: 'Buch', english: 'Book' },
+    ] 
+  },
+  
+  // Level 2: A1 Beginner
+  { 
+    level: 2, 
+    difficulty: 'A1', 
+    words: [
+      { german: 'Auto', english: 'Car' },
+      { german: 'Straße', english: 'Street' },
+      { german: 'Freund', english: 'Friend' },
+      { german: 'Familie', english: 'Family' },
+      { german: 'Mutter', english: 'Mother' },
+      { german: 'Vater', english: 'Father' },
+      { german: 'Bruder', english: 'Brother' },
+      { german: 'Schwester', english: 'Sister' },
+      { german: 'Kind', english: 'Child' },
+      { german: 'Lehrer', english: 'Teacher' },
+      { german: 'Student', english: 'Student' },
+      { german: 'Büro', english: 'Office' },
+      { german: 'Arzt', english: 'Doctor' },
+      { german: 'Apotheke', english: 'Pharmacy' },
+      { german: 'Restaurant', english: 'Restaurant' },
+      { german: 'Bäckerei', english: 'Bakery' },
+      { german: 'Kaffee', english: 'Coffee' },
+      { german: 'Wasser', english: 'Water' },
+      { german: 'Bier', english: 'Beer' },
+      { german: 'Wein', english: 'Wine' },
+    ] 
+  },
+  
+  // Level 3: A1 Beginner
+  { 
+    level: 3, 
+    difficulty: 'A1', 
+    words: [
+      { german: 'Baum', english: 'Tree' },
+      { german: 'Blume', english: 'Flower' },
+      { german: 'Sonne', english: 'Sun' },
+      { german: 'Mond', english: 'Moon' },
+      { german: 'Stern', english: 'Star' },
+      { german: 'Himmel', english: 'Sky' },
+      { german: 'Meer', english: 'Sea' },
+      { german: 'Berg', english: 'Mountain' },
+      { german: 'Fluss', english: 'River' },
+      { german: 'See', english: 'Lake' },
+      { german: 'Wald', english: 'Forest' },
+      { german: 'Wolke', english: 'Cloud' },
+      { german: 'Regen', english: 'Rain' },
+      { german: 'Schnee', english: 'Snow' },
+      { german: 'Wind', english: 'Wind' },
+      { german: 'Sturm', english: 'Storm' },
+      { german: 'Blitz', english: 'Lightning' },
+      { german: 'Donner', english: 'Thunder' },
+      { german: 'Vogel', english: 'Bird' },
+      { german: 'Fisch', english: 'Fish' },
+    ] 
+  },
+  
+  // ... Continue adding levels up to Level 100 following the same structure
+];
