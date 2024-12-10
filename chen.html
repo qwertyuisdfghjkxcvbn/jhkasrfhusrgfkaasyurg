@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Translator</title>
+<style>
+  :root {
+    --bg-color: #fafafa;
+    --text-color: #333;
+    --card-bg: #fff;
+    --border-color: #ccc;
+    --btn-bg: #0078d7;
+    --btn-text: #fff;
+    --input-bg: #fff;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg-color: #1c1c1c;
+      --text-color: #eee;
+      --card-bg: #2a2a2a;
+      --border-color: #444;
+      --btn-bg: #0078d7;
+      --btn-text: #fff;
+      --input-bg: #333;
+    }
+  }
+
+  body {
+    margin: 0;
+    padding: 0;
+    font-family: sans-serif;
+    background: var(--bg-color);
+    color: var(--text-color);
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+
+  header, footer {
+    text-align: center;
+    padding: 15px;
+    font-size: 0.9em;
+  }
+
+  main {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+
+  .card {
+    background: var(--card-bg);
+    padding: 20px;
+    border-radius: 8px;
+    max-width: 340px;
+    width: 100%;
+    text-align: center;
+    border: 1px solid var(--border-color);
+  }
+
+  .top-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+    font-size: 0.9em;
+  }
+
+  .toggle-direction {
+    cursor: pointer;
+    user-select: none;
+    color: var(--text-color);
+    text-decoration: underline;
+  }
+
+  .input-group {
+    display: flex;
+    margin-top: 15px;
+  }
+
+  input[type="text"] {
+    flex: 1;
+    padding: 10px;
+    box-sizing: border-box;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    background: var(--input-bg);
+    color: var(--text-color);
+  }
+
+  .actions {
+    margin-top: 10px;
+    display: flex;
+    gap: 5px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  button {
+    padding: 7px 10px;
+    border: none;
+    background: var(--btn-bg);
+    color: var(--btn-text);
+    font-size: 0.9em;
+    border-radius: 4px;
+    cursor: pointer;
+    flex: 1 1 auto;
+    min-width: 80px;
+  }
+
+  button:hover {
+    opacity: 0.9;
+  }
+
+  .result {
+    margin-top: 20px;
+    min-height: 50px;
+  }
+
+  .result p {
+    margin: 5px 0;
+    font-size: 1em;
+  }
+
+  .error {
+    color: #d00;
+  }
+
+  .info {
+    font-size: 0.8em;
+    margin-top: 15px;
+    opacity: 0.7;
+  }
+
+  .hidden {
+    display: none;
+  }
+</style>
+</head>
+<body>
+
+<header>Simple Translator</header>
+
+<main>
+  <div class="card">
+    <div class="top-row">
+      <div class="toggle-direction" id="directionToggle">German→English</div>
+    </div>
+
+    <div class="input-group">
+      <input type="text" id="word" placeholder="Type a German word" />
+    </div>
+
+    <div class="actions">
+      <button id="pasteBtn">Paste</button>
+      <button id="clearBtn">Clear</button>
+      <button id="copyBtn">Copy</button>
+    </div>
+
+    <div class="result" id="result"></div>
+    <div class="info">Uses MyMemory Translation API</div>
+  </div>
+</main>
+
+<footer>© 2024</footer>
+
+<script>
+let direction = 'de|en'; // default: German to English
+const directionToggle = document.getElementById('directionToggle');
+const wordInput = document.getElementById('word');
+const resultDiv = document.getElementById('result');
+const pasteBtn = document.getElementById('pasteBtn');
+const clearBtn = document.getElementById('clearBtn');
+const copyBtn = document.getElementById('copyBtn');
+
+directionToggle.addEventListener('click', () => {
+  direction = direction === 'de|en' ? 'en|de' : 'de|en';
+  if (direction === 'de|en') {
+    directionToggle.textContent = 'German→English';
+    wordInput.placeholder = 'Type a German word';
+  } else {
+    directionToggle.textContent = 'English→German';
+    wordInput.placeholder = 'Type an English word';
+  }
+  resultDiv.innerHTML = '';
+  wordInput.value = '';
+  wordInput.focus();
+});
+
+// Debounce for user typing
+let typingTimer;
+const debounceDelay = 500; // 0.5 seconds
+
+function translateWord() {
+  const word = wordInput.value.trim();
+  resultDiv.innerHTML = '';
+
+  if (!word) {
+    return;
+  }
+
+  const apiUrl = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(word)}&langpair=${direction}`;
+  fetch(apiUrl)
+    .then(response => response.json())
+    .then(data => {
+      if (data && data.responseData && data.responseData.translatedText) {
+        const translation = data.responseData.translatedText;
+        const [sourceLang, targetLang] = direction.split('|');
+        const sourceLangName = sourceLang === 'de' ? 'German' : 'English';
+        const targetLangName = targetLang === 'de' ? 'German' : 'English';
+
+        resultDiv.innerHTML = `
+          <p><strong>${sourceLangName}:</strong> ${word}</p>
+          <p><strong>${targetLangName}:</strong> ${translation}</p>
+        `;
+      } else {
+        resultDiv.innerHTML = '<p class="error">No translation found.</p>';
+      }
+    })
+    .catch(error => {
+      console.error(error);
+      resultDiv.innerHTML = '<p class="error">Error fetching translation. Try again later.</p>';
+    });
+}
+
+wordInput.addEventListener('input', () => {
+  clearTimeout(typingTimer);
+  typingTimer = setTimeout(translateWord, debounceDelay);
+});
+
+// Paste
+pasteBtn.addEventListener('click', async () => {
+  try {
+    const text = await navigator.clipboard.readText();
+    wordInput.value = text;
+    translateWord();
+  } catch (e) {
+    console.error('Paste failed', e);
+  }
+});
+
+// Clear
+clearBtn.addEventListener('click', () => {
+  wordInput.value = '';
+  resultDiv.innerHTML = '';
+  wordInput.focus();
+});
+
+// Copy
+copyBtn.addEventListener('click', () => {
+  const translationText = resultDiv.innerText.trim();
+  if (translationText) {
+    navigator.clipboard.writeText(translationText).catch(e => console.error('Copy failed', e));
+  }
+});
+
+</script>
+
+</body>
+</html>
