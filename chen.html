@@ -12,138 +12,143 @@
   <meta name="apple-mobile-web-app-title" content="Translator">
   
   <style>
+    /* CSS Variables for Theming and Consistency */
     :root {
       --font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      --bg-gradient: linear-gradient(to bottom right, #e0f7fa, #ffffff);
-      --card-bg: #ffffff;
-      --text-color: #333;
-      --input-bg: #f9f9f9;
+      --bg-light: #ffffff;
+      --bg-dark: #121212;
+      --card-bg-light: #ffffff;
+      --card-bg-dark: #1e1e1e;
+      --text-light: #333333;
+      --text-dark: #ffffff;
+      --input-bg-light: #f9f9f9;
+      --input-bg-dark: #2c2c2c;
       --btn-bg: #28a745;
-      --btn-text: #fff;
+      --btn-text: #ffffff;
       --btn-hover-bg: #218838;
-      --transition: 0.2s ease-in-out;
-      --swap-size: 10vw;
-      --divider-color: #ccc;
-      --select-padding: 1vw 1.5vw;
+      --swap-btn-bg: #007bff;
+      --swap-btn-hover-bg: #0056b3;
       --copy-success-color: #28a745;
       --speak-btn-color: #007bff;
       --speak-btn-hover-color: #0056b3;
+      --divider-color-light: #ccc;
+      --divider-color-dark: #555;
+      --transition: 0.2s ease-in-out;
+      --swap-size: 50px;
+      --modal-max-width: 400px;
+      --modal-padding: 20px;
+      --bg: var(--bg-light);
+      --card-bg: var(--card-bg-light);
+      --text-color: var(--text-light);
+      --input-bg: var(--input-bg-light);
+      --divider-color: var(--divider-color-light);
     }
-  
+    
+    /* Dark Mode Overrides */
     @media (prefers-color-scheme: dark) {
       :root {
-        --bg-gradient: linear-gradient(to bottom right, #1c1c1c, #2c2c2c);
-        --card-bg: #2f2f2f;
-        --text-color: #eee;
-        --input-bg: #3a3a3a;
-        --divider-color: #555;
-        --copy-success-color: #28a745;
-        --speak-btn-color: #66b0ff;
-        --speak-btn-hover-color: #3399ff;
+        --bg: var(--bg-dark);
+        --card-bg: var(--card-bg-dark);
+        --text-color: var(--text-dark);
+        --input-bg: var(--input-bg-dark);
+        --divider-color: var(--divider-color-dark);
       }
     }
-  
+    
+    /* Global Styles */
     body {
       margin: 0;
       padding: 0;
       font-family: var(--font-family);
-      background: var(--bg-gradient);
+      background: var(--bg);
       color: var(--text-color);
       display: flex;
       flex-direction: column;
       min-height: 100vh;
+      transition: background var(--transition), color var(--transition);
     }
-  
-    .modal-overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      display: none;
-      align-items: center;
-      justify-content: center;
-      padding: 2%;
-      background: rgba(0,0,0,0.6);
-      z-index: 999;
-    }
-  
+    
+    /* Header Styles */
     header {
-      padding: 2% 3%;
+      padding: 1em 2em;
       display: flex;
       justify-content: flex-end;
       align-items: center;
       background: transparent;
     }
-  
+    
     .about-link {
-      font-size: 0.8em;
+      font-size: 1em;
       text-decoration: none;
       color: var(--text-color);
       opacity: 0.8;
-      transition: var(--transition);
+      transition: opacity var(--transition);
       cursor: pointer;
       border: none;
       background: none;
     }
-  
+    
     .about-link:hover {
       opacity: 1;
     }
-  
+    
+    /* Main Content Styles */
     main {
       flex: 1;
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 2%;
+      padding: 2em;
       position: relative;
       max-width: 90%;
       margin: 0 auto;
       width: 100%;
     }
-  
+    
     .translator-card {
       width: 100%;
       background: var(--card-bg);
-      border-radius: 1.5%;
+      border-radius: 10px;
       display: flex;
       flex-direction: column;
       position: relative;
       overflow: hidden;
-      border: 0.1em solid var(--divider-color);
+      border: none;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      transition: background var(--transition), box-shadow var(--transition);
     }
-  
+    
     .language-selectors {
       display: flex;
-      gap: 2%;
+      gap: 1em;
       flex-wrap: wrap;
       justify-content: flex-start;
       margin-bottom: 1.5em;
     }
-  
+    
     .select-container {
       position: relative;
       width: 100%;
+      max-width: 300px;
+      flex: 1;
     }
-  
+    
     select {
-      padding: var(--select-padding);
-      border: 0.05em solid transparent;
-      border-radius: 0.5em;
+      padding: 0.8em 1.5em;
+      border: none;
+      border-radius: 5px;
       background: var(--input-bg);
       color: var(--text-color);
       font-size: 1em;
-      min-width: 30%;
-      transition: var(--transition);
+      width: 100%;
+      transition: transform var(--transition), border-color var(--transition);
       appearance: none;
       background-repeat: no-repeat;
-      background-position: right 1em;
+      background-position: right 1em center;
       background-size: 10px 7px;
-      padding-right: 2.5em;
-      width: 100%;
     }
-  
+    
+    /* Custom Dropdown Arrow */
     .select-container::after {
       content: '';
       position: absolute;
@@ -157,98 +162,94 @@
       border-top: 5px solid var(--text-color);
       transform: translateY(-50%);
     }
-  
+    
     select:hover, select:focus {
-      transform: translateY(-0.2em);
+      transform: translateY(-2px);
       outline: none;
       border-color: var(--btn-bg);
     }
-  
+    
+    /* Divider Styles */
     .divider {
-      position: relative;
       width: 100%;
-      height: 0.1em;
+      height: 1px;
       background: var(--divider-color);
-      display: flex;
-      margin: 3.5em 0;
-      align-items: center;
-      justify-content: center;
+      margin: 2em 0;
+      position: relative;
     }
-  
-    .divider::before,
-    .divider::after {
-      content: '';
-      flex: 1;
-      height: 0.1em;
-      background: var(--divider-color);
-    }
-  
+    
+    /* Swap Button Styles */
     .swap-button {
       position: absolute;
-      background: var(--btn-bg);
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: var(--swap-btn-bg);
       border: none;
       border-radius: 50%;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
-      transition: transform 0.6s;
+      transition: background var(--transition), transform var(--transition);
       width: var(--swap-size);
       height: var(--swap-size);
-      z-index: 1;
-      transform-style: preserve-3d;
-      font-size: 1em;
+      z-index: 2;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
     }
-  
+    
     .swap-button:hover {
-      background: var(--btn-hover-bg);
+      background: var(--swap-btn-hover-bg);
+      transform: translate(-50%, -50%) rotate(180deg);
     }
-  
+    
     .swap-button.flip {
-      animation: flip 0.6s;
+      animation: flip 0.6s forwards;
     }
-  
+    
     @keyframes flip {
       from {
-        transform: rotateY(0deg);
+        transform: translate(-50%, -50%) rotateY(0deg);
       }
       to {
-        transform: rotateY(360deg);
+        transform: translate(-50%, -50%) rotateY(360deg);
       }
     }
-  
+    
     .swap-button svg {
       fill: var(--btn-text);
       width: 1.5em;
       height: 1.5em;
     }
-  
+    
+    /* Panel Styles */
     .panel {
       width: 100%;
       display: flex;
       flex-direction: column;
       box-sizing: border-box;
-      padding: 1.5%;
-      border: 0.05em solid transparent;
-      border-radius: 0.5em;
+      padding: 1.5em;
+      border: none;
+      border-radius: 5px;
       margin: 0;
       position: relative;
+      transition: background var(--transition), box-shadow var(--transition);
     }
-  
+    
     .input-panel {
-      padding-bottom: 0;
+      border-bottom: 1px solid var(--divider-color);
     }
-  
+    
     .output-panel {
-      padding-top: 0;
-      position: relative;
+      border-top: 1px solid var(--divider-color);
     }
-  
+    
+    /* Textarea Container Styles */
     .textarea-container {
       position: relative;
       border: none;
     }
-  
+    
     .textarea-container::before {
       content: '';
       position: absolute;
@@ -257,47 +258,49 @@
       right: -0.1em;
       bottom: -0.1em;
       background: linear-gradient(45deg, var(--btn-bg), var(--btn-bg));
-      border-radius: 0.5em;
+      border-radius: 5px;
       filter: blur(0.2em);
       opacity: 0;
       transition: opacity 0.3s, background 0.5s ease-in-out;
       pointer-events: none;
       z-index: -1;
     }
-  
+    
     .textarea-container.active::before {
       background: linear-gradient(45deg, var(--btn-bg), #00c6ff);
       opacity: 1;
     }
-  
+    
+    /* Textarea Styles */
     textarea {
       width: 100%;
-      border: 0.05em solid transparent;
-      border-radius: 0.375em;
+      border: none;
+      border-radius: 5px;
       background: var(--input-bg);
       color: var(--text-color);
       font-size: 1em;
-      padding: 1.2em;
+      padding: 0.8em;
       resize: none;
       box-sizing: border-box;
       height: 25vh;
-      line-height: 1.5;
+      line-height: 1.6;
       transition: border-color var(--transition);
     }
-  
+    
     textarea:focus {
       outline: none;
       border-color: var(--btn-bg);
     }
-  
+    
+    /* Button Group Styles */
     .button-group {
       display: flex;
-      gap: 0.5em;
+      gap: 1em;
       position: absolute;
       bottom: 1em;
       right: 1em;
     }
-  
+    
     .copy-btn, .speak-btn {
       background: none;
       border: none;
@@ -307,74 +310,132 @@
       align-items: center;
       padding: 0.5em;
       transition: color var(--transition);
-      font-size: 1em;
+      font-size: 1.2em;
     }
-  
+    
     .copy-btn:hover {
       color: var(--btn-hover-bg);
     }
-  
+    
     .speak-btn {
       color: var(--speak-btn-color);
     }
-  
+    
     .speak-btn:hover {
       color: var(--speak-btn-hover-color);
     }
-  
+    
     .copy-btn svg, .speak-btn svg {
       width: 1.25em;
       height: 1.25em;
       fill: currentColor;
     }
-  .modal-buttons {
-  display: flex;
-  justify-content: center;
-  gap: 1em;
-  margin-top: 2em;
-}
-
-.home-btn, .close-btn {
-  background: var(--btn-bg);
-  color: var(--btn-text);
-  border: none;
-  padding: 1em 1.8em;
-  border-radius: 0.375em;
-  cursor: pointer;
-  font-size: 1em;
-  transition: background var(--transition);
-}
-
-.home-btn:hover {
-  background: #0056b3; /* Custom hover color for Home button */
-}
-
-.close-btn:hover {
-  background: var(--btn-hover-bg);
-}
-
-
+    
+    /* Modal Styles */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 1em;
+      background: rgba(0,0,0,0.6);
+      z-index: 999;
+    }
+    
+    .modal {
+      background: var(--card-bg);
+      color: var(--text-color);
+      padding: var(--modal-padding);
+      border-radius: 10px;
+      width: 90%;
+      max-width: var(--modal-max-width);
+      text-align: center;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+      transition: background var(--transition), color var(--transition), box-shadow var(--transition);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    
+    .modal h2 {
+      margin-top: 0;
+      margin-bottom: 1em;
+      font-size: 1.5em;
+    }
+    
+    .modal p {
+      font-size: 1em;
+      line-height: 1.6;
+      margin-bottom: 1em;
+    }
+    
+    .contact-link {
+      font-size: 1em;
+      color: var(--btn-bg);
+      text-decoration: none;
+      font-weight: bold;
+      transition: color var(--transition);
+    }
+    
+    .contact-link:hover {
+      color: var(--btn-hover-bg);
+    }
+    
+    .modal-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 1em;
+      margin-top: 2em;
+      width: 100%;
+    }
+    
+    .home-btn, .close-btn {
+      flex: 1;
+      font-size: 1em;
+      padding: 0.8em 1.2em;
+      background: var(--btn-bg);
+      color: var(--btn-text);
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background var(--transition);
+    }
+    
+    .home-btn:hover {
+      background: var(--btn-hover-bg);
+    }
+    
+    .close-btn:hover {
+      background: var(--btn-hover-bg);
+    }
+    
+    /* Responsive Styles for Mobile Devices */
     @media (max-width: 600px) {
       .translator-card {
-        border-radius: 1em;
+        border-radius: 10px;
       }
       .language-selectors {
-        gap: 3%;
+        gap: 1em;
         margin-bottom: 1em;
+        flex-direction: column;
       }
       select {
         font-size: 1em;
-        min-width: 45%;
-        padding: 1em 1.2em;
+        min-width: 100%;
+        padding: 0.8em 1.2em;
       }
       textarea {
         font-size: 1em;
         height: 20vh;
-        padding: 1em;
+        padding: 0.8em;
       }
       .swap-button {
-        width: 12vw;
-        height: 12vw;
+        width: 50px;
+        height: 50px;
         font-size: 1em;
       }
       .swap-button svg {
@@ -389,18 +450,32 @@
         bottom: 0.5em;
         right: 0.5em;
       }
+      .modal {
+        padding: 1.5em;
+      }
+      .modal-buttons {
+        flex-direction: column;
+        gap: 0.5em;
+      }
+      .home-btn, .close-btn {
+        flex: none;
+        width: 100%;
+      }
     }
   </style>
 </head>
 <body>
 
+  <!-- Header with About Button -->
   <header>
     <button class="about-link" id="aboutLink">About</button>
   </header>
 
+  <!-- Main Translator Card -->
   <main>
     <div class="translator-card">
       
+      <!-- Input Panel -->
       <div class="panel input-panel">
         <div class="language-selectors">
           <div class="select-container">
@@ -420,6 +495,7 @@
               <option value="fi">Finnish</option>
               <option value="fr">French</option>
               <option value="de">German</option>
+              <option value="de-CH">Swiss German</option>
               <option value="el">Greek</option>
               <option value="he">Hebrew</option>
               <option value="hi">Hindi</option>
@@ -451,6 +527,7 @@
         </div>
       </div>
       
+      <!-- Divider with Swap Button -->
       <div class="divider">
         <button class="swap-button" id="swapBtn" title="Swap Languages">
           <svg viewBox="0 0 24 24">
@@ -459,6 +536,7 @@
         </button>
       </div>
   
+      <!-- Output Panel -->
       <div class="panel output-panel">
         <div class="language-selectors">
           <div class="select-container">
@@ -478,6 +556,7 @@
               <option value="fi">Finnish</option>
               <option value="fr">French</option>
               <option value="de" selected>German</option>
+              <option value="de-CH">Swiss German</option>
               <option value="el">Greek</option>
               <option value="he">Hebrew</option>
               <option value="hi">Hindi</option>
@@ -523,32 +602,36 @@
     </div>
   </main>
 
-<div class="modal-overlay" id="modalOverlay">
-  <div class="modal">
-    <h2>About</h2>
-    <p>
-      Welcome to the Translator App! This application uses the 
-      <strong>MyMemory Translation API</strong> to provide quick and accurate translations between various languages.
-    </p>
-    <p>
-      This project was created by a dedicated student as part of a portfolio project aimed at demonstrating web development skills. The translator combines modern web technologies with a seamless user experience.
-    </p>
-    <p>
-      If you have any questions, suggestions, or encounter any issues, feel free to reach out via email:
-    </p>
-    <p>
-      <a href="mailto:contactatadiasta.com" class="contact-link">contactatadiasta.com</a>
-    </p>
-    <p>
-      We appreciate your feedback and support. Together, we can make this tool even better!
-    </p>
-    <div class="modal-buttons">
-      <button class="home-btn" id="homeBtn">Home</button>
-      <button class="close-btn" id="closeModalBtn">Close</button>
+  <!-- About Modal -->
+  <div class="modal-overlay" id="modalOverlay">
+    <div class="modal">
+      <h2>About</h2>
+      <p>
+        Welcome to the Translator App! This application uses the 
+        <strong>MyMemory Translation API</strong> to provide quick and accurate translations between various languages.
+      </p>
+      <p>
+        This project was created by a dedicated student as part of a portfolio project aimed at demonstrating web development skills. The translator combines modern web technologies with a seamless user experience.
+      </p>
+      <p>
+        If you have any questions, suggestions, or encounter any issues, feel free to reach out via email:
+      </p>
+      <p>
+        <a href="mailto:contact@atadiasta.com" class="contact-link">contact@atadiasta.com</a>
+      </p>
+      <p>
+        We appreciate your feedback and support. Together, we can make this tool even better!
+      </p>
+      <div class="modal-buttons">
+        <button class="home-btn" id="homeBtn">Home</button>
+        <button class="close-btn" id="closeModalBtn">Close</button>
+      </div>
     </div>
   </div>
-</div>
+
+  <!-- JavaScript for Functionality -->
   <script>
+    // Element References
     const inputText = document.getElementById('inputText');
     const outputText = document.getElementById('outputText');
     const copyBtn = document.getElementById('copyBtn');
@@ -559,20 +642,23 @@
     const sourceLangSelect = document.getElementById('sourceLang');
     const targetLangSelect = document.getElementById('targetLang');
     const swapBtn = document.getElementById('swapBtn');
-    
+    const homeBtn = document.getElementById('homeBtn');
+
+    // Debounce Timer
     let typingTimer;
     const debounceDelay = 500;
-    
+
+    // Translate Text Function
     async function translateText() {
       const text = inputText.value.trim();
       outputText.value = '';
       if (!text) return;
-    
+
       const sourceLang = sourceLangSelect.value;
       const targetLang = targetLangSelect.value;
       const direction = `${sourceLang}|${targetLang}`;
       const apiUrl = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=${direction}`;
-    
+
       try {
         const response = await fetch(apiUrl);
         const data = await response.json();
@@ -586,7 +672,8 @@
         outputText.value = 'Error fetching translation. Try again later.';
       }
     }
-    
+
+    // Toggle Active Class for Textarea Container
     function toggleActiveClass(textarea, container) {
       if (textarea.value.trim()) {
         container.classList.add('active');
@@ -594,7 +681,8 @@
         container.classList.remove('active');
       }
     }
-    
+
+    // Event Listeners for Input Text
     inputText.addEventListener('input', () => {
       clearTimeout(typingTimer);
       typingTimer = setTimeout(() => {
@@ -602,23 +690,26 @@
         toggleActiveClass(inputText, inputText.parentElement);
       }, debounceDelay);
     });
-    
+
+    // Event Listener for Output Text (Readonly, but keeping for consistency)
     outputText.addEventListener('input', () => {
       toggleActiveClass(outputText, outputText.parentElement);
     });
-    
+
+    // Event Listeners for Language Selection Changes
     sourceLangSelect.addEventListener('change', () => {
       if (inputText.value.trim()) {
         translateText();
       }
     });
-    
+
     targetLangSelect.addEventListener('change', () => {
       if (inputText.value.trim()) {
         translateText();
       }
     });
-    
+
+    // Swap Languages Functionality
     swapBtn.addEventListener('click', () => {
       swapBtn.classList.add('flip');
       
@@ -642,7 +733,8 @@
         swapBtn.classList.remove('flip');
       }, { once: true });
     });
-    
+
+    // Copy Translation to Clipboard
     copyBtn.addEventListener('click', () => {
       const translationText = outputText.value.trim();
       if (translationText) {
@@ -655,6 +747,7 @@
       }
     });
 
+    // Speak Translation Using Speech Synthesis
     speakBtn.addEventListener('click', () => {
       const translationText = outputText.value.trim();
       if (!translationText) return;
@@ -676,6 +769,7 @@
       speechSynthesis.speak(utterance);
     });
 
+    // Load Voices for Speech Synthesis
     function loadVoices() {
       if (speechSynthesis.getVoices().length !== 0) {
         return;
@@ -684,26 +778,29 @@
     }
 
     loadVoices();
-    
+
+    // Open About Modal
     aboutLink.addEventListener('click', () => {
       modalOverlay.style.display = 'flex';
     });
-    
+
+    // Close About Modal
     closeModalBtn.addEventListener('click', () => {
       modalOverlay.style.display = 'none';
     });
-    
+
+    // Close Modal When Clicking Outside
     modalOverlay.addEventListener('click', (e) => {
       if (e.target === modalOverlay) {
         modalOverlay.style.display = 'none';
       }
     });
-    const homeBtn = document.getElementById('homeBtn');
 
-homeBtn.addEventListener('click', () => {
-  modalOverlay.style.display = 'none';
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-});
+    // Home Button Functionality in Modal
+    homeBtn.addEventListener('click', () => {
+      modalOverlay.style.display = 'none';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
   </script>
 
 </body>
