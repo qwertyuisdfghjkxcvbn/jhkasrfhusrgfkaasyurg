@@ -11,6 +11,9 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Translator">
   
+  <!-- Tesseract.js for OCR -->
+  <script src="https://cdn.jsdelivr.net/npm/tesseract.js@2/dist/tesseract.min.js"></script>
+  
   <style>
     /* CSS Variables for Theming and Consistency */
     :root {
@@ -301,7 +304,7 @@
       right: 1em;
     }
     
-    .copy-btn, .speak-btn {
+    .copy-btn, .speak-btn, .voice-btn, .photo-btn {
       background: none;
       border: none;
       cursor: pointer;
@@ -325,7 +328,27 @@
       color: var(--speak-btn-hover-color);
     }
     
-    .copy-btn svg, .speak-btn svg {
+    .voice-btn {
+      color: #ff9800; /* Orange color for voice */
+    }
+    
+    .voice-btn.active {
+      color: #f44336; /* Red color when active */
+    }
+    
+    .voice-btn:hover {
+      color: #f44336;
+    }
+    
+    .photo-btn {
+      color: #3f51b5; /* Indigo color for photo */
+    }
+    
+    .photo-btn:hover {
+      color: #303f9f;
+    }
+    
+    .copy-btn svg, .speak-btn svg, .voice-btn svg, .photo-btn svg {
       width: 1.25em;
       height: 1.25em;
       fill: currentColor;
@@ -442,13 +465,14 @@
         width: 1.25em;
         height: 1.25em;
       }
-      .copy-btn svg, .speak-btn svg {
+      .copy-btn svg, .speak-btn svg, .voice-btn svg, .photo-btn svg {
         width: 1.125em;
         height: 1.125em;
       }
       .button-group {
         bottom: 0.5em;
         right: 0.5em;
+        gap: 0.5em;
       }
       .modal {
         padding: 1.5em;
@@ -525,11 +549,26 @@
         <div class="textarea-container">
           <textarea id="inputText" placeholder="Type text..."></textarea>
         </div>
+        <!-- New Buttons for Voice and Photo Translation -->
+        <div class="button-group">
+          <button class="voice-btn" id="voiceBtn" title="Speak to Translate" aria-label="Speak to Translate">
+            <!-- Microphone Icon -->
+            <svg viewBox="0 0 24 24">
+              <path d="M12 14a3 3 0 003-3V5a3 3 0 00-6 0v6a3 3 0 003 3zm5-3a5 5 0 01-10 0H5a7 7 0 0014 0h-2zm-7 5c3.31 0 6-2.69 6-6h-2a4 4 0 00-8 0H7c0 3.31 2.69 6 6 6z"/>
+            </svg>
+          </button>
+          <button class="photo-btn" id="photoBtn" title="Upload Photo for Translation" aria-label="Upload Photo for Translation">
+            <!-- Camera Icon -->
+            <svg viewBox="0 0 24 24">
+              <path d="M21 5h-3.17l-1.84-2H7.01L5.17 5H2c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h19c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 14H2V7h3.17l1.84-2h8.99l1.84 2H21v12zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8a3 3 0 100 6 3 3 0 000-6z"/>
+            </svg>
+          </button>
+        </div>
       </div>
       
       <!-- Divider with Swap Button -->
       <div class="divider">
-        <button class="swap-button" id="swapBtn" title="Swap Languages">
+        <button class="swap-button" id="swapBtn" title="Swap Languages" aria-label="Swap Languages">
           <svg viewBox="0 0 24 24">
             <path d="M10.02 6H17c.55 0 1 .45 1 1s-.45 1-1 1h-4.88l1.44 1.44c.39.39.39 1.02 0 1.41-.2.19-.45.29-.7.29-.26 0-.51-.1-.71-.29l-3.18-3.18c-.09-.09-.17-.2-.22-.33-.05-.12-.08-.25-.08-.38s.03-.26.08-.38c.05-.13.12-.24.22-.33l3.18-3.18c.39-.39 1.02-.39 1.41 0s.39 1.02 0 1.41L12.12 6H10.02zm3.96 11H7c-.55 0-1-.45-1-1s.45-1 1-1h4.88l-1.44-1.44c-.39-.39-.39-1.02 0-1.41.39-.39 1.02-.39 1.41 0l3.18 3.18c.09.09.17.2.22.33.05.12.08.25.08.38s-.03.26-.08.38c-.05.13-.12.24-.22.33l-3.18 3.18c-.2.19-.45.29-.7.29-.26 0-.51-.1-.71-.29-.39-.39-.39-1.02 0-1.41L14 17z"/>
           </svg>
@@ -587,14 +626,104 @@
           <textarea id="outputText" readonly placeholder="Translation..."></textarea>
         </div>
         <div class="button-group">
-          <button class="copy-btn" id="copyBtn" title="Copy">
+          <button class="copy-btn" id="copyBtn" title="Copy" aria-label="Copy Translation">
             <svg viewBox="0 0 24 24">
               <path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>
             </svg>
           </button>
-          <button class="speak-btn" id="speakBtn" title="Hear Translation">
+          <button class="speak-btn" id="speakBtn" title="Hear Translation" aria-label="Hear Translation">
             <svg viewBox="0 0 24 24">
               <path d="M3 10v4h4l5 5V5L7 10H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.06c1.48-.74 2.5-2.26 2.5-4.03zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.92 7-4.69 7-8.77s-2.99-7.85-7-8.77z"/>
+            </svg>
+          </button>
+          <!-- New Voice and Photo Buttons -->
+          <button class="voice-btn" id="voiceBtn" title="Speak to Translate" aria-label="Speak to Translate">
+            <!-- Microphone Icon -->
+            <svg viewBox="0 0 24 24">
+              <path d="M12 14a3 3 0 003-3V5a3 3 0 00-6 0v6a3 3 0 003 3zm5-3a5 5 0 01-10 0H5a7 7 0 0014 0h-2zm-7 5c3.31 0 6-2.69 6-6h-2a4 4 0 00-8 0H7c0 3.31 2.69 6 6 6z"/>
+            </svg>
+          </button>
+          <button class="photo-btn" id="photoBtn" title="Upload Photo for Translation" aria-label="Upload Photo for Translation">
+            <!-- Camera Icon -->
+            <svg viewBox="0 0 24 24">
+              <path d="M21 5h-3.17l-1.84-2H7.01L5.17 5H2c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h19c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 14H2V7h3.17l1.84-2h8.99l1.84 2H21v12zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8a3 3 0 100 6 3 3 0 000-6z"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+      
+      <!-- Output Panel -->
+      <div class="panel output-panel">
+        <div class="language-selectors">
+          <div class="select-container">
+            <select id="targetLang">
+              <option value="af">Afrikaans</option>
+              <option value="ar">Arabic</option>
+              <option value="bg">Bulgarian</option>
+              <option value="ca">Catalan</option>
+              <option value="zh-CN">Chinese (Simplified)</option>
+              <option value="zh-TW">Chinese (Traditional)</option>
+              <option value="hr">Croatian</option>
+              <option value="cs">Czech</option>
+              <option value="da">Danish</option>
+              <option value="nl">Dutch</option>
+              <option value="en">English</option>
+              <option value="et">Estonian</option>
+              <option value="fi">Finnish</option>
+              <option value="fr">French</option>
+              <option value="de" selected>German</option>
+              <option value="de-CH">Swiss German</option>
+              <option value="el">Greek</option>
+              <option value="he">Hebrew</option>
+              <option value="hi">Hindi</option>
+              <option value="hu">Hungarian</option>
+              <option value="id">Indonesian</option>
+              <option value="it">Italian</option>
+              <option value="ja">Japanese</option>
+              <option value="ko">Korean</option>
+              <option value="lv">Latvian</option>
+              <option value="lt">Lithuanian</option>
+              <option value="no">Norwegian</option>
+              <option value="pl">Polish</option>
+              <option value="pt">Portuguese</option>
+              <option value="ro">Romanian</option>
+              <option value="ru">Russian</option>
+              <option value="sk">Slovak</option>
+              <option value="sl">Slovenian</option>
+              <option value="es">Spanish</option>
+              <option value="sv">Swedish</option>
+              <option value="th">Thai</option>
+              <option value="tr">Turkish</option>
+              <option value="uk">Ukrainian</option>
+              <option value="vi">Vietnamese</option>
+            </select>
+          </div>
+        </div>
+        <div class="textarea-container">
+          <textarea id="outputText" readonly placeholder="Translation..."></textarea>
+        </div>
+        <div class="button-group">
+          <button class="copy-btn" id="copyBtn" title="Copy" aria-label="Copy Translation">
+            <svg viewBox="0 0 24 24">
+              <path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>
+            </svg>
+          </button>
+          <button class="speak-btn" id="speakBtn" title="Hear Translation" aria-label="Hear Translation">
+            <svg viewBox="0 0 24 24">
+              <path d="M3 10v4h4l5 5V5L7 10H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.06c1.48-.74 2.5-2.26 2.5-4.03zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.92 7-4.69 7-8.77s-2.99-7.85-7-8.77z"/>
+            </svg>
+          </button>
+          <!-- New Voice and Photo Buttons -->
+          <button class="voice-btn" id="voiceBtn" title="Speak to Translate" aria-label="Speak to Translate">
+            <!-- Microphone Icon -->
+            <svg viewBox="0 0 24 24">
+              <path d="M12 14a3 3 0 003-3V5a3 3 0 00-6 0v6a3 3 0 003 3zm5-3a5 5 0 01-10 0H5a7 7 0 0014 0h-2zm-7 5c3.31 0 6-2.69 6-6h-2a4 4 0 00-8 0H7c0 3.31 2.69 6 6 6z"/>
+            </svg>
+          </button>
+          <button class="photo-btn" id="photoBtn" title="Upload Photo for Translation" aria-label="Upload Photo for Translation">
+            <!-- Camera Icon -->
+            <svg viewBox="0 0 24 24">
+              <path d="M21 5h-3.17l-1.84-2H7.01L5.17 5H2c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h19c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 14H2V7h3.17l1.84-2h8.99l1.84 2H21v12zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8a3 3 0 100 6 3 3 0 000-6z"/>
             </svg>
           </button>
         </div>
@@ -636,6 +765,8 @@
     const outputText = document.getElementById('outputText');
     const copyBtn = document.getElementById('copyBtn');
     const speakBtn = document.getElementById('speakBtn');
+    const voiceBtn = document.getElementById('voiceBtn');
+    const photoBtn = document.getElementById('photoBtn');
     const aboutLink = document.getElementById('aboutLink');
     const modalOverlay = document.getElementById('modalOverlay');
     const closeModalBtn = document.getElementById('closeModalBtn');
@@ -647,6 +778,41 @@
     // Debounce Timer
     let typingTimer;
     const debounceDelay = 500;
+
+    // Speech Recognition Setup
+    let recognition;
+    let isListening = false;
+
+    if ('SpeechRecognition' in window || 'webkitSpeechRecognition' in window) {
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      recognition = new SpeechRecognition();
+      recognition.continuous = false;
+      recognition.lang = sourceLangSelect.value;
+      recognition.interimResults = false;
+      recognition.maxAlternatives = 1;
+
+      recognition.onresult = (event) => {
+        const transcript = event.results[0][0].transcript;
+        inputText.value = transcript;
+        toggleActiveClass(inputText, inputText.parentElement);
+        translateText();
+      };
+
+      recognition.onerror = (event) => {
+        console.error('Speech recognition error:', event.error);
+        alert('Speech recognition error: ' + event.error);
+        isListening = false;
+        voiceBtn.classList.remove('active');
+      };
+
+      recognition.onend = () => {
+        isListening = false;
+        voiceBtn.classList.remove('active');
+      };
+    } else {
+      voiceBtn.disabled = true;
+      voiceBtn.title = 'Speech Recognition not supported in this browser.';
+    }
 
     // Translate Text Function
     async function translateText() {
@@ -700,6 +866,10 @@
     sourceLangSelect.addEventListener('change', () => {
       if (inputText.value.trim()) {
         translateText();
+      }
+      // Update recognition language if SpeechRecognition is available
+      if (recognition) {
+        recognition.lang = sourceLangSelect.value;
       }
     });
 
@@ -800,6 +970,56 @@
     homeBtn.addEventListener('click', () => {
       modalOverlay.style.display = 'none';
       window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+
+    // Voice Button Functionality
+    voiceBtn.addEventListener('click', () => {
+      if (!recognition) return;
+      if (isListening) {
+        recognition.stop();
+        isListening = false;
+        voiceBtn.classList.remove('active');
+      } else {
+        recognition.start();
+        isListening = true;
+        voiceBtn.classList.add('active');
+      }
+    });
+
+    // Photo Button Functionality
+    photoBtn.addEventListener('click', () => {
+      // Create a hidden file input element
+      const fileInput = document.createElement('input');
+      fileInput.type = 'file';
+      fileInput.accept = 'image/*';
+      fileInput.style.display = 'none';
+      document.body.appendChild(fileInput);
+
+      fileInput.addEventListener('change', (event) => {
+        const file = event.target.files[0];
+        if (file) {
+          // Show a loading indicator or disable buttons as needed
+          Tesseract.recognize(
+            file,
+            'eng', // You can dynamically set the language based on sourceLangSelect
+            { logger: m => console.log(m) }
+          ).then(({ data: { text } }) => {
+            inputText.value = text;
+            toggleActiveClass(inputText, inputText.parentElement);
+            translateText();
+          }).catch(err => {
+            console.error(err);
+            alert('Error processing image for translation.');
+          }).finally(() => {
+            document.body.removeChild(fileInput);
+          });
+        } else {
+          document.body.removeChild(fileInput);
+        }
+      });
+
+      // Trigger the file input click
+      fileInput.click();
     });
   </script>
 
