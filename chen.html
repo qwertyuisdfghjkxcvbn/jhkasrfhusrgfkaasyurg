@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
   <title>Translator</title>
   
+  <!-- Manifest and Icons for Progressive Web App -->
   <link rel="manifest" href="manifest.json">
   <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -45,6 +46,9 @@
       --text-color: var(--text-light);
       --input-bg: var(--input-bg-light);
       --divider-color: var(--divider-color-light);
+      --overlay-bg: rgba(0,0,0,0.6);
+      --loading-bg: rgba(255, 255, 255, 0.8);
+      --loading-color: #333;
     }
     
     /* Dark Mode Overrides */
@@ -55,6 +59,9 @@
         --text-color: var(--text-dark);
         --input-bg: var(--input-bg-dark);
         --divider-color: var(--divider-color-dark);
+        --overlay-bg: rgba(0,0,0,0.8);
+        --loading-bg: rgba(0, 0, 0, 0.8);
+        --loading-color: #ffffff;
       }
     }
     
@@ -302,6 +309,7 @@
       position: absolute;
       bottom: 1em;
       right: 1em;
+      flex-wrap: wrap;
     }
     
     .copy-btn, .speak-btn, .voice-btn, .photo-btn {
@@ -365,7 +373,7 @@
       align-items: center;
       justify-content: center;
       padding: 1em;
-      background: rgba(0,0,0,0.6);
+      background: var(--overlay-bg);
       z-index: 999;
     }
     
@@ -436,6 +444,41 @@
       background: var(--btn-hover-bg);
     }
     
+    /* Loading Overlay Styles */
+    .loading-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      background: var(--loading-bg);
+      z-index: 1000;
+      flex-direction: column;
+    }
+    
+    .spinner {
+      border: 4px solid #f3f3f3;
+      border-top: 4px solid var(--btn-bg);
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      animation: spin 1s linear infinite;
+      margin-bottom: 1em;
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    .loading-text {
+      font-size: 1em;
+      color: var(--loading-color);
+    }
+    
     /* Responsive Styles for Mobile Devices */
     @media (max-width: 600px) {
       .translator-card {
@@ -490,9 +533,15 @@
 </head>
 <body>
 
+  <!-- Loading Overlay -->
+  <div class="loading-overlay" id="loadingOverlay">
+    <div class="spinner"></div>
+    <div class="loading-text" id="loadingText">Processing...</div>
+  </div>
+  
   <!-- Header with About Button -->
   <header>
-    <button class="about-link" id="aboutLink">About</button>
+    <button class="about-link" id="aboutLink" aria-label="About">About</button>
   </header>
 
   <!-- Main Translator Card -->
@@ -503,7 +552,7 @@
       <div class="panel input-panel">
         <div class="language-selectors">
           <div class="select-container">
-            <select id="sourceLang">
+            <select id="sourceLang" aria-label="Select Source Language">
               <option value="af">Afrikaans</option>
               <option value="ar">Arabic</option>
               <option value="bg">Bulgarian</option>
@@ -547,7 +596,7 @@
           </div>
         </div>
         <div class="textarea-container">
-          <textarea id="inputText" placeholder="Type text..."></textarea>
+          <textarea id="inputText" placeholder="Type text..." aria-label="Input Text"></textarea>
         </div>
         <!-- New Buttons for Voice and Photo Translation -->
         <div class="button-group">
@@ -579,7 +628,7 @@
       <div class="panel output-panel">
         <div class="language-selectors">
           <div class="select-container">
-            <select id="targetLang">
+            <select id="targetLang" aria-label="Select Target Language">
               <option value="af">Afrikaans</option>
               <option value="ar">Arabic</option>
               <option value="bg">Bulgarian</option>
@@ -623,84 +672,7 @@
           </div>
         </div>
         <div class="textarea-container">
-          <textarea id="outputText" readonly placeholder="Translation..."></textarea>
-        </div>
-        <div class="button-group">
-          <button class="copy-btn" id="copyBtn" title="Copy" aria-label="Copy Translation">
-            <svg viewBox="0 0 24 24">
-              <path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>
-            </svg>
-          </button>
-          <button class="speak-btn" id="speakBtn" title="Hear Translation" aria-label="Hear Translation">
-            <svg viewBox="0 0 24 24">
-              <path d="M3 10v4h4l5 5V5L7 10H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.06c1.48-.74 2.5-2.26 2.5-4.03zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.92 7-4.69 7-8.77s-2.99-7.85-7-8.77z"/>
-            </svg>
-          </button>
-          <!-- New Voice and Photo Buttons -->
-          <button class="voice-btn" id="voiceBtn" title="Speak to Translate" aria-label="Speak to Translate">
-            <!-- Microphone Icon -->
-            <svg viewBox="0 0 24 24">
-              <path d="M12 14a3 3 0 003-3V5a3 3 0 00-6 0v6a3 3 0 003 3zm5-3a5 5 0 01-10 0H5a7 7 0 0014 0h-2zm-7 5c3.31 0 6-2.69 6-6h-2a4 4 0 00-8 0H7c0 3.31 2.69 6 6 6z"/>
-            </svg>
-          </button>
-          <button class="photo-btn" id="photoBtn" title="Upload Photo for Translation" aria-label="Upload Photo for Translation">
-            <!-- Camera Icon -->
-            <svg viewBox="0 0 24 24">
-              <path d="M21 5h-3.17l-1.84-2H7.01L5.17 5H2c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h19c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 14H2V7h3.17l1.84-2h8.99l1.84 2H21v12zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8a3 3 0 100 6 3 3 0 000-6z"/>
-            </svg>
-          </button>
-        </div>
-      </div>
-      
-      <!-- Output Panel -->
-      <div class="panel output-panel">
-        <div class="language-selectors">
-          <div class="select-container">
-            <select id="targetLang">
-              <option value="af">Afrikaans</option>
-              <option value="ar">Arabic</option>
-              <option value="bg">Bulgarian</option>
-              <option value="ca">Catalan</option>
-              <option value="zh-CN">Chinese (Simplified)</option>
-              <option value="zh-TW">Chinese (Traditional)</option>
-              <option value="hr">Croatian</option>
-              <option value="cs">Czech</option>
-              <option value="da">Danish</option>
-              <option value="nl">Dutch</option>
-              <option value="en">English</option>
-              <option value="et">Estonian</option>
-              <option value="fi">Finnish</option>
-              <option value="fr">French</option>
-              <option value="de" selected>German</option>
-              <option value="de-CH">Swiss German</option>
-              <option value="el">Greek</option>
-              <option value="he">Hebrew</option>
-              <option value="hi">Hindi</option>
-              <option value="hu">Hungarian</option>
-              <option value="id">Indonesian</option>
-              <option value="it">Italian</option>
-              <option value="ja">Japanese</option>
-              <option value="ko">Korean</option>
-              <option value="lv">Latvian</option>
-              <option value="lt">Lithuanian</option>
-              <option value="no">Norwegian</option>
-              <option value="pl">Polish</option>
-              <option value="pt">Portuguese</option>
-              <option value="ro">Romanian</option>
-              <option value="ru">Russian</option>
-              <option value="sk">Slovak</option>
-              <option value="sl">Slovenian</option>
-              <option value="es">Spanish</option>
-              <option value="sv">Swedish</option>
-              <option value="th">Thai</option>
-              <option value="tr">Turkish</option>
-              <option value="uk">Ukrainian</option>
-              <option value="vi">Vietnamese</option>
-            </select>
-          </div>
-        </div>
-        <div class="textarea-container">
-          <textarea id="outputText" readonly placeholder="Translation..."></textarea>
+          <textarea id="outputText" readonly placeholder="Translation..." aria-label="Translated Text"></textarea>
         </div>
         <div class="button-group">
           <button class="copy-btn" id="copyBtn" title="Copy" aria-label="Copy Translation">
@@ -752,8 +724,8 @@
         We appreciate your feedback and support. Together, we can make this tool even better!
       </p>
       <div class="modal-buttons">
-        <button class="home-btn" id="homeBtn">Home</button>
-        <button class="close-btn" id="closeModalBtn">Close</button>
+        <button class="home-btn" id="homeBtn" aria-label="Home">Home</button>
+        <button class="close-btn" id="closeModalBtn" aria-label="Close About Modal">Close</button>
       </div>
     </div>
   </div>
@@ -774,6 +746,8 @@
     const targetLangSelect = document.getElementById('targetLang');
     const swapBtn = document.getElementById('swapBtn');
     const homeBtn = document.getElementById('homeBtn');
+    const loadingOverlay = document.getElementById('loadingOverlay');
+    const loadingText = document.getElementById('loadingText');
 
     // Debounce Timer
     let typingTimer;
@@ -800,7 +774,7 @@
 
       recognition.onerror = (event) => {
         console.error('Speech recognition error:', event.error);
-        alert('Speech recognition error: ' + event.error);
+        showAlert('Speech recognition error: ' + event.error);
         isListening = false;
         voiceBtn.classList.remove('active');
       };
@@ -820,6 +794,7 @@
       outputText.value = '';
       if (!text) return;
 
+      showLoading('Translating...');
       const sourceLang = sourceLangSelect.value;
       const targetLang = targetLangSelect.value;
       const direction = `${sourceLang}|${targetLang}`;
@@ -836,6 +811,8 @@
       } catch (error) {
         console.error(error);
         outputText.value = 'Error fetching translation. Try again later.';
+      } finally {
+        hideLoading();
       }
     }
 
@@ -846,6 +823,23 @@
       } else {
         container.classList.remove('active');
       }
+    }
+
+    // Show Loading Overlay
+    function showLoading(message) {
+      loadingText.textContent = message;
+      loadingOverlay.style.display = 'flex';
+    }
+
+    // Hide Loading Overlay
+    function hideLoading() {
+      loadingOverlay.style.display = 'none';
+    }
+
+    // Show Alert within UI
+    function showAlert(message) {
+      // You can implement a better UI alert here
+      alert(message);
     }
 
     // Event Listeners for Input Text
@@ -913,7 +907,10 @@
           setTimeout(() => {
             copyBtn.style.color = 'var(--btn-bg)';
           }, 1500);
-        }).catch(e => console.error('Copy failed', e));
+        }).catch(e => {
+          console.error('Copy failed', e);
+          showAlert('Failed to copy translation.');
+        });
       }
     });
 
@@ -923,7 +920,7 @@
       if (!translationText) return;
 
       if (!('speechSynthesis' in window)) {
-        alert('Sorry, your browser does not support speech synthesis.');
+        showAlert('Sorry, your browser does not support speech synthesis.');
         return;
       }
 
@@ -983,6 +980,7 @@
         recognition.start();
         isListening = true;
         voiceBtn.classList.add('active');
+        showLoading('Listening...');
       }
     });
 
@@ -998,19 +996,26 @@
       fileInput.addEventListener('change', (event) => {
         const file = event.target.files[0];
         if (file) {
-          // Show a loading indicator or disable buttons as needed
+          showLoading('Processing Image...');
+          // Perform OCR using Tesseract.js
           Tesseract.recognize(
             file,
-            'eng', // You can dynamically set the language based on sourceLangSelect
-            { logger: m => console.log(m) }
+            sourceLangSelect.value, // Dynamically set language based on source language
+            { 
+              logger: m => {
+                console.log(m);
+                // You can update a progress bar here if desired
+              } 
+            }
           ).then(({ data: { text } }) => {
             inputText.value = text;
             toggleActiveClass(inputText, inputText.parentElement);
             translateText();
           }).catch(err => {
             console.error(err);
-            alert('Error processing image for translation.');
+            showAlert('Error processing image for translation.');
           }).finally(() => {
+            hideLoading();
             document.body.removeChild(fileInput);
           });
         } else {
