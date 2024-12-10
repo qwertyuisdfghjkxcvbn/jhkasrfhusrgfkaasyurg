@@ -1,224 +1,664 @@
-// Sample Data: Levels and Words
-const wordsData = [
-  // Level 1: A1 Beginner
-  {
-    level: 1,
-    difficulty: 'A1',
-    words: [
-      { german: 'Hallo', english: 'Hello' },
-      { german: 'Tschüss', english: 'Goodbye' },
-      { german: 'Bitte', english: 'Please' },
-      { german: 'Danke', english: 'Thank you' },
-      { german: 'Ja', english: 'Yes' },
-      { german: 'Nein', english: 'No' },
-      { german: 'Entschuldigung', english: 'Excuse me' },
-      { german: 'Wie geht\'s?', english: 'How are you?' },
-      { german: 'Gut', english: 'Good' },
-      { german: 'Schlecht', english: 'Bad' },
-      { german: 'Ich', english: 'I' },
-      { german: 'Du', english: 'You' },
-      { german: 'Er', english: 'He' },
-      { german: 'Sie', english: 'She' },
-      { german: 'Es', english: 'It' },
-      { german: 'Wir', english: 'We' },
-      { german: 'Ihr', english: 'You (plural)' },
-      { german: 'Sie', english: 'They' },
-      { german: 'Haus', english: 'House' },
-      { german: 'Buch', english: 'Book' },
-    ]
-  },
-  // Level 2: A1 Beginner
-  {
-    level: 2,
-    difficulty: 'A1',
-    words: [
-      { german: 'Auto', english: 'Car' },
-      { german: 'Straße', english: 'Street' },
-      { german: 'Freund', english: 'Friend' },
-      { german: 'Familie', english: 'Family' },
-      { german: 'Mutter', english: 'Mother' },
-      { german: 'Vater', english: 'Father' },
-      { german: 'Bruder', english: 'Brother' },
-      { german: 'Schwester', english: 'Sister' },
-      { german: 'Kind', english: 'Child' },
-      { german: 'Lehrer', english: 'Teacher' },
-      { german: 'Student', english: 'Student' },
-      { german: 'Büro', english: 'Office' },
-      { german: 'Arzt', english: 'Doctor' },
-      { german: 'Apotheke', english: 'Pharmacy' },
-      { german: 'Restaurant', english: 'Restaurant' },
-      { german: 'Bäckerei', english: 'Bakery' },
-      { german: 'Kaffee', english: 'Coffee' },
-      { german: 'Wasser', english: 'Water' },
-      { german: 'Bier', english: 'Beer' },
-      { german: 'Wein', english: 'Wine' },
-    ]
-  },
-  // ... Add more levels up to level 100 with appropriate difficulty (A1 to C1)
-];
-
-// Initialize App
-document.addEventListener('DOMContentLoaded', () => {
-  const levelSelect = document.getElementById('levelSelect');
-  const flashcardContainer = document.getElementById('flashcardContainer');
-  const quizSection = document.getElementById('quizSection');
-  const quizContainer = document.getElementById('quizContainer');
-  const submitQuizButton = document.getElementById('submitQuiz');
-  const quizResult = document.getElementById('quizResult');
-  const progressContainer = document.getElementById('progressContainer');
-  const themeToggle = document.getElementById('themeToggle');
-  const aboutLink = document.getElementById('aboutLink');
-  const aboutModal = document.getElementById('aboutModal');
-  const closeModalBtn = document.getElementById('closeModal');
-
-  // Populate Level Selection Dropdown
-  function populateLevels() {
-    wordsData.forEach(data => {
-      const option = document.createElement('option');
-      option.value = data.level;
-      option.textContent = `Level ${data.level} (${data.difficulty})`;
-      levelSelect.appendChild(option);
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>German Learning App</title>
+  
+  <!-- FontAwesome for Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <style>
+    /* CSS Variables for Theming */
+    :root {
+      --font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      --bg-color-light: #f5f5f5;
+      --bg-color-dark: #1e1e1e;
+      --card-bg-light: #ffffff;
+      --card-bg-dark: #2c2c2c;
+      --text-color-light: #333333;
+      --text-color-dark: #ffffff;
+      --primary-color: #4CAF50;
+      --primary-hover: #45a049;
+      --secondary-color: #2196F3;
+      --secondary-hover: #0b7dda;
+      --error-color: #f44336;
+      --modal-bg-light: #ffffff;
+      --modal-bg-dark: #2c2c2c;
+      --transition-speed: 0.3s;
+      --flashcard-width: 300px;
+      --flashcard-height: 200px;
+    }
+    
+    /* Dark Mode Overrides */
+    body.dark {
+      background-color: var(--bg-color-dark);
+      color: var(--text-color-dark);
+    }
+    
+    body.dark .modal {
+      background-color: var(--modal-bg-dark);
+    }
+    
+    body.dark select {
+      background-color: #3a3a3a;
+      color: var(--text-color-dark);
+    }
+    
+    body.dark .flashcard {
+      background-color: #444;
+      color: var(--text-color-dark);
+    }
+    
+    body.dark button {
+      background-color: var(--primary-color);
+      color: #fff;
+    }
+    
+    body.dark a {
+      color: var(--primary-color);
+    }
+    
+    /* Global Styles */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    
+    body {
+      font-family: var(--font-family);
+      background-color: var(--bg-color-light);
+      color: var(--text-color-light);
+      transition: background-color var(--transition-speed), color var(--transition-speed);
+    }
+    
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1em 2em;
+      background-color: transparent;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    
+    header h1 {
+      font-size: 1.5em;
+    }
+    
+    #themeToggle {
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 1.5em;
+      color: var(--text-color-light);
+      transition: color var(--transition-speed);
+    }
+    
+    #themeToggle:hover {
+      color: var(--primary-color);
+    }
+    
+    main {
+      padding: 2em;
+      display: flex;
+      flex-direction: column;
+      gap: 2em;
+    }
+    
+    section {
+      background-color: var(--card-bg-light);
+      padding: 1.5em;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      transition: background-color var(--transition-speed), box-shadow var(--transition-speed);
+    }
+    
+    .hidden {
+      display: none;
+    }
+    
+    #levelSelection select {
+      width: 100%;
+      padding: 0.8em 1em;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      font-size: 1em;
+      transition: border-color var(--transition-speed);
+    }
+    
+    #levelSelection select:hover,
+    #levelSelection select:focus {
+      border-color: var(--primary-color);
+      outline: none;
+    }
+    
+    .flashcard-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1em;
+      justify-content: center;
+    }
+    
+    .flashcard {
+      width: var(--flashcard-width);
+      height: var(--flashcard-height);
+      background-color: var(--card-bg-light);
+      border-radius: 10px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      cursor: pointer;
+      position: relative;
+      transition: transform var(--transition-speed), box-shadow var(--transition-speed);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 1em;
+    }
+    
+    .flashcard:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    }
+    
+    .flashcard.flip {
+      transform: rotateY(180deg);
+    }
+    
+    .flashcard .word {
+      font-size: 1.5em;
+      font-weight: bold;
+    }
+    
+    .flashcard .definition {
+      font-size: 1em;
+      display: none;
+    }
+    
+    .flashcard.flip .word {
+      display: none;
+    }
+    
+    .flashcard.flip .definition {
+      display: block;
+    }
+    
+    .buttons {
+      display: flex;
+      gap: 1em;
+      justify-content: center;
+    }
+    
+    .buttons button {
+      background-color: var(--primary-color);
+      color: #fff;
+      border: none;
+      padding: 0.8em 1.2em;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 1em;
+      display: flex;
+      align-items: center;
+      gap: 0.5em;
+      transition: background-color var(--transition-speed);
+    }
+    
+    .buttons button:hover {
+      background-color: var(--primary-hover);
+    }
+    
+    #submitQuiz {
+      background-color: var(--secondary-color);
+    }
+    
+    #submitQuiz:hover {
+      background-color: var(--secondary-hover);
+    }
+    
+    #quizContainer {
+      display: flex;
+      flex-direction: column;
+      gap: 1em;
+    }
+    
+    .quiz-question {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5em;
+    }
+    
+    .quiz-question label {
+      font-weight: bold;
+    }
+    
+    #quizResult {
+      margin-top: 1em;
+      font-size: 1.2em;
+      font-weight: bold;
+    }
+    
+    #progressContainer {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1em;
+      justify-content: center;
+    }
+    
+    .progress-item {
+      background-color: var(--input-bg);
+      padding: 0.5em 1em;
+      border-radius: 5px;
+      font-size: 1em;
+    }
+    
+    footer {
+      text-align: center;
+      padding: 1em;
+      background-color: transparent;
+      color: var(--text-color-light);
+    }
+    
+    footer a {
+      color: var(--primary-color);
+      text-decoration: none;
+      transition: color var(--transition-speed);
+    }
+    
+    footer a:hover {
+      color: var(--primary-hover);
+    }
+    
+    /* Modal Styles */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0,0,0,0.6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+    
+    .modal {
+      background-color: var(--modal-bg-light);
+      padding: 2em;
+      border-radius: 10px;
+      width: 90%;
+      max-width: 500px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      transition: background-color var(--transition-speed), color var(--transition-speed), box-shadow var(--transition-speed);
+    }
+    
+    body.dark .modal {
+      background-color: var(--modal-bg-dark);
+    }
+    
+    .modal h2 {
+      margin-bottom: 1em;
+    }
+    
+    .modal p {
+      margin-bottom: 1em;
+    }
+    
+    .close-button {
+      background-color: var(--primary-color);
+      color: #fff;
+      border: none;
+      padding: 0.6em 1.2em;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 1em;
+      transition: background-color var(--transition-speed);
+    }
+    
+    .close-button:hover {
+      background-color: var(--primary-hover);
+    }
+    
+    /* Pronounce Button Styles */
+    .pronounce-btn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--primary-color);
+      font-size: 1em;
+      transition: color var(--transition-speed);
+    }
+    
+    .pronounce-btn:hover {
+      color: var(--primary-hover);
+    }
+    
+    .pronounce-btn i {
+      pointer-events: none;
+    }
+    
+    /* Hidden Class */
+    .hidden {
+      display: none;
+    }
+    
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      .flashcard {
+        width: 80%;
+        height: 150px;
+      }
+      
+      header h1 {
+        font-size: 1.2em;
+      }
+      
+      #themeToggle {
+        font-size: 1.2em;
+      }
+    }
+    
+    @media (max-width: 480px) {
+      .flashcard {
+        width: 100%;
+        height: 120px;
+      }
+      
+      header {
+        padding: 1em;
+      }
+      
+      main {
+        padding: 1em;
+      }
+      
+      section h2 {
+        font-size: 1.2em;
+      }
+      
+      .buttons button {
+        font-size: 0.9em;
+        padding: 0.6em 1em;
+      }
+    }
+  </style>
+</head>
+<body>
+  
+  <!-- Header -->
+  <header>
+    <h1>German Learning App</h1>
+    <button id="themeToggle" aria-label="Toggle Dark/Light Mode">
+      <i class="fas fa-moon"></i>
+    </button>
+  </header>
+  
+  <!-- Main Content -->
+  <main>
+    <!-- Level Selection -->
+    <section id="levelSelection">
+      <h2>Select Level</h2>
+      <select id="levelSelect" aria-label="Select Learning Level">
+        <!-- Levels will be populated dynamically -->
+      </select>
+    </section>
+    
+    <!-- Flashcards -->
+    <section id="flashcards">
+      <h2>Flashcards</h2>
+      <div class="flashcard-container" id="flashcardContainer">
+        <!-- Flashcards will be populated dynamically -->
+      </div>
+    </section>
+    
+    <!-- Quiz Section -->
+    <section id="quizSection" class="hidden">
+      <h2>Quiz</h2>
+      <div id="quizContainer">
+        <!-- Quiz questions will be populated dynamically -->
+      </div>
+      <button id="submitQuiz">Submit Quiz</button>
+      <div id="quizResult" class="hidden">
+        <!-- Quiz results will be displayed here -->
+      </div>
+    </section>
+    
+    <!-- Progress Tracker -->
+    <section id="progressTracker">
+      <h2>Your Progress</h2>
+      <div id="progressContainer">
+        <!-- Progress will be displayed dynamically -->
+      </div>
+    </section>
+  </main>
+  
+  <!-- Footer -->
+  <footer>
+    <p>&copy; 2024 German Learning App</p>
+    <button class="about-link" id="aboutLink">About</button>
+  </footer>
+  
+  <!-- Modal for About -->
+  <div id="aboutModal" class="modal-overlay hidden">
+    <div class="modal">
+      <h2>About</h2>
+      <p>
+        Welcome to the German Learning App! This application is designed to help you learn German through structured levels, flashcards, and quizzes. Track your progress and achieve fluency from beginner (A1) to advanced (C1).
+      </p>
+      <p>
+        If you have any questions or feedback, feel free to reach out at <a href="mailto:support@germanlearningapp.com">support@germanlearningapp.com</a>.
+      </p>
+      <button id="closeModal" class="close-button">Close</button>
+    </div>
+  </div>
+  
+  <!-- JavaScript -->
+  <script src="wordsData.js"></script>
+  <script>
+    // Element References
+    const levelSelect = document.getElementById('levelSelect');
+    const flashcardContainer = document.getElementById('flashcardContainer');
+    const quizSection = document.getElementById('quizSection');
+    const quizContainer = document.getElementById('quizContainer');
+    const submitQuizButton = document.getElementById('submitQuiz');
+    const quizResult = document.getElementById('quizResult');
+    const progressContainer = document.getElementById('progressContainer');
+    const themeToggle = document.getElementById('themeToggle');
+    const aboutLink = document.getElementById('aboutLink');
+    const aboutModal = document.getElementById('aboutModal');
+    const closeModalBtn = document.getElementById('closeModal');
+    
+    // Initialize App
+    document.addEventListener('DOMContentLoaded', () => {
+      populateLevels();
+      loadFlashcards(levelSelect.value);
+      generateQuiz(levelSelect.value);
+      renderProgress();
+      initializeTheme();
     });
-  }
-
-  // Load Flashcards for Selected Level
-  function loadFlashcards(level) {
-    flashcardContainer.innerHTML = '';
-    const levelData = wordsData.find(data => data.level === parseInt(level));
-    if (!levelData) return;
-
-    levelData.words.forEach(wordObj => {
-      const flashcard = document.createElement('div');
-      flashcard.classList.add('flashcard');
-      
-      const word = document.createElement('div');
-      word.classList.add('word');
-      word.textContent = wordObj.german;
-      
-      const definition = document.createElement('div');
-      definition.classList.add('definition');
-      definition.textContent = wordObj.english;
-      
-      flashcard.appendChild(word);
-      flashcard.appendChild(definition);
-      
-      flashcard.addEventListener('click', () => {
-        flashcard.classList.toggle('flip');
+    
+    // Populate Level Selection Dropdown
+    function populateLevels() {
+      wordsData.forEach(data => {
+        const option = document.createElement('option');
+        option.value = data.level;
+        option.textContent = `Level ${data.level} (${data.difficulty})`;
+        levelSelect.appendChild(option);
       });
-      
-      flashcardContainer.appendChild(flashcard);
-    });
-  }
-
-  // Generate Quiz for Selected Level
-  function generateQuiz(level) {
-    quizContainer.innerHTML = '';
-    const levelData = wordsData.find(data => data.level === parseInt(level));
-    if (!levelData) return;
-
-    // Shuffle words and select 10 for the quiz
-    const shuffledWords = levelData.words.sort(() => 0.5 - Math.random()).slice(0, 10);
-
-    shuffledWords.forEach((wordObj, index) => {
-      const questionDiv = document.createElement('div');
-      questionDiv.classList.add('quiz-question');
-
-      const questionLabel = document.createElement('label');
-      questionLabel.textContent = `Q${index + 1}: What is the English translation of "${wordObj.german}"?`;
-      
-      const input = document.createElement('input');
-      input.type = 'text';
-      input.dataset.correctAnswer = wordObj.english.toLowerCase();
-
-      questionDiv.appendChild(questionLabel);
-      questionDiv.appendChild(input);
-
-      quizContainer.appendChild(questionDiv);
-    });
-
-    quizSection.classList.remove('hidden');
-    quizResult.classList.add('hidden');
-  }
-
-  // Submit Quiz and Show Results
-  function submitQuiz() {
-    const level = levelSelect.value;
-    const levelData = wordsData.find(data => data.level === parseInt(level));
-    if (!levelData) return;
-
-    const quizInputs = quizContainer.querySelectorAll('input');
-    let correctAnswers = 0;
-
-    quizInputs.forEach(input => {
-      const userAnswer = input.value.trim().toLowerCase();
-      const correctAnswer = input.dataset.correctAnswer;
-      if (userAnswer === correctAnswer) {
-        correctAnswers++;
-        input.style.borderColor = 'var(--primary-color)';
+    }
+    
+    // Load Flashcards for Selected Level
+    function loadFlashcards(level) {
+      flashcardContainer.innerHTML = '';
+      const levelData = wordsData.find(data => data.level === parseInt(level));
+      if (!levelData) return;
+    
+      levelData.words.forEach(wordObj => {
+        const flashcard = document.createElement('div');
+        flashcard.classList.add('flashcard');
+        
+        const word = document.createElement('div');
+        word.classList.add('word');
+        word.textContent = wordObj.german;
+        
+        const definition = document.createElement('div');
+        definition.classList.add('definition');
+        definition.textContent = wordObj.english;
+        
+        // Pronounce Button
+        const pronounceBtn = document.createElement('button');
+        pronounceBtn.classList.add('pronounce-btn');
+        pronounceBtn.innerHTML = '<i class="fas fa-volume-up"></i>';
+        
+        pronounceBtn.addEventListener('click', (e) => {
+          e.stopPropagation(); // Prevent flipping the flashcard
+          const utterance = new SpeechSynthesisUtterance(wordObj.german);
+          utterance.lang = 'de-DE';
+          window.speechSynthesis.speak(utterance);
+        });
+        
+        flashcard.appendChild(word);
+        flashcard.appendChild(definition);
+        flashcard.appendChild(pronounceBtn);
+        
+        flashcard.addEventListener('click', () => {
+          flashcard.classList.toggle('flip');
+        });
+        
+        flashcardContainer.appendChild(flashcard);
+      });
+    }
+    
+    // Generate Quiz for Selected Level
+    function generateQuiz(level) {
+      quizContainer.innerHTML = '';
+      const levelData = wordsData.find(data => data.level === parseInt(level));
+      if (!levelData) return;
+    
+      // Shuffle words and select 10 for the quiz
+      const shuffledWords = [...levelData.words].sort(() => 0.5 - Math.random()).slice(0, 10);
+    
+      shuffledWords.forEach((wordObj, index) => {
+        const questionDiv = document.createElement('div');
+        questionDiv.classList.add('quiz-question');
+    
+        const questionLabel = document.createElement('label');
+        questionLabel.textContent = `Q${index + 1}: What is the English translation of "${wordObj.german}"?`;
+        
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.dataset.correctAnswer = wordObj.english.toLowerCase();
+    
+        questionDiv.appendChild(questionLabel);
+        questionDiv.appendChild(input);
+    
+        quizContainer.appendChild(questionDiv);
+      });
+    
+      quizSection.classList.remove('hidden');
+      quizResult.classList.add('hidden');
+    }
+    
+    // Submit Quiz and Show Results
+    function submitQuiz() {
+      const level = levelSelect.value;
+      const levelData = wordsData.find(data => data.level === parseInt(level));
+      if (!levelData) return;
+    
+      const quizInputs = quizContainer.querySelectorAll('input');
+      let correctAnswers = 0;
+    
+      quizInputs.forEach(input => {
+        const userAnswer = input.value.trim().toLowerCase();
+        const correctAnswer = input.dataset.correctAnswer;
+        if (userAnswer === correctAnswer) {
+          correctAnswers++;
+          input.style.borderColor = 'var(--primary-color)';
+        } else {
+          input.style.borderColor = 'var(--error-color)';
+        }
+      });
+    
+      quizResult.textContent = `You answered ${correctAnswers} out of ${quizInputs.length} correctly!`;
+      quizResult.classList.remove('hidden');
+    
+      // Update Progress
+      updateProgress(level, correctAnswers === quizInputs.length);
+    }
+    
+    // Update Progress Tracker
+    function updateProgress(level, completed) {
+      let progress = JSON.parse(localStorage.getItem('progress')) || {};
+      progress[level] = completed;
+      localStorage.setItem('progress', JSON.stringify(progress));
+      renderProgress();
+    }
+    
+    // Render Progress Tracker
+    function renderProgress() {
+      progressContainer.innerHTML = '';
+      let progress = JSON.parse(localStorage.getItem('progress')) || {};
+    
+      for (let i = 1; i <= wordsData.length; i++) {
+        const progressItem = document.createElement('div');
+        progressItem.classList.add('progress-item');
+        progressItem.textContent = `Level ${i}: ${progress[i] ? '✔️' : '❌'}`;
+        progressContainer.appendChild(progressItem);
+      }
+    }
+    
+    // Theme Toggle
+    function initializeTheme() {
+      const savedTheme = localStorage.getItem('theme') || 'light';
+      if (savedTheme === 'dark') {
+        document.body.classList.add('dark');
+        themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
       } else {
-        input.style.borderColor = 'var(--error-color)';
+        themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
+      }
+    }
+    
+    function toggleTheme() {
+      document.body.classList.toggle('dark');
+      if (document.body.classList.contains('dark')) {
+        themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+        localStorage.setItem('theme', 'dark');
+      } else {
+        themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
+        localStorage.setItem('theme', 'light');
+      }
+    }
+    
+    // Event Listeners
+    levelSelect.addEventListener('change', (e) => {
+      loadFlashcards(e.target.value);
+      generateQuiz(e.target.value);
+    });
+    
+    submitQuizButton.addEventListener('click', submitQuiz);
+    
+    themeToggle.addEventListener('click', toggleTheme);
+    
+    aboutLink.addEventListener('click', () => {
+      aboutModal.classList.remove('hidden');
+    });
+    
+    closeModalBtn.addEventListener('click', () => {
+      aboutModal.classList.add('hidden');
+    });
+    
+    // Close Modal When Clicking Outside
+    aboutModal.addEventListener('click', (e) => {
+      if (e.target === aboutModal) {
+        aboutModal.classList.add('hidden');
       }
     });
+  </script>
 
-    quizResult.textContent = `You answered ${correctAnswers} out of ${quizInputs.length} correctly!`;
-    quizResult.classList.remove('hidden');
-
-    // Update Progress
-    updateProgress(level, correctAnswers === quizInputs.length);
-  }
-
-  // Update Progress Tracker
-  function updateProgress(level, completed) {
-    let progress = JSON.parse(localStorage.getItem('progress')) || {};
-    progress[level] = completed;
-    localStorage.setItem('progress', JSON.stringify(progress));
-    renderProgress();
-  }
-
-  // Render Progress Tracker
-  function renderProgress() {
-    progressContainer.innerHTML = '';
-    let progress = JSON.parse(localStorage.getItem('progress')) || {};
-
-    for (let i = 1; i <= wordsData.length; i++) {
-      const progressItem = document.createElement('div');
-      progressItem.classList.add('progress-item');
-      progressItem.textContent = `Level ${i}: ${progress[i] ? '✔️' : '❌'}`;
-      progressContainer.appendChild(progressItem);
-    }
-  }
-
-  // Theme Toggle
-  function toggleTheme() {
-    document.body.classList.toggle('dark');
-    if (document.body.classList.contains('dark')) {
-      themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
-    } else {
-      themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
-    }
-  }
-
-  // Event Listeners
-  levelSelect.addEventListener('change', (e) => {
-    loadFlashcards(e.target.value);
-    generateQuiz(e.target.value);
-  });
-
-  submitQuizButton.addEventListener('click', submitQuiz);
-
-  themeToggle.addEventListener('click', toggleTheme);
-
-  aboutLink.addEventListener('click', () => {
-    aboutModal.classList.remove('hidden');
-  });
-
-  closeModalBtn.addEventListener('click', () => {
-    aboutModal.classList.add('hidden');
-  });
-
-  // Initialize App
-  populateLevels();
-  loadFlashcards(levelSelect.value);
-  generateQuiz(levelSelect.value);
-  renderProgress();
-});
+</body>
+</html>
