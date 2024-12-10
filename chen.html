@@ -327,46 +327,33 @@
       height: 1.25em;
       fill: currentColor;
     }
-  
-.modal {
-  background: var(--card-bg);
-  padding: 0; 
-  max-width: 100%;
-  width: 100%;
-  height: 100%;
-  text-align: center;
-  display: flex; 
-  align-items: center;
+  .modal-buttons {
+  display: flex;
   justify-content: center;
+  gap: 1em;
+  margin-top: 2em;
 }
-  
-    .modal h2 {
-      margin-top: 0;
-      margin-bottom: 1.5em;
-      font-size: 1.4em;
-    }
-  
-    .modal p {
-      font-size: 1em;
-      line-height: 1.5;
-      margin-bottom: 2.5em;
-    }
-  
-    .close-btn {
-      background: var(--btn-bg);
-      color: var(--btn-text);
-      border: none;
-      padding: 1em 1.8em;
-      border-radius: 0.375em;
-      cursor: pointer;
-      font-size: 1em;
-      transition: background var(--transition);
-    }
-  
-    .close-btn:hover {
-      background: var(--btn-hover-bg);
-    }
-  
+
+.home-btn, .close-btn {
+  background: var(--btn-bg);
+  color: var(--btn-text);
+  border: none;
+  padding: 1em 1.8em;
+  border-radius: 0.375em;
+  cursor: pointer;
+  font-size: 1em;
+  transition: background var(--transition);
+}
+
+.home-btn:hover {
+  background: #0056b3; /* Custom hover color for Home button */
+}
+
+.close-btn:hover {
+  background: var(--btn-hover-bg);
+}
+
+
     @media (max-width: 600px) {
       .translator-card {
         border-radius: 1em;
@@ -536,14 +523,31 @@
     </div>
   </main>
 
-  <div class="modal-overlay" id="modalOverlay">
-    <div class="modal">
-      <h2>About</h2>
-      <p>This translator uses the MyMemory Translation API</p>
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <h2>About</h2>
+    <p>
+      Welcome to the Translator App! This application uses the 
+      <strong>MyMemory Translation API</strong> to provide quick and accurate translations between various languages.
+    </p>
+    <p>
+      This project was created by a dedicated student as part of a portfolio project aimed at demonstrating web development skills. The translator combines modern web technologies with a seamless user experience.
+    </p>
+    <p>
+      If you have any questions, suggestions, or encounter any issues, feel free to reach out via email:
+    </p>
+    <p>
+      <a href="mailto:contactatadiasta.com" class="contact-link">contactatadiasta.com</a>
+    </p>
+    <p>
+      We appreciate your feedback and support. Together, we can make this tool even better!
+    </p>
+    <div class="modal-buttons">
+      <button class="home-btn" id="homeBtn">Home</button>
       <button class="close-btn" id="closeModalBtn">Close</button>
     </div>
   </div>
-
+</div>
   <script>
     const inputText = document.getElementById('inputText');
     const outputText = document.getElementById('outputText');
@@ -694,6 +698,12 @@
         modalOverlay.style.display = 'none';
       }
     });
+    const homeBtn = document.getElementById('homeBtn');
+
+homeBtn.addEventListener('click', () => {
+  modalOverlay.style.display = 'none';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+});
   </script>
 
 </body>
