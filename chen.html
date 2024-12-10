@@ -77,7 +77,7 @@
     }
   
     header .about-link {
-      font-size: 1em; /* Increased to prevent zoom */
+      font-size: 1em; /* Ensured 16px to prevent zoom */
       text-decoration: none;
       color: var(--text-color);
       opacity: 0.8;
@@ -124,7 +124,7 @@
   
     select {
       padding: var(--select-padding);
-      border: 1px solid var(--divider-color);
+      border: 1px solid transparent; /* Removed existing borders */
       border-radius: 8px;
       background: var(--input-bg);
       color: var(--text-color);
@@ -210,9 +210,10 @@
       flex-direction: column;
       box-sizing: border-box;
       padding: 15px;
-      border: 1px solid var(--divider-color);
+      border: 1px solid transparent; /* Removed existing borders */
       border-radius: 8px;
       margin: 0;
+      position: relative; /* For pseudo-elements */
     }
   
     .input-panel {
@@ -224,9 +225,36 @@
       position: relative;
     }
   
+    /* Container for textarea to hold animated border */
+    .textarea-container {
+      position: relative;
+      border: none; /* Removed existing borders */
+    }
+  
+    .textarea-container::before {
+      content: '';
+      position: absolute;
+      top: -1px;
+      left: -1px;
+      right: -1px;
+      bottom: -1px;
+      background: linear-gradient(45deg, var(--btn-bg), var(--btn-bg));
+      border-radius: 8px;
+      filter: blur(2px);
+      opacity: 0;
+      transition: opacity 0.3s, background 0.5s ease-in-out;
+      pointer-events: none;
+      z-index: -1;
+    }
+  
+    .textarea-container.active::before {
+      background: linear-gradient(45deg, var(--btn-bg), #00c6ff); /* Green to Light Blue */
+      opacity: 1;
+    }
+  
     textarea {
       width: 100%;
-      border: 1px solid var(--divider-color);
+      border: 1px solid transparent; /* Removed existing borders */
       border-radius: 6px;
       background: var(--input-bg);
       color: var(--text-color);
@@ -393,7 +421,9 @@
             <option value="vi">Vietnamese</option>
           </select>
         </div>
-        <textarea id="inputText" placeholder="Type text..."></textarea>
+        <div class="textarea-container">
+          <textarea id="inputText" placeholder="Type text..."></textarea>
+        </div>
       </div>
       
       <!-- Divider with Swap Button -->
@@ -449,7 +479,9 @@
             <option value="vi">Vietnamese</option>
           </select>
         </div>
-        <textarea id="outputText" readonly placeholder="Translation..."></textarea>
+        <div class="textarea-container">
+          <textarea id="outputText" readonly placeholder="Translation..."></textarea>
+        </div>
         <button class="copy-btn" id="copyBtn" title="Copy">
           <svg viewBox="0 0 24 24">
             <path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>
@@ -505,9 +537,27 @@
       }
     }
     
+    // Function to toggle active class based on textarea content
+    function toggleActiveClass(textarea, container) {
+      if (textarea.value.trim()) {
+        container.classList.add('active');
+      } else {
+        container.classList.remove('active');
+      }
+    }
+    
+    // Event listeners for inputText
     inputText.addEventListener('input', () => {
       clearTimeout(typingTimer);
-      typingTimer = setTimeout(translateText, debounceDelay);
+      typingTimer = setTimeout(() => {
+        translateText();
+        toggleActiveClass(inputText, inputText.parentElement);
+      }, debounceDelay);
+    });
+    
+    // Event listeners for outputText (optional, if you want to animate border when it changes)
+    outputText.addEventListener('input', () => {
+      toggleActiveClass(outputText, outputText.parentElement);
     });
     
     sourceLangSelect.addEventListener('change', () => {
@@ -539,8 +589,10 @@
       // Trigger translation if input is not empty
       if (inputText.value.trim()) {
         translateText();
+        toggleActiveClass(inputText, inputText.parentElement);
       } else {
         outputText.value = '';
+        toggleActiveClass(outputText, outputText.parentElement);
       }
 
       // Remove the animation class after animation ends
