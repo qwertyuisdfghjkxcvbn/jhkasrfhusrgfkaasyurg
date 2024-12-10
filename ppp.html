@@ -1,0 +1,224 @@
+// Sample Data: Levels and Words
+const wordsData = [
+  // Level 1: A1 Beginner
+  {
+    level: 1,
+    difficulty: 'A1',
+    words: [
+      { german: 'Hallo', english: 'Hello' },
+      { german: 'Tschüss', english: 'Goodbye' },
+      { german: 'Bitte', english: 'Please' },
+      { german: 'Danke', english: 'Thank you' },
+      { german: 'Ja', english: 'Yes' },
+      { german: 'Nein', english: 'No' },
+      { german: 'Entschuldigung', english: 'Excuse me' },
+      { german: 'Wie geht\'s?', english: 'How are you?' },
+      { german: 'Gut', english: 'Good' },
+      { german: 'Schlecht', english: 'Bad' },
+      { german: 'Ich', english: 'I' },
+      { german: 'Du', english: 'You' },
+      { german: 'Er', english: 'He' },
+      { german: 'Sie', english: 'She' },
+      { german: 'Es', english: 'It' },
+      { german: 'Wir', english: 'We' },
+      { german: 'Ihr', english: 'You (plural)' },
+      { german: 'Sie', english: 'They' },
+      { german: 'Haus', english: 'House' },
+      { german: 'Buch', english: 'Book' },
+    ]
+  },
+  // Level 2: A1 Beginner
+  {
+    level: 2,
+    difficulty: 'A1',
+    words: [
+      { german: 'Auto', english: 'Car' },
+      { german: 'Straße', english: 'Street' },
+      { german: 'Freund', english: 'Friend' },
+      { german: 'Familie', english: 'Family' },
+      { german: 'Mutter', english: 'Mother' },
+      { german: 'Vater', english: 'Father' },
+      { german: 'Bruder', english: 'Brother' },
+      { german: 'Schwester', english: 'Sister' },
+      { german: 'Kind', english: 'Child' },
+      { german: 'Lehrer', english: 'Teacher' },
+      { german: 'Student', english: 'Student' },
+      { german: 'Büro', english: 'Office' },
+      { german: 'Arzt', english: 'Doctor' },
+      { german: 'Apotheke', english: 'Pharmacy' },
+      { german: 'Restaurant', english: 'Restaurant' },
+      { german: 'Bäckerei', english: 'Bakery' },
+      { german: 'Kaffee', english: 'Coffee' },
+      { german: 'Wasser', english: 'Water' },
+      { german: 'Bier', english: 'Beer' },
+      { german: 'Wein', english: 'Wine' },
+    ]
+  },
+  // ... Add more levels up to level 100 with appropriate difficulty (A1 to C1)
+];
+
+// Initialize App
+document.addEventListener('DOMContentLoaded', () => {
+  const levelSelect = document.getElementById('levelSelect');
+  const flashcardContainer = document.getElementById('flashcardContainer');
+  const quizSection = document.getElementById('quizSection');
+  const quizContainer = document.getElementById('quizContainer');
+  const submitQuizButton = document.getElementById('submitQuiz');
+  const quizResult = document.getElementById('quizResult');
+  const progressContainer = document.getElementById('progressContainer');
+  const themeToggle = document.getElementById('themeToggle');
+  const aboutLink = document.getElementById('aboutLink');
+  const aboutModal = document.getElementById('aboutModal');
+  const closeModalBtn = document.getElementById('closeModal');
+
+  // Populate Level Selection Dropdown
+  function populateLevels() {
+    wordsData.forEach(data => {
+      const option = document.createElement('option');
+      option.value = data.level;
+      option.textContent = `Level ${data.level} (${data.difficulty})`;
+      levelSelect.appendChild(option);
+    });
+  }
+
+  // Load Flashcards for Selected Level
+  function loadFlashcards(level) {
+    flashcardContainer.innerHTML = '';
+    const levelData = wordsData.find(data => data.level === parseInt(level));
+    if (!levelData) return;
+
+    levelData.words.forEach(wordObj => {
+      const flashcard = document.createElement('div');
+      flashcard.classList.add('flashcard');
+      
+      const word = document.createElement('div');
+      word.classList.add('word');
+      word.textContent = wordObj.german;
+      
+      const definition = document.createElement('div');
+      definition.classList.add('definition');
+      definition.textContent = wordObj.english;
+      
+      flashcard.appendChild(word);
+      flashcard.appendChild(definition);
+      
+      flashcard.addEventListener('click', () => {
+        flashcard.classList.toggle('flip');
+      });
+      
+      flashcardContainer.appendChild(flashcard);
+    });
+  }
+
+  // Generate Quiz for Selected Level
+  function generateQuiz(level) {
+    quizContainer.innerHTML = '';
+    const levelData = wordsData.find(data => data.level === parseInt(level));
+    if (!levelData) return;
+
+    // Shuffle words and select 10 for the quiz
+    const shuffledWords = levelData.words.sort(() => 0.5 - Math.random()).slice(0, 10);
+
+    shuffledWords.forEach((wordObj, index) => {
+      const questionDiv = document.createElement('div');
+      questionDiv.classList.add('quiz-question');
+
+      const questionLabel = document.createElement('label');
+      questionLabel.textContent = `Q${index + 1}: What is the English translation of "${wordObj.german}"?`;
+      
+      const input = document.createElement('input');
+      input.type = 'text';
+      input.dataset.correctAnswer = wordObj.english.toLowerCase();
+
+      questionDiv.appendChild(questionLabel);
+      questionDiv.appendChild(input);
+
+      quizContainer.appendChild(questionDiv);
+    });
+
+    quizSection.classList.remove('hidden');
+    quizResult.classList.add('hidden');
+  }
+
+  // Submit Quiz and Show Results
+  function submitQuiz() {
+    const level = levelSelect.value;
+    const levelData = wordsData.find(data => data.level === parseInt(level));
+    if (!levelData) return;
+
+    const quizInputs = quizContainer.querySelectorAll('input');
+    let correctAnswers = 0;
+
+    quizInputs.forEach(input => {
+      const userAnswer = input.value.trim().toLowerCase();
+      const correctAnswer = input.dataset.correctAnswer;
+      if (userAnswer === correctAnswer) {
+        correctAnswers++;
+        input.style.borderColor = 'var(--primary-color)';
+      } else {
+        input.style.borderColor = 'var(--error-color)';
+      }
+    });
+
+    quizResult.textContent = `You answered ${correctAnswers} out of ${quizInputs.length} correctly!`;
+    quizResult.classList.remove('hidden');
+
+    // Update Progress
+    updateProgress(level, correctAnswers === quizInputs.length);
+  }
+
+  // Update Progress Tracker
+  function updateProgress(level, completed) {
+    let progress = JSON.parse(localStorage.getItem('progress')) || {};
+    progress[level] = completed;
+    localStorage.setItem('progress', JSON.stringify(progress));
+    renderProgress();
+  }
+
+  // Render Progress Tracker
+  function renderProgress() {
+    progressContainer.innerHTML = '';
+    let progress = JSON.parse(localStorage.getItem('progress')) || {};
+
+    for (let i = 1; i <= wordsData.length; i++) {
+      const progressItem = document.createElement('div');
+      progressItem.classList.add('progress-item');
+      progressItem.textContent = `Level ${i}: ${progress[i] ? '✔️' : '❌'}`;
+      progressContainer.appendChild(progressItem);
+    }
+  }
+
+  // Theme Toggle
+  function toggleTheme() {
+    document.body.classList.toggle('dark');
+    if (document.body.classList.contains('dark')) {
+      themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+    } else {
+      themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
+    }
+  }
+
+  // Event Listeners
+  levelSelect.addEventListener('change', (e) => {
+    loadFlashcards(e.target.value);
+    generateQuiz(e.target.value);
+  });
+
+  submitQuizButton.addEventListener('click', submitQuiz);
+
+  themeToggle.addEventListener('click', toggleTheme);
+
+  aboutLink.addEventListener('click', () => {
+    aboutModal.classList.remove('hidden');
+  });
+
+  closeModalBtn.addEventListener('click', () => {
+    aboutModal.classList.add('hidden');
+  });
+
+  // Initialize App
+  populateLevels();
+  loadFlashcards(levelSelect.value);
+  generateQuiz(levelSelect.value);
+  renderProgress();
+});
