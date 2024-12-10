@@ -28,10 +28,10 @@
         }
         .header .logo {
             .header .logo {
-    flex-grow: 1; 
-    text-align: center;
-}
+                flex-grow: 1; 
+                text-align: center;
             }
+        }
         .iii {
             color: red;
         }
@@ -47,18 +47,39 @@
             z-index: 1000;
             display: flex;
             align-items: center;
- justify-content: space-between;
+            justify-content: space-between;
             backdrop-filter: blur(15px);
             transition: background-color 0.3s ease, color 0.3s ease;
         }
+
+        /* BEGIN: Updated styles for burger menu animation */
         .menu-btn {
             cursor: pointer;
-            margin-left: auto;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            width: 24px;
+            height: 24px;
         }
-        .menu-btn img {
-            filter: var(--icon-filter);
-            transition: filter 0.3s;
+        .menu-btn span {
+            display: block;
+            height: 3px;
+            width: 100%;
+            background: var(--header-text);
+            border-radius: 2px;
+            transition: transform 0.3s ease, opacity 0.3s ease;
         }
+        .menu-btn.active .line1 {
+            transform: rotate(45deg) translate(5px, 5px);
+        }
+        .menu-btn.active .line2 {
+            opacity: 0;
+        }
+        .menu-btn.active .line3 {
+            transform: rotate(-45deg) translate(5px, -5px);
+        }
+        /* END: Updated styles for burger menu animation */
+
         .menu {
             display: none;
             position: absolute;
@@ -203,8 +224,11 @@
 
     <div class="header">
         <div class="logo">AdiAsta</div>
+        <!-- Changed the button content from img to three spans -->
         <div class="menu-btn" id="menuBtn">
-            <img class="iii" src="https://img.icons8.com/material-outlined/24/ffffff/menu.png" alt="Menu" class="icon">
+            <span class="line1"></span>
+            <span class="line2"></span>
+            <span class="line3"></span>
         </div>
         <div class="menu" id="menu">
             <div class="menu-item" id="newChatBtn">New Chat</div>
@@ -255,8 +279,10 @@
         window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', checkSystemTheme);
         checkSystemTheme();
 
+        // Updated event listener to toggle .active class on the menu button
         menuBtn.addEventListener('click', () => {
             menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+            menuBtn.classList.toggle('active');
         });
 
         newChatBtn.addEventListener('click', () => {
