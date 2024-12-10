@@ -685,14 +685,14 @@
               <path d="M3 10v4h4l5 5V5L7 10H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.06c1.48-.74 2.5-2.26 2.5-4.03zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.92 7-4.69 7-8.77s-2.99-7.85-7-8.77z"/>
             </svg>
           </button>
-          <!-- New Voice and Photo Buttons -->
-          <button class="voice-btn" id="voiceBtn" title="Speak to Translate" aria-label="Speak to Translate">
+          <!-- New Voice and Photo Buttons (Unique IDs) -->
+          <button class="voice-btn" id="voiceBtnInput" title="Speak to Translate" aria-label="Speak to Translate">
             <!-- Microphone Icon -->
             <svg viewBox="0 0 24 24">
               <path d="M12 14a3 3 0 003-3V5a3 3 0 00-6 0v6a3 3 0 003 3zm5-3a5 5 0 01-10 0H5a7 7 0 0014 0h-2zm-7 5c3.31 0 6-2.69 6-6h-2a4 4 0 00-8 0H7c0 3.31 2.69 6 6 6z"/>
             </svg>
           </button>
-          <button class="photo-btn" id="photoBtn" title="Upload Photo for Translation" aria-label="Upload Photo for Translation">
+          <button class="photo-btn" id="photoBtnInput" title="Upload Photo for Translation" aria-label="Upload Photo for Translation">
             <!-- Camera Icon -->
             <svg viewBox="0 0 24 24">
               <path d="M21 5h-3.17l-1.84-2H7.01L5.17 5H2c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h19c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 14H2V7h3.17l1.84-2h8.99l1.84 2H21v12zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8a3 3 0 100 6 3 3 0 000-6z"/>
@@ -737,8 +737,8 @@
     const outputText = document.getElementById('outputText');
     const copyBtn = document.getElementById('copyBtn');
     const speakBtn = document.getElementById('speakBtn');
-    const voiceBtn = document.getElementById('voiceBtn');
-    const photoBtn = document.getElementById('photoBtn');
+    const voiceBtnInput = document.getElementById('voiceBtnInput');
+    const photoBtnInput = document.getElementById('photoBtnInput');
     const aboutLink = document.getElementById('aboutLink');
     const modalOverlay = document.getElementById('modalOverlay');
     const closeModalBtn = document.getElementById('closeModalBtn');
@@ -776,16 +776,18 @@
         console.error('Speech recognition error:', event.error);
         showAlert('Speech recognition error: ' + event.error);
         isListening = false;
-        voiceBtn.classList.remove('active');
+        voiceBtnInput.classList.remove('active');
+        hideLoading();
       };
 
       recognition.onend = () => {
         isListening = false;
-        voiceBtn.classList.remove('active');
+        voiceBtnInput.classList.remove('active');
+        hideLoading();
       };
     } else {
-      voiceBtn.disabled = true;
-      voiceBtn.title = 'Speech Recognition not supported in this browser.';
+      voiceBtnInput.disabled = true;
+      voiceBtnInput.title = 'Speech Recognition not supported in this browser.';
     }
 
     // Translate Text Function
@@ -970,22 +972,22 @@
     });
 
     // Voice Button Functionality
-    voiceBtn.addEventListener('click', () => {
+    voiceBtnInput.addEventListener('click', () => {
       if (!recognition) return;
       if (isListening) {
         recognition.stop();
         isListening = false;
-        voiceBtn.classList.remove('active');
+        voiceBtnInput.classList.remove('active');
       } else {
         recognition.start();
         isListening = true;
-        voiceBtn.classList.add('active');
+        voiceBtnInput.classList.add('active');
         showLoading('Listening...');
       }
     });
 
     // Photo Button Functionality
-    photoBtn.addEventListener('click', () => {
+    photoBtnInput.addEventListener('click', () => {
       // Create a hidden file input element
       const fileInput = document.createElement('input');
       fileInput.type = 'file';
@@ -1000,7 +1002,7 @@
           // Perform OCR using Tesseract.js
           Tesseract.recognize(
             file,
-            sourceLangSelect.value, // Dynamically set language based on source language
+            getTesseractLanguage(sourceLangSelect.value), // Dynamically set language based on source language
             { 
               logger: m => {
                 console.log(m);
@@ -1026,6 +1028,23 @@
       // Trigger the file input click
       fileInput.click();
     });
+
+    // Function to map source language to Tesseract.js language codes
+    function getTesseractLanguage(langCode) {
+      const langMap = {
+        'en': 'eng',
+        'de': 'deu',
+        'es': 'spa',
+        'fr': 'fra',
+        'it': 'ita',
+        'pt': 'por',
+        'ru': 'rus',
+        'zh-CN': 'chi_sim',
+        'zh-TW': 'chi_tra',
+        // Add more mappings as needed
+      };
+      return langMap[langCode] || 'eng'; // Default to English if not mapped
+    }
   </script>
 
 </body>
