@@ -5,10 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
   <title>Translator</title>
   
-  <!-- Web App Manifest -->
   <link rel="manifest" href="manifest.json">
-  
-  <!-- Apple Touch Icons -->
   <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -21,14 +18,16 @@
       --card-bg: #ffffff;
       --text-color: #333;
       --input-bg: #f9f9f9;
-      --btn-bg: #28a745; /* Green */
+      --btn-bg: #28a745;
       --btn-text: #fff;
-      --btn-hover-bg: #218838; /* Darker Green */
+      --btn-hover-bg: #218838;
       --transition: 0.2s ease-in-out;
-      --swap-size: 10vw; /* Changed from fixed px to viewport width */
+      --swap-size: 10vw;
       --divider-color: #ccc;
-      --select-padding: 1vw 1.5vw; /* Changed to relative units */
-      --copy-success-color: #28a745; /* Green */
+      --select-padding: 1vw 1.5vw;
+      --copy-success-color: #28a745;
+      --speak-btn-color: #007bff;
+      --speak-btn-hover-color: #0056b3;
     }
   
     @media (prefers-color-scheme: dark) {
@@ -37,11 +36,10 @@
         --card-bg: #2f2f2f;
         --text-color: #eee;
         --input-bg: #3a3a3a;
-        --btn-bg: #28a745; /* Green */
-        --btn-text: #fff;
-        --btn-hover-bg: #218838; /* Darker Green */
         --divider-color: #555;
-        --copy-success-color: #28a745; /* Green */
+        --copy-success-color: #28a745;
+        --speak-btn-color: #66b0ff;
+        --speak-btn-hover-color: #3399ff;
       }
     }
   
@@ -58,8 +56,10 @@
   
     .modal-overlay {
       position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
       display: none;
       align-items: center;
       justify-content: center;
@@ -76,8 +76,8 @@
       background: transparent;
     }
   
-    header .about-link {
-      font-size: 1em; /* Ensured 16px to prevent zoom */
+    .about-link {
+      font-size: 1em;
       text-decoration: none;
       color: var(--text-color);
       opacity: 0.8;
@@ -87,7 +87,7 @@
       background: none;
     }
   
-    header .about-link:hover {
+    .about-link:hover {
       opacity: 1;
     }
   
@@ -98,7 +98,7 @@
       align-items: center;
       padding: 2%;
       position: relative;
-      max-width: 90%; /* Changed from fixed px to percentage */
+      max-width: 90%;
       margin: 0 auto;
       width: 100%;
     }
@@ -122,20 +122,40 @@
       margin-bottom: 1.5em;
     }
   
+    .select-container {
+      position: relative;
+      width: 100%;
+    }
+  
     select {
       padding: var(--select-padding);
-      border: 0.05em solid transparent; /* Changed to relative units */
+      border: 0.05em solid transparent;
       border-radius: 0.5em;
       background: var(--input-bg);
       color: var(--text-color);
-      font-size: 1em; /* Ensured 16px */
-      min-width: 30%; /* Changed from fixed px to percentage */
+      font-size: 1em;
+      min-width: 30%;
       transition: var(--transition);
       appearance: none;
-      background-image: url('data:image/svg+xml;charset=US-ASCII,<svg xmlns="http://www.w3.org/2000/svg" width="10" height="7"><path fill="%23333" d="M0 0l5 5 5-5z"/></svg>');
       background-repeat: no-repeat;
-      background-position: right 2%;
+      background-position: right 1em;
       background-size: 10px 7px;
+      padding-right: 2.5em;
+      width: 100%;
+    }
+  
+    .select-container::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      right: 1em;
+      width: 0;
+      height: 0;
+      pointer-events: none;
+      border-left: 5px solid transparent;
+      border-right: 5px solid transparent;
+      border-top: 5px solid var(--text-color);
+      transform: translateY(-50%);
     }
   
     select:hover, select:focus {
@@ -177,7 +197,7 @@
       height: var(--swap-size);
       z-index: 1;
       transform-style: preserve-3d;
-      font-size: 1em; /* Ensured 16px */
+      font-size: 1em;
     }
   
     .swap-button:hover {
@@ -209,10 +229,10 @@
       flex-direction: column;
       box-sizing: border-box;
       padding: 1.5%;
-      border: 0.05em solid transparent; /* Changed to relative units */
+      border: 0.05em solid transparent;
       border-radius: 0.5em;
       margin: 0;
-      position: relative; /* For pseudo-elements */
+      position: relative;
     }
   
     .input-panel {
@@ -224,10 +244,9 @@
       position: relative;
     }
   
-    /* Container for textarea to hold animated border */
     .textarea-container {
       position: relative;
-      border: none; /* Removed existing borders */
+      border: none;
     }
   
     .textarea-container::before {
@@ -247,17 +266,17 @@
     }
   
     .textarea-container.active::before {
-      background: linear-gradient(45deg, var(--btn-bg), #00c6ff); /* Green to Light Blue */
+      background: linear-gradient(45deg, var(--btn-bg), #00c6ff);
       opacity: 1;
     }
   
     textarea {
       width: 100%;
-      border: 0.05em solid transparent; /* Changed to relative units */
+      border: 0.05em solid transparent;
       border-radius: 0.375em;
       background: var(--input-bg);
       color: var(--text-color);
-      font-size: 1em; /* Ensured 16px */
+      font-size: 1em;
       padding: 1.2em;
       resize: none;
       box-sizing: border-box;
@@ -271,10 +290,15 @@
       border-color: var(--btn-bg);
     }
   
-    .copy-btn {
+    .button-group {
+      display: flex;
+      gap: 0.5em;
       position: absolute;
       bottom: 1em;
       right: 1em;
+    }
+  
+    .copy-btn, .speak-btn {
       background: none;
       border: none;
       cursor: pointer;
@@ -283,14 +307,22 @@
       align-items: center;
       padding: 0.5em;
       transition: color var(--transition);
-      font-size: 1em; /* Ensured 16px */
+      font-size: 1em;
     }
   
     .copy-btn:hover {
       color: var(--btn-hover-bg);
     }
   
-    .copy-btn svg {
+    .speak-btn {
+      color: var(--speak-btn-color);
+    }
+  
+    .speak-btn:hover {
+      color: var(--speak-btn-hover-color);
+    }
+  
+    .copy-btn svg, .speak-btn svg {
       width: 1.25em;
       height: 1.25em;
       fill: currentColor;
@@ -325,7 +357,7 @@
       padding: 1em 1.8em;
       border-radius: 0.375em;
       cursor: pointer;
-      font-size: 1em; /* Ensured 16px */
+      font-size: 1em;
       transition: background var(--transition);
     }
   
@@ -342,27 +374,31 @@
         margin-bottom: 1em;
       }
       select {
-        font-size: 1em; /* Ensured 16px */
-        min-width: 45%; /* Adjusted for smaller screens */
+        font-size: 1em;
+        min-width: 45%;
         padding: 1em 1.2em;
       }
       textarea {
-        font-size: 1em; /* Ensured 16px */
+        font-size: 1em;
         height: 20vh;
         padding: 1em;
       }
       .swap-button {
-        width: 12vw; /* Adjusted to viewport width */
+        width: 12vw;
         height: 12vw;
-        font-size: 1em; /* Ensured 16px */
+        font-size: 1em;
       }
       .swap-button svg {
         width: 1.25em;
         height: 1.25em;
       }
-      .copy-btn svg {
+      .copy-btn svg, .speak-btn svg {
         width: 1.125em;
         height: 1.125em;
+      }
+      .button-group {
+        bottom: 0.5em;
+        right: 0.5em;
       }
     }
   </style>
@@ -376,56 +412,56 @@
   <main>
     <div class="translator-card">
       
-      <!-- Input Panel -->
       <div class="panel input-panel">
         <div class="language-selectors">
-          <select id="sourceLang">
-            <option value="af">Afrikaans</option>
-            <option value="ar">Arabic</option>
-            <option value="bg">Bulgarian</option>
-            <option value="ca">Catalan</option>
-            <option value="zh-CN">Chinese (Simplified)</option>
-            <option value="zh-TW">Chinese (Traditional)</option>
-            <option value="hr">Croatian</option>
-            <option value="cs">Czech</option>
-            <option value="da">Danish</option>
-            <option value="nl">Dutch</option>
-            <option value="en" selected>English</option>
-            <option value="et">Estonian</option>
-            <option value="fi">Finnish</option>
-            <option value="fr">French</option>
-            <option value="de">German</option>
-            <option value="el">Greek</option>
-            <option value="he">Hebrew</option>
-            <option value="hi">Hindi</option>
-            <option value="hu">Hungarian</option>
-            <option value="id">Indonesian</option>
-            <option value="it">Italian</option>
-            <option value="ja">Japanese</option>
-            <option value="ko">Korean</option>
-            <option value="lv">Latvian</option>
-            <option value="lt">Lithuanian</option>
-            <option value="no">Norwegian</option>
-            <option value="pl">Polish</option>
-            <option value="pt">Portuguese</option>
-            <option value="ro">Romanian</option>
-            <option value="ru">Russian</option>
-            <option value="sk">Slovak</option>
-            <option value="sl">Slovenian</option>
-            <option value="es">Spanish</option>
-            <option value="sv">Swedish</option>
-            <option value="th">Thai</option>
-            <option value="tr">Turkish</option>
-            <option value="uk">Ukrainian</option>
-            <option value="vi">Vietnamese</option>
-          </select>
+          <div class="select-container">
+            <select id="sourceLang">
+              <option value="af">Afrikaans</option>
+              <option value="ar">Arabic</option>
+              <option value="bg">Bulgarian</option>
+              <option value="ca">Catalan</option>
+              <option value="zh-CN">Chinese (Simplified)</option>
+              <option value="zh-TW">Chinese (Traditional)</option>
+              <option value="hr">Croatian</option>
+              <option value="cs">Czech</option>
+              <option value="da">Danish</option>
+              <option value="nl">Dutch</option>
+              <option value="en" selected>English</option>
+              <option value="et">Estonian</option>
+              <option value="fi">Finnish</option>
+              <option value="fr">French</option>
+              <option value="de">German</option>
+              <option value="el">Greek</option>
+              <option value="he">Hebrew</option>
+              <option value="hi">Hindi</option>
+              <option value="hu">Hungarian</option>
+              <option value="id">Indonesian</option>
+              <option value="it">Italian</option>
+              <option value="ja">Japanese</option>
+              <option value="ko">Korean</option>
+              <option value="lv">Latvian</option>
+              <option value="lt">Lithuanian</option>
+              <option value="no">Norwegian</option>
+              <option value="pl">Polish</option>
+              <option value="pt">Portuguese</option>
+              <option value="ro">Romanian</option>
+              <option value="ru">Russian</option>
+              <option value="sk">Slovak</option>
+              <option value="sl">Slovenian</option>
+              <option value="es">Spanish</option>
+              <option value="sv">Swedish</option>
+              <option value="th">Thai</option>
+              <option value="tr">Turkish</option>
+              <option value="uk">Ukrainian</option>
+              <option value="vi">Vietnamese</option>
+            </select>
+          </div>
         </div>
         <div class="textarea-container">
           <textarea id="inputText" placeholder="Type text..."></textarea>
         </div>
       </div>
       
-      <!-- Divider with Swap Button -->
       <div class="divider">
         <button class="swap-button" id="swapBtn" title="Swap Languages">
           <svg viewBox="0 0 24 24">
@@ -434,58 +470,66 @@
         </button>
       </div>
   
-      <!-- Output Panel -->
       <div class="panel output-panel">
         <div class="language-selectors">
-          <select id="targetLang">
-            <option value="af">Afrikaans</option>
-            <option value="ar">Arabic</option>
-            <option value="bg">Bulgarian</option>
-            <option value="ca">Catalan</option>
-            <option value="zh-CN">Chinese (Simplified)</option>
-            <option value="zh-TW">Chinese (Traditional)</option>
-            <option value="hr">Croatian</option>
-            <option value="cs">Czech</option>
-            <option value="da">Danish</option>
-            <option value="nl">Dutch</option>
-            <option value="en">English</option>
-            <option value="et">Estonian</option>
-            <option value="fi">Finnish</option>
-            <option value="fr">French</option>
-            <option value="de" selected>German</option>
-            <option value="el">Greek</option>
-            <option value="he">Hebrew</option>
-            <option value="hi">Hindi</option>
-            <option value="hu">Hungarian</option>
-            <option value="id">Indonesian</option>
-            <option value="it">Italian</option>
-            <option value="ja">Japanese</option>
-            <option value="ko">Korean</option>
-            <option value="lv">Latvian</option>
-            <option value="lt">Lithuanian</option>
-            <option value="no">Norwegian</option>
-            <option value="pl">Polish</option>
-            <option value="pt">Portuguese</option>
-            <option value="ro">Romanian</option>
-            <option value="ru">Russian</option>
-            <option value="sk">Slovak</option>
-            <option value="sl">Slovenian</option>
-            <option value="es">Spanish</option>
-            <option value="sv">Swedish</option>
-            <option value="th">Thai</option>
-            <option value="tr">Turkish</option>
-            <option value="uk">Ukrainian</option>
-            <option value="vi">Vietnamese</option>
-          </select>
+          <div class="select-container">
+            <select id="targetLang">
+              <option value="af">Afrikaans</option>
+              <option value="ar">Arabic</option>
+              <option value="bg">Bulgarian</option>
+              <option value="ca">Catalan</option>
+              <option value="zh-CN">Chinese (Simplified)</option>
+              <option value="zh-TW">Chinese (Traditional)</option>
+              <option value="hr">Croatian</option>
+              <option value="cs">Czech</option>
+              <option value="da">Danish</option>
+              <option value="nl">Dutch</option>
+              <option value="en">English</option>
+              <option value="et">Estonian</option>
+              <option value="fi">Finnish</option>
+              <option value="fr">French</option>
+              <option value="de" selected>German</option>
+              <option value="el">Greek</option>
+              <option value="he">Hebrew</option>
+              <option value="hi">Hindi</option>
+              <option value="hu">Hungarian</option>
+              <option value="id">Indonesian</option>
+              <option value="it">Italian</option>
+              <option value="ja">Japanese</option>
+              <option value="ko">Korean</option>
+              <option value="lv">Latvian</option>
+              <option value="lt">Lithuanian</option>
+              <option value="no">Norwegian</option>
+              <option value="pl">Polish</option>
+              <option value="pt">Portuguese</option>
+              <option value="ro">Romanian</option>
+              <option value="ru">Russian</option>
+              <option value="sk">Slovak</option>
+              <option value="sl">Slovenian</option>
+              <option value="es">Spanish</option>
+              <option value="sv">Swedish</option>
+              <option value="th">Thai</option>
+              <option value="tr">Turkish</option>
+              <option value="uk">Ukrainian</option>
+              <option value="vi">Vietnamese</option>
+            </select>
+          </div>
         </div>
         <div class="textarea-container">
           <textarea id="outputText" readonly placeholder="Translation..."></textarea>
         </div>
-        <button class="copy-btn" id="copyBtn" title="Copy">
-          <svg viewBox="0 0 24 24">
-            <path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>
-          </svg>
-        </button>
+        <div class="button-group">
+          <button class="copy-btn" id="copyBtn" title="Copy">
+            <svg viewBox="0 0 24 24">
+              <path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>
+            </svg>
+          </button>
+          <button class="speak-btn" id="speakBtn" title="Hear Translation">
+            <svg viewBox="0 0 24 24">
+              <path d="M3 10v4h4l5 5V5L7 10H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.06c1.48-.74 2.5-2.26 2.5-4.03zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.92 7-4.69 7-8.77s-2.99-7.85-7-8.77z"/>
+            </svg>
+          </button>
+        </div>
       </div>
     </div>
   </main>
@@ -502,6 +546,7 @@
     const inputText = document.getElementById('inputText');
     const outputText = document.getElementById('outputText');
     const copyBtn = document.getElementById('copyBtn');
+    const speakBtn = document.getElementById('speakBtn');
     const aboutLink = document.getElementById('aboutLink');
     const modalOverlay = document.getElementById('modalOverlay');
     const closeModalBtn = document.getElementById('closeModalBtn');
@@ -510,7 +555,7 @@
     const swapBtn = document.getElementById('swapBtn');
     
     let typingTimer;
-    const debounceDelay = 500; // 0.5s
+    const debounceDelay = 500;
     
     async function translateText() {
       const text = inputText.value.trim();
@@ -536,7 +581,6 @@
       }
     }
     
-    // Function to toggle active class based on textarea content
     function toggleActiveClass(textarea, container) {
       if (textarea.value.trim()) {
         container.classList.add('active');
@@ -545,7 +589,6 @@
       }
     }
     
-    // Event listeners for inputText
     inputText.addEventListener('input', () => {
       clearTimeout(typingTimer);
       typingTimer = setTimeout(() => {
@@ -554,7 +597,6 @@
       }, debounceDelay);
     });
     
-    // Event listeners for outputText (optional, if you want to animate border when it changes)
     outputText.addEventListener('input', () => {
       toggleActiveClass(outputText, outputText.parentElement);
     });
@@ -572,20 +614,16 @@
     });
     
     swapBtn.addEventListener('click', () => {
-      // Add flip animation
       swapBtn.classList.add('flip');
       
-      // Swap the text areas' content
       const tempText = inputText.value;
       inputText.value = outputText.value;
       outputText.value = tempText;
 
-      // Swap the selected languages
       const tempLang = sourceLangSelect.value;
       sourceLangSelect.value = targetLangSelect.value;
       targetLangSelect.value = tempLang;
 
-      // Trigger translation if input is not empty
       if (inputText.value.trim()) {
         translateText();
         toggleActiveClass(inputText, inputText.parentElement);
@@ -594,7 +632,6 @@
         toggleActiveClass(outputText, outputText.parentElement);
       }
 
-      // Remove the animation class after animation ends
       swapBtn.addEventListener('animationend', () => {
         swapBtn.classList.remove('flip');
       }, { once: true });
@@ -611,6 +648,36 @@
         }).catch(e => console.error('Copy failed', e));
       }
     });
+
+    speakBtn.addEventListener('click', () => {
+      const translationText = outputText.value.trim();
+      if (!translationText) return;
+
+      if (!('speechSynthesis' in window)) {
+        alert('Sorry, your browser does not support speech synthesis.');
+        return;
+      }
+
+      const utterance = new SpeechSynthesisUtterance(translationText);
+      const targetLang = targetLangSelect.value;
+      const voices = speechSynthesis.getVoices();
+      const matchedVoice = voices.find(voice => voice.lang.startsWith(targetLang)) || voices.find(voice => voice.lang.startsWith('en'));
+
+      if (matchedVoice) {
+        utterance.voice = matchedVoice;
+      }
+
+      speechSynthesis.speak(utterance);
+    });
+
+    function loadVoices() {
+      if (speechSynthesis.getVoices().length !== 0) {
+        return;
+      }
+      speechSynthesis.onvoiceschanged = () => {};
+    }
+
+    loadVoices();
     
     aboutLink.addEventListener('click', () => {
       modalOverlay.style.display = 'flex';
