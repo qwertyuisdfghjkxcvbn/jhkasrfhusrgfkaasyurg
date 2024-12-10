@@ -5,12 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Translator</title>
 
-<!-- Google Font -->
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-
 <style>
   :root {
-    --font-family: 'Inter', sans-serif;
+    --font-family: Helvetica;
     --bg-gradient: linear-gradient(to bottom right, #e0f7fa, #ffffff);
     --card-bg: #ffffff;
     --text-color: #333;
@@ -48,6 +45,18 @@
     min-height: 100vh;
   }
 
+  .modal-overlay {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0,0,0,0.6);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    z-index: 999;
+  }
+
   header {
     padding: 15px 20px;
     display: flex;
@@ -73,6 +82,17 @@
     opacity: 1;
   }
 
+  .card {
+    width: 100%;
+    max-width: 700px;
+    display: flex;
+    flex-direction: column;
+    padding: 15px;
+    margin-bottom: 20px;
+    box-sizing: border-box;
+    position: relative;
+  }
+  
   main {
     flex: 1;
     display: flex;
@@ -108,19 +128,6 @@
     box-shadow: 0 6px 14px rgba(0,0,0,0.1);
   }
 
-  .card {
-    width: 100%;
-    max-width: 700px;
-    background: var(--card-bg);
-    border-radius: 12px;
-    box-shadow: var(--shadow);
-    display: flex;
-    flex-direction: column;
-    padding: 15px;
-    margin-bottom: 20px;
-    box-sizing: border-box;
-    position: relative;
-  }
 
   .panel-title {
     font-size: 1em;
@@ -202,27 +209,6 @@
     box-shadow: 0 6px 14px rgba(0,0,0,0.1);
   }
 
-  footer {
-    text-align: center;
-    font-size: 0.8em;
-    padding: 10px;
-    color: var(--text-color);
-    opacity: 0.7;
-  }
-
-  /* About Modal */
-  .modal-overlay {
-    position: fixed;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
-    background: rgba(0,0,0,0.6);
-    display: none;
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
-    z-index: 999;
-  }
-
   .modal {
     background: var(--card-bg);
     padding: 20px;
@@ -282,7 +268,6 @@
 <body>
 
 <header>
-  <div class="title">Translator</div>
   <a class="about-link" id="aboutLink">About</a>
 </header>
 
@@ -393,13 +378,10 @@
   </div>
 </main>
 
-<footer>© 2024</footer>
-
 <div class="modal-overlay" id="modalOverlay">
   <div class="modal">
     <h2>About</h2>
-    <p>This translator uses the MyMemory Translation API.<br>
-    It can translate text between many languages.</p>
+    <p>This translator uses the MyMemory Translation API</p>
     <button class="close-btn" id="closeModalBtn">Close</button>
   </div>
 </div>
