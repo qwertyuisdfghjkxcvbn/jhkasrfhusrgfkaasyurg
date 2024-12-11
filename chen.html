@@ -25,7 +25,7 @@
       height: 100%;
       overflow: hidden;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
-      background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
+      background: linear-gradient(135deg, #f0f4f8, #d9e2ec);
       transition: background 0.3s ease-in-out;
     }
 
@@ -69,7 +69,7 @@
     /* Light Mode Styles */
     @media (prefers-color-scheme: light) {
       body {
-        background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
+        background: linear-gradient(135deg, #f0f4f8, #d9e2ec);
         color: #2c3e50;
       }
 
@@ -130,6 +130,7 @@
       flex-direction: column;
       gap: 20px;
       transition: background 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+      position: relative;
     }
 
     /* Language Selectors */
@@ -160,11 +161,12 @@
     /* Textareas */
     .textarea-container {
       position: relative;
+      width: 100%;
     }
 
     textarea {
       width: 100%;
-      height: 120px;
+      min-height: 100px;
       padding: 15px;
       font-size: 16px;
       border: none;
@@ -174,6 +176,7 @@
       resize: none;
       box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
       transition: box-shadow 0.3s ease-in-out, background-color 0.3s ease-in-out;
+      overflow: hidden;
     }
 
     textarea::placeholder {
@@ -183,6 +186,12 @@
     textarea:focus {
       outline: none;
       box-shadow: 0 0 0 3px #3498db;
+    }
+
+    /* Auto-Resizing Textarea */
+    textarea.auto-resize {
+      overflow: hidden;
+      min-height: 100px;
     }
 
     /* Swap Button */
@@ -368,7 +377,7 @@
       textarea {
         font-size: 14px;
         padding: 12px;
-        height: 100px;
+        min-height: 100px;
       }
 
       .swap-button {
@@ -501,7 +510,7 @@
 
       <!-- Input Textarea -->
       <div class="textarea-container">
-        <textarea id="inputText" placeholder="Type text..." required></textarea>
+        <textarea id="inputText" class="auto-resize" placeholder="Type text..." required></textarea>
         <button class="copy-btn" id="copyBtnInput" title="Copy">
           <svg viewBox="0 0 24 24">
             <path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>
@@ -521,7 +530,7 @@
 
       <!-- Output Textarea -->
       <div class="textarea-container">
-        <textarea id="outputText" readonly placeholder="Translation..." required></textarea>
+        <textarea id="outputText" class="auto-resize" readonly placeholder="Translation..." required></textarea>
         <button class="copy-btn" id="copyBtnOutput" title="Copy">
           <svg viewBox="0 0 24 24">
             <path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>
@@ -579,6 +588,7 @@
         const data = await response.json();
         if (data?.responseData?.translatedText) {
           outputText.value = data.responseData.translatedText;
+          autoResizeTextarea(outputText);
         } else {
           outputText.value = 'No translation found.';
         }
@@ -588,12 +598,25 @@
       }
     }
 
+    // Auto-Resize Function for Textareas
+    function autoResizeTextarea(textarea) {
+      textarea.style.height = 'auto';
+      textarea.style.height = textarea.scrollHeight + 'px';
+    }
+
     // Debounced Input Event
     inputText.addEventListener('input', () => {
+      autoResizeTextarea(inputText);
       clearTimeout(typingTimer);
       typingTimer = setTimeout(() => {
         translateText();
       }, debounceDelay);
+    });
+
+    // Initialize Auto-Resize on Page Load
+    window.addEventListener('load', () => {
+      autoResizeTextarea(inputText);
+      autoResizeTextarea(outputText);
     });
 
     // Language Selection Change Events
@@ -620,6 +643,10 @@
       const tempText = inputText.value;
       inputText.value = outputText.value;
       outputText.value = tempText;
+
+      // Auto-resize after swapping
+      autoResizeTextarea(inputText);
+      autoResizeTextarea(outputText);
 
       // Trigger translation if input is not empty
       if (inputText.value.trim()) {
