@@ -26,15 +26,16 @@
 
     /* Root Variables */
     :root {
-      --background-color-light: #f5f5f5;
-      --background-color-dark: #121212;
+      /* Updated to friendlier colors */
+      --background-color-light: #f0f4f8;
+      --background-color-dark: #1e1e1e;
       --card-bg-light: #ffffff;
-      --card-bg-dark: #1e1e1e;
-      --text-color-light: #333333;
-      --text-color-dark: #e0e0e0;
-      --primary-color: #e63946; /* Bold Red */
-      --secondary-color: #1d3557; /* Dark Blue */
-      --copy-success-color: #2a9d8f; /* Teal */
+      --card-bg-dark: #2c2c2c;
+      --text-color-light: #2c3e50;
+      --text-color-dark: #ecf0f1;
+      --primary-color: #3498db; /* Softer Blue */
+      --secondary-color: #2ecc71; /* Soft Green */
+      --copy-success-color: #1abc9c; /* Teal */
       --transition: 0.3s ease-in-out;
       --max-textarea-height: 300px;
       --min-font-size: 16px;
@@ -238,15 +239,15 @@
       transition: background-color var(--transition), box-shadow var(--transition);
       border-top: 2px solid var(--primary-color);
       margin-top: 20px; /* Added margin to separate from main content */
-      flex-wrap: wrap; /* Allow buttons to wrap on smaller screens */
-      gap: 10px; /* Add spacing between buttons */
+      flex-wrap: nowrap; /* Prevent wrapping on small screens */
+      overflow-x: auto; /* Allow horizontal scrolling if necessary */
     }
 
     .footer-buttons {
       display: flex;
       gap: 10px;
-      flex-wrap: wrap;
       justify-content: center;
+      width: 100%;
     }
 
     .footer-buttons button {
@@ -261,6 +262,8 @@
       text-transform: uppercase;
       letter-spacing: 1px;
       font-weight: bold;
+      flex: 1 1 auto; /* Allow buttons to grow/shrink */
+      min-width: 80px; /* Ensure buttons aren't too small */
     }
 
     .footer-buttons button:hover {
@@ -376,6 +379,7 @@
       .footer-buttons button {
         font-size: 14px;
         padding: 8px 16px;
+        min-width: 60px;
       }
     }
 
