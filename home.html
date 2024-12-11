@@ -212,6 +212,7 @@
       transition: background-color var(--transition), transform var(--transition);
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
       margin: -25px 0 15px 0; /* Positioning the swap button */
+      flex-shrink: 0;
     }
 
     .swap-button:hover {
@@ -262,8 +263,9 @@
       text-transform: uppercase;
       letter-spacing: 1px;
       font-weight: bold;
-      flex: 1 1 auto; /* Allow buttons to grow/shrink */
-      min-width: 80px; /* Ensure buttons aren't too small */
+      flex: 1 1 0; /* Allow buttons to grow and shrink */
+      min-width: 60px; /* Reduced min-width for better fit on small screens */
+      white-space: nowrap; /* Prevent text from wrapping within buttons */
     }
 
     .footer-buttons button:hover {
@@ -379,7 +381,7 @@
       .footer-buttons button {
         font-size: 14px;
         padding: 8px 16px;
-        min-width: 60px;
+        min-width: 50px; /* Further reduced min-width */
       }
     }
 
