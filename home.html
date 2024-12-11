@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <!-- Prevent zooming on iOS devices -->
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <!-- Allow zooming on iOS devices for better accessibility -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Malevich Translator</title>
   
   <style>
@@ -17,10 +17,11 @@
     html, body {
       width: 100%;
       height: 100%;
-      overflow: hidden; /* Prevent overall scrolling */
       font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
       background: var(--background-color);
       transition: background var(--transition), color var(--transition);
+      /* Removed overflow: hidden to allow scrolling */
+      overflow-x: hidden; /* Prevent horizontal scrolling */
     }
 
     /* Root Variables */
@@ -66,9 +67,9 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
-      position: relative;
+      justify-content: flex-start; /* Changed to flex-start to allow scrolling */
       padding: 20px;
+      min-height: 100vh;
     }
 
     main {
@@ -227,20 +228,28 @@
     /* Footer */
     footer {
       width: 100%;
-      height: 60px;
       background-color: var(--card-bg);
       display: flex;
       align-items: center;
       justify-content: center;
-      position: fixed;
-      bottom: 0;
-      left: 0;
+      padding: 10px 0;
+      position: relative; /* Changed to relative to allow multiple buttons */
       box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.1);
       transition: background-color var(--transition), box-shadow var(--transition);
       border-top: 2px solid var(--primary-color);
+      margin-top: 20px; /* Added margin to separate from main content */
+      flex-wrap: wrap; /* Allow buttons to wrap on smaller screens */
+      gap: 10px; /* Add spacing between buttons */
     }
 
-    .about-link {
+    .footer-buttons {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .footer-buttons button {
       font-size: var(--min-font-size);
       color: var(--primary-color);
       background: none;
@@ -254,7 +263,7 @@
       font-weight: bold;
     }
 
-    .about-link:hover {
+    .footer-buttons button:hover {
       color: #fff;
       background-color: var(--primary-color);
       border-color: var(--secondary-color);
@@ -364,7 +373,7 @@
         font-size: 14px;
       }
 
-      .about-link {
+      .footer-buttons button {
         font-size: 14px;
         padding: 8px 16px;
       }
@@ -512,9 +521,14 @@
     </div>
   </main>
 
-  <!-- Footer with About Link -->
+  <!-- Footer with Multiple Buttons -->
   <footer>
-    <button class="about-link" id="aboutLink">About</button>
+    <div class="footer-buttons">
+      <button class="about-link" id="aboutLink">About</button>
+      <button class="clear-link" id="clearLink">Clear</button>
+      <button class="paste-link" id="pasteLink">Paste</button>
+      <button class="home-link" id="homeLink">Home</button>
+    </div>
   </footer>
 
   <!-- Modal Overlay -->
@@ -539,6 +553,9 @@
     const sourceLangSelect = document.getElementById('sourceLang');
     const targetLangSelect = document.getElementById('targetLang');
     const swapBtn = document.getElementById('swapBtn');
+    const clearLink = document.getElementById('clearLink');
+    const pasteLink = document.getElementById('pasteLink');
+    const homeLink = document.getElementById('homeLink');
 
     let typingTimer;
     const debounceDelay = 500; // 0.5 seconds
@@ -673,6 +690,34 @@
       if (e.target === modalOverlay) {
         modalOverlay.style.display = 'none';
       }
+    });
+
+    // Clear Button Functionality
+    clearLink.addEventListener('click', () => {
+      inputText.value = '';
+      outputText.value = '';
+      autoResize(inputText);
+      autoResize(outputText);
+    });
+
+    // Paste Button Functionality
+    pasteLink.addEventListener('click', async () => {
+      try {
+        const text = await navigator.clipboard.readText();
+        if (text) {
+          inputText.value = text;
+          autoResize(inputText);
+          translateText();
+        }
+      } catch (err) {
+        console.error('Failed to paste: ', err);
+        alert('Failed to paste text. Please ensure you have granted clipboard permissions.');
+      }
+    });
+
+    // Home Button Functionality
+    homeLink.addEventListener('click', () => {
+      window.location.href = 'https://adiasta.com';
     });
 
     // Initial Auto-Resize on Page Load
