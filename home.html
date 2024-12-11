@@ -20,7 +20,6 @@
       font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
       background: var(--background-color);
       transition: background var(--transition), color var(--transition);
-      /* Allow vertical scrolling */
       overflow-x: hidden; /* Prevent horizontal scrolling */
     }
 
@@ -42,6 +41,7 @@
       --border-radius: 12px;
       --box-shadow-light: 0 4px 12px rgba(0, 0, 0, 0.1);
       --box-shadow-dark: 0 4px 12px rgba(0, 0, 0, 0.5);
+      --dropdown-width: 200px;
     }
 
     /* Light and Dark Modes */
@@ -97,43 +97,130 @@
       position: relative; /* To position the swap button */
     }
 
-    /* Language Selectors */
-    .language-selectors {
+    /* Language Switcher */
+    .language-switcher {
       display: flex;
+      align-items: center;
       justify-content: space-between;
       gap: 10px;
-      flex-wrap: wrap;
-    }
-
-    select {
-      flex: 1;
-      min-width: 120px;
-      padding: 10px 15px;
-      font-size: var(--min-font-size);
-      border: 2px solid var(--primary-color);
-      border-radius: 8px;
-      background-color: var(--card-bg);
-      color: var(--text-color);
-      appearance: none;
-      cursor: pointer;
-      transition: border-color var(--transition), background-color var(--transition), color var(--transition);
       position: relative;
     }
 
-    select:focus {
-      outline: none;
+    .language-button {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      max-width: 200px;
+      background-color: var(--card-bg);
+      color: var(--text-color);
+      padding: 10px 15px;
+      border: 2px solid var(--primary-color);
+      border-radius: var(--border-radius);
+      cursor: pointer;
+      transition: border-color var(--transition), background-color var(--transition), color var(--transition);
+      position: relative;
+      font-size: var(--min-font-size);
+    }
+
+    .language-button:hover {
       border-color: var(--secondary-color);
     }
 
-    /* Add a dropdown arrow */
-    select::after {
-      content: '▼';
+    .language-button .flag-icon {
+      width: 24px;
+      height: 16px;
+      margin-right: 10px;
+    }
+
+    .language-button .language-name {
+      flex: 1;
+    }
+
+    .language-button .arrow-down {
+      width: 12px;
+      height: 12px;
+      transition: transform var(--transition);
+    }
+
+    .language-button.open .arrow-down {
+      transform: rotate(180deg);
+    }
+
+    .language-options {
       position: absolute;
-      right: 15px;
+      top: 100%;
+      left: 0;
+      width: 100%;
+      background-color: var(--card-bg);
+      border: 2px solid var(--primary-color);
+      border-top: none;
+      border-radius: 0 0 var(--border-radius) var(--border-radius);
+      max-height: 200px;
+      overflow-y: auto;
+      box-shadow: var(--box-shadow);
+      z-index: 100;
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(-10px);
+      transition: opacity var(--transition), transform var(--transition), visibility var(--transition);
+    }
+
+    .language-switcher .language-button.open .language-options {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+    }
+
+    .language-option {
+      display: flex;
+      align-items: center;
+      padding: 10px 15px;
+      cursor: pointer;
+      transition: background-color var(--transition), color var(--transition);
+    }
+
+    .language-option:hover {
+      background-color: var(--primary-color);
+      color: #fff;
+    }
+
+    .language-option .flag-icon {
+      width: 24px;
+      height: 16px;
+      margin-right: 10px;
+    }
+
+    /* Swap Button */
+    .swap-button {
+      position: absolute;
       top: 50%;
-      transform: translateY(-50%);
-      pointer-events: none;
-      color: var(--text-color);
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background-color: var(--primary-color);
+      border: none;
+      border-radius: var(--border-radius);
+      width: 50px;
+      height: 50px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: background-color var(--transition), transform var(--transition);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      z-index: 1;
+    }
+
+    .swap-button:hover {
+      background-color: var(--secondary-color);
+      transform: translate(-50%, -50%) rotate(180deg);
+    }
+
+    .swap-button svg {
+      width: 20px;
+      height: 20px;
+      fill: #fff;
+      transition: fill var(--transition);
     }
 
     /* Textareas */
@@ -196,82 +283,7 @@
       fill: currentColor;
     }
 
-    /* Swap Button */
-    .swap-button {
-      position: absolute;
-      top: -25px; /* Position above the translator card */
-      right: 20px;
-      background-color: var(--primary-color);
-      border: none;
-      border-radius: 50%;
-      width: 50px;
-      height: 50px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      transition: background-color var(--transition), transform var(--transition);
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    }
-
-    .swap-button:hover {
-      background-color: var(--secondary-color);
-      transform: rotate(180deg);
-    }
-
-    .swap-button svg {
-      width: 20px;
-      height: 20px;
-      fill: #fff;
-      transition: fill var(--transition);
-    }
-
-    /* Footer */
-    footer {
-      width: 100%;
-      background-color: var(--card-bg);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 10px 0;
-      box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.1);
-      transition: background-color var(--transition), box-shadow var(--transition);
-      border-top: 2px solid var(--primary-color);
-      margin-top: 20px; /* Added margin to separate from main content */
-      flex-wrap: nowrap; /* Prevent wrapping on small screens */
-      overflow-x: auto; /* Allow horizontal scrolling if necessary */
-    }
-
-    .footer-buttons {
-      display: flex;
-      gap: 10px;
-      justify-content: center;
-      width: 100%;
-      padding: 0 10px; /* Added padding to prevent buttons from touching screen edges */
-    }
-
-    .footer-buttons button {
-      font-size: var(--min-font-size);
-      color: var(--primary-color);
-      background: none;
-      border: 2px solid var(--primary-color);
-      cursor: pointer;
-      transition: color var(--transition), background-color var(--transition), border-color var(--transition);
-      padding: 10px 20px;
-      border-radius: 8px;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      font-weight: bold;
-      flex: 1 1 auto; /* Allow buttons to grow and shrink */
-      min-width: 60px; /* Suitable min-width for small screens */
-      white-space: nowrap; /* Prevent text from wrapping within buttons */
-    }
-
-    .footer-buttons button:hover {
-      color: #fff;
-      background-color: var(--primary-color);
-      border-color: var(--secondary-color);
-    }
+    /* Footer (Removed as per request) */
 
     /* Modal Overlay */
     .modal-overlay {
@@ -340,8 +352,13 @@
         padding: 20px;
       }
 
-      select, textarea {
-        font-size: 16px;
+      .language-switcher {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .language-button {
+        max-width: 100%;
       }
 
       .swap-button {
@@ -375,12 +392,6 @@
         padding: 8px 16px;
         font-size: 14px;
       }
-
-      .footer-buttons button {
-        font-size: 14px;
-        padding: 8px 16px;
-        min-width: 50px; /* Further reduced min-width */
-      }
     }
 
     /* Scrollbar Styling for Textareas */
@@ -407,97 +418,67 @@
   <main>
     <div class="translator-card">
       
-      <!-- Swap Button -->
-      <button class="swap-button" id="swapBtn" title="Swap Languages" aria-label="Swap languages">
-        <!-- Swap Icon SVG -->
-        <svg viewBox="0 0 24 24">
-          <path d="M10.02 6H17c.55 0 1 .45 1 1s-.45 1-1 1h-4.88l1.44 1.44c.39.39.39 1.02 0 1.41-.2.19-.45.29-.7.29-.26 0-.51-.1-.71-.29l-3.18-3.18c-.09-.09-.17-.2-.22-.33-.05-.12-.08-.25-.08-.38s.03-.26.08-.38c.05-.13.12-.24.22-.33l3.18-3.18c.39-.39 1.02-.39 1.41 0s.39 1.02 0 1.41L12.12 6H10.02zm3.96 11H7c-.55 0-1-.45-1-1s.45-1 1-1h4.88l-1.44-1.44c-.39-.39-.39-1.02 0-1.41.39-.39 1.02-.39 1.41 0l3.18 3.18c.09.09.17.2.22.33.05.12.08.25.08.38s-.03.26-.08.38c-.05.13-.12.24-.22.33l-3.18 3.18c-.2.19-.45.29-.7.29-.26 0-.51-.1-.71-.29-.39-.39-.39-1.02 0-1.41L14 17z"/>
-        </svg>
-      </button>
-      
-      <!-- Language Selectors -->
-      <div class="language-selectors">
-        <select id="sourceLang" aria-label="Select source language">
-          <option value="af">Afrikaans</option>
-          <option value="ar">Arabic</option>
-          <option value="bg">Bulgarian</option>
-          <option value="ca">Catalan</option>
-          <option value="zh-CN">Chinese (Simplified)</option>
-          <option value="zh-TW">Chinese (Traditional)</option>
-          <option value="hr">Croatian</option>
-          <option value="cs">Czech</option>
-          <option value="da">Danish</option>
-          <option value="nl">Dutch</option>
-          <option value="en" selected>English</option>
-          <option value="et">Estonian</option>
-          <option value="fi">Finnish</option>
-          <option value="fr">French</option>
-          <option value="de">German</option>
-          <option value="el">Greek</option>
-          <option value="he">Hebrew</option>
-          <option value="hi">Hindi</option>
-          <option value="hu">Hungarian</option>
-          <option value="id">Indonesian</option>
-          <option value="it">Italian</option>
-          <option value="ja">Japanese</option>
-          <option value="ko">Korean</option>
-          <option value="lv">Latvian</option>
-          <option value="lt">Lithuanian</option>
-          <option value="no">Norwegian</option>
-          <option value="pl">Polish</option>
-          <option value="pt">Portuguese</option>
-          <option value="ro">Romanian</option>
-          <option value="ru">Russian</option>
-          <option value="sk">Slovak</option>
-          <option value="sl">Slovenian</option>
-          <option value="es">Spanish</option>
-          <option value="sv">Swedish</option>
-          <option value="th">Thai</option>
-          <option value="tr">Turkish</option>
-          <option value="uk">Ukrainian</option>
-          <option value="vi">Vietnamese</option>
-        </select>
+      <!-- Language Switcher -->
+      <div class="language-switcher">
+        <!-- Source Language Button -->
+        <div class="language-dropdown" id="sourceLangDropdown">
+          <div class="language-button" aria-label="Select source language" tabindex="0">
+            <img src="https://flagcdn.com/w20/us.png" alt="English" class="flag-icon">
+            <span class="language-name">English</span>
+            <svg class="arrow-down" viewBox="0 0 24 24">
+              <path d="M7 10l5 5 5-5H7z"/>
+            </svg>
+          </div>
+          <div class="language-options">
+            <div class="language-option" data-lang="en">
+              <img src="https://flagcdn.com/w20/us.png" alt="English" class="flag-icon">
+              English
+            </div>
+            <div class="language-option" data-lang="de">
+              <img src="https://flagcdn.com/w20/de.png" alt="German" class="flag-icon">
+              German
+            </div>
+            <div class="language-option" data-lang="fr">
+              <img src="https://flagcdn.com/w20/fr.png" alt="French" class="flag-icon">
+              French
+            </div>
+            <!-- Add more languages as needed -->
+          </div>
+        </div>
 
-        <select id="targetLang" aria-label="Select target language">
-          <option value="af">Afrikaans</option>
-          <option value="ar">Arabic</option>
-          <option value="bg">Bulgarian</option>
-          <option value="ca">Catalan</option>
-          <option value="zh-CN">Chinese (Simplified)</option>
-          <option value="zh-TW">Chinese (Traditional)</option>
-          <option value="hr">Croatian</option>
-          <option value="cs">Czech</option>
-          <option value="da">Danish</option>
-          <option value="nl">Dutch</option>
-          <option value="en">English</option>
-          <option value="et">Estonian</option>
-          <option value="fi">Finnish</option>
-          <option value="fr">French</option>
-          <option value="de" selected>German</option>
-          <option value="el">Greek</option>
-          <option value="he">Hebrew</option>
-          <option value="hi">Hindi</option>
-          <option value="hu">Hungarian</option>
-          <option value="id">Indonesian</option>
-          <option value="it">Italian</option>
-          <option value="ja">Japanese</option>
-          <option value="ko">Korean</option>
-          <option value="lv">Latvian</option>
-          <option value="lt">Lithuanian</option>
-          <option value="no">Norwegian</option>
-          <option value="pl">Polish</option>
-          <option value="pt">Portuguese</option>
-          <option value="ro">Romanian</option>
-          <option value="ru">Russian</option>
-          <option value="sk">Slovak</option>
-          <option value="sl">Slovenian</option>
-          <option value="es">Spanish</option>
-          <option value="sv">Swedish</option>
-          <option value="th">Thai</option>
-          <option value="tr">Turkish</option>
-          <option value="uk">Ukrainian</option>
-          <option value="vi">Vietnamese</option>
-        </select>
+        <!-- Swap Button -->
+        <button class="swap-button" id="swapBtn" title="Swap Languages" aria-label="Swap languages">
+          <!-- Swap Icon SVG -->
+          <svg viewBox="0 0 24 24">
+            <path d="M10.02 6H17c.55 0 1 .45 1 1s-.45 1-1 1h-4.88l1.44 1.44c.39.39.39 1.02 0 1.41-.2.19-.45.29-.7.29-.26 0-.51-.1-.71-.29l-3.18-3.18c-.09-.09-.17-.2-.22-.33-.05-.12-.08-.25-.08-.38s.03-.26.08-.38c.05-.13.12-.24.22-.33l3.18-3.18c.39-.39 1.02-.39 1.41 0s.39 1.02 0 1.41L12.12 6H10.02zm3.96 11H7c-.55 0-1-.45-1-1s.45-1 1-1h4.88l-1.44-1.44c-.39-.39-.39-1.02 0-1.41.39-.39 1.02-.39 1.41 0l3.18 3.18c.09.09.17.2.22.33.05.12.08.25.08.38s-.03.26-.08.38c-.05.13-.12.24-.22.33l-3.18 3.18c-.2.19-.45.29-.7.29-.26 0-.51-.1-.71-.29-.39-.39-.39-1.02 0-1.41L14 17z"/>
+          </svg>
+        </button>
+
+        <!-- Target Language Button -->
+        <div class="language-dropdown" id="targetLangDropdown">
+          <div class="language-button" aria-label="Select target language" tabindex="0">
+            <img src="https://flagcdn.com/w20/de.png" alt="German" class="flag-icon">
+            <span class="language-name">German</span>
+            <svg class="arrow-down" viewBox="0 0 24 24">
+              <path d="M7 10l5 5 5-5H7z"/>
+            </svg>
+          </div>
+          <div class="language-options">
+            <div class="language-option" data-lang="de">
+              <img src="https://flagcdn.com/w20/de.png" alt="German" class="flag-icon">
+              German
+            </div>
+            <div class="language-option" data-lang="en">
+              <img src="https://flagcdn.com/w20/us.png" alt="English" class="flag-icon">
+              English
+            </div>
+            <div class="language-option" data-lang="fr">
+              <img src="https://flagcdn.com/w20/fr.png" alt="French" class="flag-icon">
+              French
+            </div>
+            <!-- Add more languages as needed -->
+          </div>
+        </div>
       </div>
 
       <!-- Input Textarea -->
@@ -525,15 +506,7 @@
     </div>
   </main>
 
-  <!-- Footer with Multiple Buttons -->
-  <footer>
-    <div class="footer-buttons">
-      <button class="about-link" id="aboutLink">About</button>
-      <button class="clear-link" id="clearLink">Clear</button>
-      <button class="paste-link" id="pasteLink">Paste</button>
-      <button class="home-link" id="homeLink">Home</button>
-    </div>
-  </footer>
+  <!-- Footer Removed as per request -->
 
   <!-- Modal Overlay -->
   <div class="modal-overlay" id="modalOverlay">
@@ -554,12 +527,14 @@
     const aboutLink = document.getElementById('aboutLink');
     const modalOverlay = document.getElementById('modalOverlay');
     const closeModalBtn = document.getElementById('closeModalBtn');
-    const sourceLangSelect = document.getElementById('sourceLang');
-    const targetLangSelect = document.getElementById('targetLang');
     const swapBtn = document.getElementById('swapBtn');
     const clearLink = document.getElementById('clearLink');
     const pasteLink = document.getElementById('pasteLink');
     const homeLink = document.getElementById('homeLink');
+
+    // Language Dropdown Elements
+    const sourceLangDropdown = document.getElementById('sourceLangDropdown');
+    const targetLangDropdown = document.getElementById('targetLangDropdown');
 
     let typingTimer;
     const debounceDelay = 500; // 0.5 seconds
@@ -570,8 +545,8 @@
       outputText.value = '';
       if (!text) return;
 
-      const sourceLang = sourceLangSelect.value;
-      const targetLang = targetLangSelect.value;
+      const sourceLang = sourceLangDropdown.getAttribute('data-selected-lang') || 'en';
+      const targetLang = targetLangDropdown.getAttribute('data-selected-lang') || 'de';
 
       // Prevent translating if source and target languages are the same
       if (sourceLang === targetLang) {
@@ -584,6 +559,7 @@
       const apiUrl = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=${direction}`;
 
       try {
+        showLoading();
         const response = await fetch(apiUrl);
         const data = await response.json();
         if (data?.responseData?.translatedText) {
@@ -595,6 +571,8 @@
       } catch (error) {
         console.error(error);
         outputText.value = 'Error fetching translation. Try again later.';
+      } finally {
+        hideLoading();
       }
     }
 
@@ -603,6 +581,9 @@
       textarea.style.height = 'auto';
       textarea.style.height = `${textarea.scrollHeight}px`;
     }
+
+    // Loading Spinner Elements (optional, can be implemented as needed)
+    // For simplicity, omitted in this example
 
     // Debounced Input Event for Input Textarea
     inputText.addEventListener('input', () => {
@@ -618,40 +599,101 @@
       autoResize(outputText);
     });
 
-    // Language Selection Change Events
-    sourceLangSelect.addEventListener('change', () => {
-      if (inputText.value.trim()) {
-        translateText();
-      }
-    });
+    // Language Dropdown Functionality
+    function setupLanguageDropdown(dropdown) {
+      const selected = dropdown.querySelector('.language-button');
+      const optionsContainer = dropdown.querySelector('.language-options');
+      const options = dropdown.querySelectorAll('.language-option');
 
-    targetLangSelect.addEventListener('change', () => {
-      if (inputText.value.trim()) {
-        translateText();
-      }
-    });
+      selected.addEventListener('click', () => {
+        dropdown.classList.toggle('open');
+        selected.classList.toggle('open');
+      });
+
+      selected.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          dropdown.classList.toggle('open');
+          selected.classList.toggle('open');
+        }
+      });
+
+      options.forEach(option => {
+        option.addEventListener('click', () => {
+          const lang = option.getAttribute('data-lang');
+          const imgSrc = option.querySelector('.flag-icon').getAttribute('src');
+          const langName = option.textContent.trim();
+
+          // Update selected display
+          selected.querySelector('.flag-icon').setAttribute('src', imgSrc);
+          selected.querySelector('.language-name').textContent = langName;
+
+          // Update the value in the dropdown
+          dropdown.setAttribute('data-selected-lang', lang);
+
+          // Close the dropdown
+          dropdown.classList.remove('open');
+          selected.classList.remove('open');
+
+          // Trigger translation if source language changed
+          if (dropdown.id === 'sourceLangDropdown' && inputText.value.trim()) {
+            translateText();
+          }
+        });
+      });
+
+      // Close dropdown when clicking outside
+      document.addEventListener('click', (e) => {
+        if (!dropdown.contains(e.target)) {
+          dropdown.classList.remove('open');
+          selected.classList.remove('open');
+        }
+      });
+    }
+
+    setupLanguageDropdown(sourceLangDropdown);
+    setupLanguageDropdown(targetLangDropdown);
 
     // Swap Languages and Text
     swapBtn.addEventListener('click', () => {
       // Swap selected languages
-      const tempLang = sourceLangSelect.value;
-      sourceLangSelect.value = targetLangSelect.value;
-      targetLangSelect.value = tempLang;
+      const sourceLang = sourceLangDropdown.getAttribute('data-selected-lang') || 'en';
+      const targetLang = targetLangDropdown.getAttribute('data-selected-lang') || 'de';
 
-      // Swap text areas
-      const tempText = inputText.value;
-      inputText.value = outputText.value;
-      outputText.value = tempText;
+      // Find corresponding options
+      const sourceOption = sourceLangDropdown.querySelector(`.language-option[data-lang="${targetLang}"]`);
+      const targetOption = targetLangDropdown.querySelector(`.language-option[data-lang="${sourceLang}"]`);
 
-      // Auto-resize after swapping
-      autoResize(inputText);
-      autoResize(outputText);
+      if (sourceOption && targetOption) {
+        // Swap Source
+        const sourceImgSrc = sourceOption.querySelector('.flag-icon').getAttribute('src');
+        const sourceLangName = sourceOption.textContent.trim();
+        sourceLangDropdown.querySelector('.language-button .flag-icon').setAttribute('src', sourceImgSrc);
+        sourceLangDropdown.querySelector('.language-button .language-name').textContent = sourceLangName;
+        sourceLangDropdown.setAttribute('data-selected-lang', targetLang);
 
-      // Trigger translation if input is not empty
-      if (inputText.value.trim()) {
-        translateText();
-      } else {
-        outputText.value = '';
+        // Swap Target
+        const targetImgSrc = targetOption.querySelector('.flag-icon').getAttribute('src');
+        const targetLangName = targetOption.textContent.trim();
+        targetLangDropdown.querySelector('.language-button .flag-icon').setAttribute('src', targetImgSrc);
+        targetLangDropdown.querySelector('.language-button .language-name').textContent = targetLangName;
+        targetLangDropdown.setAttribute('data-selected-lang', sourceLang);
+
+        // Swap text areas
+        const tempText = inputText.value;
+        inputText.value = outputText.value;
+        outputText.value = tempText;
+
+        // Auto-resize after swapping
+        autoResize(inputText);
+        autoResize(outputText);
+
+        // Trigger translation if input is not empty
+        if (inputText.value.trim()) {
+          translateText();
+        } else {
+          outputText.value = '';
+        }
       }
     });
 
@@ -729,6 +771,18 @@
       autoResize(inputText);
       autoResize(outputText);
     });
+
+    // Helper Functions for Loading Spinner (Optional)
+    // Implement showLoading() and hideLoading() if you add a loading spinner
+    function showLoading() {
+      // Example implementation
+      // You can add a spinner element and toggle its visibility here
+    }
+
+    function hideLoading() {
+      // Example implementation
+      // Hide the spinner element here
+    }
   </script>
 
 </body>
