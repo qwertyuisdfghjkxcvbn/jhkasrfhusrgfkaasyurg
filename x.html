@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Newsroom</title>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono&family=Helvetica+Neue&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Helvetica+Neue&display=swap" rel="stylesheet">
     <style>
         :root {
             --bg-color: #ffffff;
@@ -15,6 +15,7 @@
             --link-color: #0071e3;
             --border-color: #e5e5e7;
             --overlay-bg: rgba(0, 0, 0, 0.5);
+            --modal-bg: rgba(255, 255, 255, 0.95);
         }
         @media (prefers-color-scheme: dark) {
             :root {
@@ -26,6 +27,7 @@
                 --link-color: #0a84ff;
                 --border-color: #3a3a3c;
                 --overlay-bg: rgba(255, 255, 255, 0.5);
+                --modal-bg: rgba(28, 28, 30, 0.95);
             }
         }
         * {
@@ -187,7 +189,6 @@
             margin-bottom: 15px;
         }
         .article-title {
-            font-family: 'Roboto Mono', monospace;
             font-size: 1.25em;
             margin-bottom: 10px;
             color: var(--link-color);
@@ -206,6 +207,56 @@
             border-top: 1px solid var(--border-color);
             font-size: 0.9em;
         }
+        .modal {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.8);
+            width: 80%;
+            max-width: 800px;
+            background-color: var(--modal-bg);
+            border-radius: 12px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+            padding: 20px;
+            z-index: 1003;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s, transform 0.3s;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        .modal.active {
+            opacity: 1;
+            visibility: visible;
+            transform: translate(-50%, -50%) scale(1);
+        }
+        .modal img {
+            width: 100%;
+            height: auto;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+        .modal-title {
+            font-size: 1.5em;
+            margin-bottom: 10px;
+            color: var(--link-color);
+        }
+        .modal-content {
+            font-size: 1em;
+            line-height: 1.6;
+            color: var(--text-color);
+        }
+        .close-btn {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 1.5em;
+            color: var(--text-color);
+            cursor: pointer;
+            background: none;
+            border: none;
+        }
         @media (max-width: 768px) {
             nav {
                 display: none;
@@ -219,6 +270,13 @@
             }
             .article img {
                 height: 150px;
+            }
+            .modal {
+                width: 90%;
+                padding: 15px;
+            }
+            .modal-title {
+                font-size: 1.25em;
             }
         }
     </style>
@@ -253,10 +311,21 @@
     <footer>
         &copy; 2024 Newsroom. All rights reserved.
     </footer>
+    <div class="modal" id="modal">
+        <button class="close-btn" id="closeBtn">&times;</button>
+        <img src="" alt="" id="modalImage">
+        <h2 class="modal-title" id="modalTitle"></h2>
+        <p class="modal-content" id="modalContent"></p>
+    </div>
     <script>
         const burger = document.getElementById('burger');
         const mobileMenu = document.getElementById('mobileMenu');
         const overlay = document.getElementById('overlay');
+        const modal = document.getElementById('modal');
+        const closeBtn = document.getElementById('closeBtn');
+        const modalImage = document.getElementById('modalImage');
+        const modalTitle = document.getElementById('modalTitle');
+        const modalContent = document.getElementById('modalContent');
 
         burger.addEventListener('click', () => {
             burger.classList.toggle('open');
@@ -268,6 +337,18 @@
             burger.classList.remove('open');
             mobileMenu.classList.remove('open');
             overlay.classList.remove('active');
+        });
+
+        closeBtn.addEventListener('click', () => {
+            modal.classList.remove('active');
+            overlay.classList.remove('active');
+        });
+
+        window.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                modal.classList.remove('active');
+                overlay.classList.remove('active');
+            }
         });
 
         const articlesContainer = document.getElementById('articles');
@@ -289,9 +370,7 @@
                 img.alt = data.title;
                 article.appendChild(img);
             }
-            const title = document.createElement('a');
-            title.href = data.content_urls.desktop.page;
-            title.target = '_blank';
+            const title = document.createElement('h3');
             title.className = 'article-title';
             title.textContent = data.title;
             article.appendChild(title);
@@ -299,6 +378,15 @@
             summary.className = 'article-summary';
             summary.textContent = data.extract;
             article.appendChild(summary);
+            article.addEventListener('click', () => {
+                modalImage.src = data.thumbnail ? data.thumbnail.source : '';
+                modalImage.alt = data.title;
+                modalTitle.textContent = data.title;
+                modalContent.textContent = data.extract;
+                modal.classList.add('active');
+                overlay.classList.add('active');
+                document.body.style.overflow = 'hidden';
+            });
             return article;
         }
         async function loadArticles(count = 12) {
