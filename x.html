@@ -4,30 +4,34 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Newsroom</title>
-    <link href="https://fonts.googleapis.com/css2?family=Helvetica+Neue&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Helvetica+Neue:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root {
             --bg-color: #ffffff;
             --text-color: #1c1c1e;
-            --header-bg: rgba(255, 255, 255, 0.8);
-            --menu-bg: rgba(255, 255, 255, 0.95);
+            --header-bg: rgba(255, 255, 255, 0.95);
             --article-bg: #ffffff;
             --link-color: #0071e3;
             --border-color: #e5e5e7;
             --overlay-bg: #ffffff;
             --modal-bg: #ffffff;
+            --input-bg: #f9f9f9;
+            --input-border: #e5e5e7;
+            --icon-color: #999999;
         }
         @media (prefers-color-scheme: dark) {
             :root {
                 --bg-color: #1c1c1e;
                 --text-color: #f2f2f7;
-                --header-bg: rgba(28, 28, 30, 0.8);
-                --menu-bg: rgba(28, 28, 30, 0.95);
+                --header-bg: rgba(28, 28, 30, 0.95);
                 --article-bg: #2c2c2e;
                 --link-color: #0a84ff;
                 --border-color: #3a3a3c;
                 --overlay-bg: #2c2c2e;
                 --modal-bg: #2c2c2e;
+                --input-bg: #3a3a3c;
+                --input-border: #444444;
+                --icon-color: #cccccc;
             }
         }
         * {
@@ -63,7 +67,7 @@
             font-family: 'Helvetica Neue', Helvetica, sans-serif;
             font-size: 1.8em;
             font-weight: bold;
-            color: var(--link-color);
+            color: var(--text-color);
             cursor: pointer;
         }
         nav {
@@ -77,10 +81,11 @@
         .search-container form {
             display: flex;
             align-items: center;
-            background-color: var(--bg-color);
-            border: 1px solid var(--border-color);
-            border-radius: 4px;
+            background-color: var(--input-bg);
+            border: 1px solid var(--input-border);
+            border-radius: 8px;
             overflow: hidden;
+            padding: 4px 8px;
         }
         .search-container input[type="text"] {
             width: 100%;
@@ -89,10 +94,10 @@
             outline: none;
             font-size: 1em;
             color: var(--text-color);
-            background-color: var(--bg-color);
+            background-color: var(--input-bg);
         }
         .search-container button {
-            padding: 8px 12px;
+            padding: 8px;
             border: none;
             background-color: transparent;
             cursor: pointer;
@@ -103,7 +108,7 @@
         .search-icon {
             width: 20px;
             height: 20px;
-            fill: var(--text-color);
+            fill: var(--icon-color);
             margin-left: 5px;
         }
         .overlay {
@@ -123,7 +128,7 @@
             visibility: visible;
         }
         main {
-            padding: 100px 40px 40px 40px;
+            padding: 120px 40px 40px 40px;
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
             gap: 30px;
@@ -139,10 +144,6 @@
             flex-direction: column;
             transition: transform 0.3s, box-shadow 0.3s;
             position: relative;
-        }
-        .article:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 12px rgba(0,0,0,0.15);
         }
         .article img {
             width: 100%;
@@ -269,7 +270,7 @@
 <body>
     <header>
         <div class="logo">
-            <a href="https://adiasta.com/x">NR</a>
+            <a href="#" id="logoLink">NR</a>
         </div>
         <nav>
         </nav>
@@ -302,13 +303,14 @@
         const modalTitle = document.getElementById('modalTitle');
         const modalContent = document.getElementById('modalContent');
         const overlay = document.getElementById('overlay');
-
+        const logoLink = document.getElementById('logoLink');
+    
         closeBtn.addEventListener('click', () => {
             modal.classList.remove('active');
             overlay.classList.remove('active');
             document.body.style.overflow = 'auto';
         });
-
+    
         window.addEventListener('click', (e) => {
             if (e.target === modal || e.target === overlay) {
                 modal.classList.remove('active');
@@ -316,9 +318,14 @@
                 document.body.style.overflow = 'auto';
             }
         });
-
+    
+        logoLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            location.reload();
+        });
+    
         const articlesContainer = document.getElementById('articles');
-
+    
         async function fetchRandomArticle() {
             try {
                 const response = await fetch('https://en.wikipedia.org/api/rest_v1/page/random/summary');
@@ -328,7 +335,7 @@
                 return null;
             }
         }
-
+    
         async function fetchSearchArticles(query, limit = 12) {
             try {
                 const response = await fetch(`https://en.wikipedia.org/w/api.php?origin=*&action=query&list=search&srsearch=${encodeURIComponent(query)}&utf8=&format=json&srlimit=${limit}`);
@@ -349,7 +356,7 @@
                 return null;
             }
         }
-
+    
         function createArticleElement(data) {
             const article = document.createElement('div');
             article.className = 'article';
@@ -361,10 +368,10 @@
             }
             const title = document.createElement('h3');
             title.className = 'article-title';
-
+    
             const titleText = document.createElement('span');
             titleText.textContent = data.title;
-
+    
             const externalLink = document.createElement('a');
             externalLink.href = `https://en.wikipedia.org/wiki/${encodeURIComponent(data.title)}`;
             externalLink.target = '_blank';
@@ -376,16 +383,16 @@
                     <path d="M5 5h4V3H5c-1.103 0-2 .897-2 2v14c0 1.103.897 2 2 2h14c1.103 0 2-.897 2-2v-4h-2v4H5V5z"/>
                 </svg>
             `;
-
+    
             title.appendChild(titleText);
             title.appendChild(externalLink);
             article.appendChild(title);
-
+    
             const summary = document.createElement('p');
             summary.className = 'article-summary';
             summary.textContent = data.extract;
             article.appendChild(summary);
-
+    
             article.addEventListener('click', (e) => {
                 if (e.target.closest('a')) return;
                 modalImage.src = data.thumbnail ? data.thumbnail.source : '';
@@ -396,10 +403,10 @@
                 overlay.classList.add('active');
                 document.body.style.overflow = 'hidden';
             });
-
+    
             return article;
         }
-
+    
         async function loadArticles(count = 12) {
             articlesContainer.innerHTML = '';
             for (let i = 0; i < count; i++) {
@@ -410,7 +417,7 @@
                 }
             }
         }
-
+    
         async function loadSearchResults(query) {
             articlesContainer.innerHTML = '';
             const summaries = await fetchSearchArticles(query, 12);
@@ -425,10 +432,10 @@
                 articlesContainer.appendChild(noResults);
             }
         }
-
+    
         const searchForm = document.getElementById('searchForm');
         const searchInput = document.getElementById('searchInput');
-
+    
         searchForm.addEventListener('submit', (e) => {
             e.preventDefault();
             const query = searchInput.value.trim();
@@ -436,7 +443,7 @@
                 loadSearchResults(query);
             }
         });
-
+    
         loadArticles();
     </script>
 </body>
