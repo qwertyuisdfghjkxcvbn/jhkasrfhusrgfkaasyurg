@@ -14,8 +14,8 @@
             --article-bg: #ffffff;
             --link-color: #0071e3;
             --border-color: #e5e5e7;
-            --overlay-bg: #ffffff; /* Changed to solid color */
-            --modal-bg: #ffffff;   /* Changed to solid color */
+            --overlay-bg: #ffffff;
+            --modal-bg: #ffffff;
         }
         @media (prefers-color-scheme: dark) {
             :root {
@@ -26,8 +26,8 @@
                 --article-bg: #2c2c2e;
                 --link-color: #0a84ff;
                 --border-color: #3a3a3c;
-                --overlay-bg: #2c2c2e; /* Changed to solid color */
-                --modal-bg: #2c2c2e;   /* Changed to solid color */
+                --overlay-bg: #2c2c2e;
+                --modal-bg: #2c2c2e;
             }
         }
         * {
@@ -67,7 +67,7 @@
             cursor: pointer;
         }
         nav {
-            display: none; /* Removed navigation links */
+            display: none;
         }
         .search-container {
             position: relative;
@@ -80,7 +80,6 @@
             background-color: var(--bg-color);
             border: 1px solid var(--border-color);
             border-radius: 4px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
             overflow: hidden;
         }
         .search-container input[type="text"] {
@@ -95,23 +94,17 @@
         .search-container button {
             padding: 8px 12px;
             border: none;
-            background-color: var(--link-color);
-            color: #ffffff;
-            font-size: 1em;
+            background-color: transparent;
             cursor: pointer;
-            transition: background-color 0.3s, transform 0.2s;
             display: flex;
             align-items: center;
             justify-content: center;
         }
-        .search-container button:hover {
-            background-color: #005bb5;
-            transform: scale(1.05);
-        }
         .search-icon {
             width: 20px;
             height: 20px;
-            fill: var(--text-color); /* Changed to match text input color */
+            fill: var(--text-color);
+            margin-left: 5px;
         }
         .overlay {
             position: fixed;
@@ -145,7 +138,7 @@
             display: flex;
             flex-direction: column;
             transition: transform 0.3s, box-shadow 0.3s;
-            position: relative; /* For positioning the link icon */
+            position: relative;
         }
         .article:hover {
             transform: translateY(-5px);
@@ -276,16 +269,14 @@
 <body>
     <header>
         <div class="logo">
-            <a href="https://ariasta.com/x">NW</a> <!-- Wrapped logo in anchor tag -->
+            <a href="https://ariasta.com/x">NR</a>
         </div>
         <nav>
-            <!-- Navigation links removed as per request -->
         </nav>
         <div class="search-container">
             <form id="searchForm">
                 <input type="text" id="searchInput" placeholder="Search articles..." aria-label="Search articles">
                 <button type="submit" aria-label="Search">
-                    <!-- Search Icon SVG -->
                     <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
                         <path d="M10 2a8 8 0 105.293 14.293l4.707 4.707 1.414-1.414-4.707-4.707A8 8 0 0010 2zm0 2a6 6 0 110 12A6 6 0 0110 4z"/>
                     </svg>
@@ -371,18 +362,14 @@
             const title = document.createElement('h3');
             title.className = 'article-title';
 
-            // Create title text
             const titleText = document.createElement('span');
             titleText.textContent = data.title;
 
-            // Create external link icon
             const externalLink = document.createElement('a');
             externalLink.href = `https://en.wikipedia.org/wiki/${encodeURIComponent(data.title)}`;
             externalLink.target = '_blank';
             externalLink.rel = 'noopener noreferrer';
             externalLink.setAttribute('aria-label', `Open ${data.title} on Wikipedia`);
-
-            // External Link SVG Icon
             externalLink.innerHTML = `
                 <svg class="external-link-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
                     <path d="M14 3h7v7h-2V6.414l-9.293 9.293-1.414-1.414L17.586 5H14V3z"/>
@@ -390,7 +377,6 @@
                 </svg>
             `;
 
-            // Append title text and external link to the title container
             title.appendChild(titleText);
             title.appendChild(externalLink);
             article.appendChild(title);
@@ -400,9 +386,7 @@
             summary.textContent = data.extract;
             article.appendChild(summary);
 
-            // Event listener for opening modal
             article.addEventListener('click', (e) => {
-                // Prevent triggering modal when clicking on the external link
                 if (e.target.closest('a')) return;
                 modalImage.src = data.thumbnail ? data.thumbnail.source : '';
                 modalImage.alt = data.title;
