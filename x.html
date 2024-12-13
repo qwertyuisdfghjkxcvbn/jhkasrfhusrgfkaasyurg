@@ -58,85 +58,52 @@
             z-index: 1000;
             border-bottom: 1px solid var(--border-color);
         }
-        .logo {
-            width: 40px;
-            height: 40px;
-            position: relative;
-            cursor: pointer;
-        }
-        .logo::before, .logo::after {
-            content: '';
-            position: absolute;
-            background-color: var(--link-color);
-            border-radius: 2px;
-        }
-        .logo::before {
-            width: 100%;
-            height: 6px;
-            top: 0;
-            left: 0;
-        }
-        .logo::after {
-            width: 6px;
-            height: 100%;
-            top: 0;
-            left: 17px;
-        }
-        nav {
-            display: flex;
-            gap: 25px;
-        }
-        nav a {
-            text-decoration: none;
-            color: var(--text-color);
-            font-weight: 700;
-            position: relative;
-        }
-        nav a::after {
-            content: '';
-            position: absolute;
-            width: 0%;
-            height: 2px;
-            background-color: var(--link-color);
-            left: 0;
-            bottom: -5px;
-            transition: width 0.3s;
-        }
-        nav a:hover::after {
-            width: 100%;
-        }
-        .search-container {
-            position: relative;
-            max-width: 400px;
-            width: 100%;
-        }
-        .search-container form {
-            display: flex;
-            align-items: center;
-        }
-        .search-container input[type="text"] {
-            width: 100%;
-            padding: 8px 12px;
-            border: 1px solid var(--border-color);
-            border-radius: 4px 0 0 4px;
-            outline: none;
-            font-size: 1em;
-            color: var(--text-color);
-            background-color: var(--bg-color);
-        }
-        .search-container button {
-            padding: 8px 12px;
-            border: 1px solid var(--border-color);
-            border-left: none;
-            border-radius: 0 4px 4px 0;
-            background-color: var(--link-color);
-            color: #ffffff;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-        .search-container button:hover {
-            background-color: #0061c2;
-        }
+.logo {
+    font-family: 'Times New Roman', Times, serif;
+    font-size: 1.8em;
+    font-weight: bold;
+    color: var(--link-color);
+    cursor: pointer;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.search-container form {
+    display: flex;
+    align-items: center;
+    background-color: var(--bg-color);
+    border: 1px solid var(--border-color);
+    border-radius: 50px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+.search-container input[type="text"] {
+    width: 100%;
+    padding: 10px 15px;
+    border: none;
+    outline: none;
+    font-size: 1em;
+    color: var(--text-color);
+    border-radius: 50px 0 0 50px;
+    background-color: var(--bg-color);
+}
+
+.search-container button {
+    padding: 10px 20px;
+    border: none;
+    background-color: var(--link-color);
+    color: #ffffff;
+    font-size: 1em;
+    font-weight: bold;
+    border-radius: 0 50px 50px 0;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.2s;
+}
+
+.search-container button:hover {
+    background-color: #005bb5;
+    transform: scale(1.05);
+}
         .overlay {
             position: fixed;
             top: 0;
@@ -275,23 +242,23 @@
     </style>
 </head>
 <body>
-    <header>
-        <div class="logo"></div>
-        <nav>
-            <a href="#">Home</a>
-            <a href="#">World</a>
-            <a href="#">Technology</a>
-            <a href="#">Science</a>
-            <a href="#">Health</a>
-            <a href="#">Sports</a>
-        </nav>
-        <div class="search-container">
-            <form id="searchForm">
-                <input type="text" id="searchInput" placeholder="Search articles..." aria-label="Search articles">
-                <button type="submit">Search</button>
-            </form>
-        </div>
-    </header>
+   <header>
+    <div class="logo">Newsroom</div>
+    <nav>
+        <a href="#">Home</a>
+        <a href="#">World</a>
+        <a href="#">Technology</a>
+        <a href="#">Science</a>
+        <a href="#">Health</a>
+        <a href="#">Sports</a>
+    </nav>
+    <div class="search-container">
+        <form id="searchForm">
+            <input type="text" id="searchInput" placeholder="Search articles..." aria-label="Search articles">
+            <button type="submit">Search</button>
+        </form>
+    </div>
+</header>
     <div class="overlay" id="overlay"></div>
     <main id="articles"></main>
     <footer>
