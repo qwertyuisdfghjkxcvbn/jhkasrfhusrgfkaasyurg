@@ -145,6 +145,7 @@
             display: flex;
             flex-direction: column;
             transition: transform 0.3s, box-shadow 0.3s;
+            position: relative; /* For positioning the link icon */
         }
         .article:hover {
             transform: translateY(-5px);
@@ -162,6 +163,28 @@
             margin-bottom: 10px;
             color: var(--link-color);
             text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .article-title a {
+            text-decoration: none;
+            color: var(--link-color);
+            display: flex;
+            align-items: center;
+        }
+        .article-title a:hover {
+            text-decoration: underline;
+        }
+        .external-link-icon {
+            width: 16px;
+            height: 16px;
+            fill: var(--link-color);
+            cursor: pointer;
+            transition: fill 0.3s;
+        }
+        .external-link-icon:hover {
+            fill: #005bb5;
         }
         .article-summary {
             flex: 1;
@@ -347,13 +370,40 @@
             }
             const title = document.createElement('h3');
             title.className = 'article-title';
-            title.textContent = data.title;
+
+            // Create title text
+            const titleText = document.createElement('span');
+            titleText.textContent = data.title;
+
+            // Create external link icon
+            const externalLink = document.createElement('a');
+            externalLink.href = `https://en.wikipedia.org/wiki/${encodeURIComponent(data.title)}`;
+            externalLink.target = '_blank';
+            externalLink.rel = 'noopener noreferrer';
+            externalLink.setAttribute('aria-label', `Open ${data.title} on Wikipedia`);
+
+            // External Link SVG Icon
+            externalLink.innerHTML = `
+                <svg class="external-link-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                    <path d="M14 3h7v7h-2V6.414l-9.293 9.293-1.414-1.414L17.586 5H14V3z"/>
+                    <path d="M5 5h4V3H5c-1.103 0-2 .897-2 2v14c0 1.103.897 2 2 2h14c1.103 0 2-.897 2-2v-4h-2v4H5V5z"/>
+                </svg>
+            `;
+
+            // Append title text and external link to the title container
+            title.appendChild(titleText);
+            title.appendChild(externalLink);
             article.appendChild(title);
+
             const summary = document.createElement('p');
             summary.className = 'article-summary';
             summary.textContent = data.extract;
             article.appendChild(summary);
-            article.addEventListener('click', () => {
+
+            // Event listener for opening modal
+            article.addEventListener('click', (e) => {
+                // Prevent triggering modal when clicking on the external link
+                if (e.target.closest('a')) return;
                 modalImage.src = data.thumbnail ? data.thumbnail.source : '';
                 modalImage.alt = data.title;
                 modalTitle.textContent = data.title;
@@ -362,6 +412,7 @@
                 overlay.classList.add('active');
                 document.body.style.overflow = 'hidden';
             });
+
             return article;
         }
 
