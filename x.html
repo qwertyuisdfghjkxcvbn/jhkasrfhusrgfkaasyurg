@@ -14,8 +14,8 @@
             --article-bg: #ffffff;
             --link-color: #0071e3;
             --border-color: #e5e5e7;
-            --overlay-bg: rgba(0, 0, 0, 0.5);
-            --modal-bg: rgba(255, 255, 255, 0.95);
+            --overlay-bg: #ffffff; /* Changed to solid color */
+            --modal-bg: #ffffff;   /* Changed to solid color */
         }
         @media (prefers-color-scheme: dark) {
             :root {
@@ -26,8 +26,8 @@
                 --article-bg: #2c2c2e;
                 --link-color: #0a84ff;
                 --border-color: #3a3a3c;
-                --overlay-bg: rgba(255, 255, 255, 0.5);
-                --modal-bg: rgba(28, 28, 30, 0.95);
+                --overlay-bg: #2c2c2e; /* Changed to solid color */
+                --modal-bg: #2c2c2e;   /* Changed to solid color */
             }
         }
         * {
@@ -58,7 +58,8 @@
             z-index: 1000;
             border-bottom: 1px solid var(--border-color);
         }
-        .logo {
+        .logo a {
+            text-decoration: none;
             font-family: 'Helvetica Neue', Helvetica, sans-serif;
             font-size: 1.8em;
             font-weight: bold;
@@ -66,27 +67,7 @@
             cursor: pointer;
         }
         nav {
-            display: flex;
-            gap: 25px;
-        }
-        nav a {
-            text-decoration: none;
-            color: var(--text-color);
-            font-weight: 700;
-            position: relative;
-        }
-        nav a::after {
-            content: '';
-            position: absolute;
-            width: 0%;
-            height: 2px;
-            background-color: var(--link-color);
-            left: 0;
-            bottom: -5px;
-            transition: width 0.3s;
-        }
-        nav a:hover::after {
-            width: 100%;
+            display: none; /* Removed navigation links */
         }
         .search-container {
             position: relative;
@@ -130,7 +111,7 @@
         .search-icon {
             width: 20px;
             height: 20px;
-            fill: #ffffff;
+            fill: var(--text-color); /* Changed to match text input color */
         }
         .overlay {
             position: fixed;
@@ -271,14 +252,11 @@
 </head>
 <body>
     <header>
-        <div class="logo">NW</div>
+        <div class="logo">
+            <a href="https://ariasta.com/x">NW</a> <!-- Wrapped logo in anchor tag -->
+        </div>
         <nav>
-            <a href="#">Home</a>
-            <a href="#">World</a>
-            <a href="#">Technology</a>
-            <a href="#">Science</a>
-            <a href="#">Health</a>
-            <a href="#">Sports</a>
+            <!-- Navigation links removed as per request -->
         </nav>
         <div class="search-container">
             <form id="searchForm">
