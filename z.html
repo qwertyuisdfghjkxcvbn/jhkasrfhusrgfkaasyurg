@@ -4,50 +4,56 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Newsroom</title>
-    <link href="https://fonts.googleapis.com/css2?family=Helvetica+Neue&display=swap" rel="stylesheet">
+    <!-- Apple-like Font -->
+    <link href="https://fonts.googleapis.com/css2?family=San+Francisco+Text:wght@400;600&display=swap" rel="stylesheet">
     <style>
         :root {
             --bg-color: #ffffff;
-            --text-color: #1c1c1e;
-            --header-bg: rgba(255, 255, 255, 0.8);
-            --menu-bg: rgba(255, 255, 255, 0.95);
-            --article-bg: #ffffff;
+            --text-color: #333333;
+            --header-bg: #ffffff;
+            --article-bg: #f9f9f9;
             --link-color: #0071e3;
-            --border-color: #e5e5e7;
-            --overlay-bg: rgba(0, 0, 0, 0.5);
-            --modal-bg: rgba(255, 255, 255, 0.95);
-            --favorite-color: #ff9500;
-            --loader-color: #0071e3;
-            --placeholder-bg: #cccccc;
-            --favorite-hover: #ffb84d;
+            --border-color: #e0e0e0;
+            --overlay-bg: rgba(0, 0, 0, 0.6);
+            --modal-bg: #ffffff;
+            --input-bg: #f0f0f0;
+            --input-border: #cccccc;
+            --icon-color: #666666;
+            --close-btn-color: #999999;
+            --close-btn-hover: #333333;
+            --burger-color: #333333;
+            --burger-hover: #0071e3;
+            --favorite-bg: #ffeb3b;
+            --favorite-text: #333333;
         }
-
         @media (prefers-color-scheme: dark) {
             :root {
                 --bg-color: #1c1c1e;
                 --text-color: #f2f2f7;
-                --header-bg: rgba(28, 28, 30, 0.8);
-                --menu-bg: rgba(28, 28, 30, 0.95);
+                --header-bg: #2c2c2e;
                 --article-bg: #2c2c2e;
                 --link-color: #0a84ff;
                 --border-color: #3a3a3c;
-                --overlay-bg: rgba(255, 255, 255, 0.5);
-                --modal-bg: rgba(28, 28, 30, 0.95);
-                --favorite-color: #ff9f0a;
-                --loader-color: #0a84ff;
-                --placeholder-bg: #555555;
-                --favorite-hover: #ffb84d;
+                --overlay-bg: rgba(255, 255, 255, 0.6);
+                --modal-bg: #2c2c2e;
+                --input-bg: #3a3a3c;
+                --input-border: #444444;
+                --icon-color: #cccccc;
+                --close-btn-color: #cccccc;
+                --close-btn-hover: #ffffff;
+                --burger-color: #f2f2f7;
+                --burger-hover: #0a84ff;
+                --favorite-bg: #ffeb3b;
+                --favorite-text: #1c1c1e;
             }
         }
-
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: 'Helvetica Neue', Helvetica, sans-serif;
+            font-family: 'San Francisco Text', Arial, sans-serif;
             transition: background-color 0.3s, color 0.3s;
         }
-
         body {
             background-color: var(--bg-color);
             color: var(--text-color);
@@ -55,168 +61,86 @@
             display: flex;
             flex-direction: column;
             font-size: 16px;
-            overflow-x: hidden;
         }
-
+        /* Header */
         header {
             position: fixed;
             top: 0;
             width: 100%;
             background-color: var(--header-bg);
-            backdrop-filter: blur(10px);
-            padding: 15px 40px;
+            padding: 10px 30px;
             display: flex;
             align-items: center;
             justify-content: space-between;
             z-index: 1000;
             border-bottom: 1px solid var(--border-color);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
         }
-
-        .logo {
-            width: 30px;
-            height: 30px;
-            position: relative;
-            cursor: pointer;
-        }
-
-        .logo::before, .logo::after {
-            content: '';
-            position: absolute;
-            background-color: var(--link-color);
-            border-radius: 2px;
-        }
-
-        .logo::before {
-            width: 100%;
-            height: 6px;
-            top: 0;
-            left: 0;
-        }
-
-        .logo::after {
-            width: 6px;
-            height: 100%;
-            top: 0;
-            left: 12px;
-        }
-
-        nav {
-            display: flex;
-            gap: 25px;
-        }
-
-        nav a {
+        /* Logo */
+        .logo a {
             text-decoration: none;
+            font-size: 1.5em;
+            font-weight: 600;
             color: var(--text-color);
-            font-weight: 700;
-            position: relative;
             cursor: pointer;
         }
-
-        nav a::after {
-            content: '';
-            position: absolute;
-            width: 0%;
-            height: 2px;
-            background-color: var(--link-color);
-            left: 0;
-            bottom: -5px;
-            transition: width 0.3s;
-        }
-
-        nav a:hover::after {
-            width: 100%;
-        }
-
-        .search-container {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        #searchInput {
-            padding: 8px 12px;
-            border: 1px solid var(--border-color);
-            border-radius: 4px;
-            outline: none;
-            width: 200px;
-            transition: width 0.3s;
-        }
-
-        #searchInput:focus {
-            width: 250px;
-        }
-
-        #searchBtn {
-            padding: 8px 12px;
-            border: none;
-            background-color: var(--link-color);
-            color: #fff;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-
-        #searchBtn:hover {
-            background-color: #005bb5;
-        }
-
+        /* Burger Menu */
         .burger {
             display: none;
             flex-direction: column;
-            gap: 5px;
+            justify-content: space-between;
+            width: 25px;
+            height: 20px;
             cursor: pointer;
         }
-
         .burger div {
-            width: 25px;
+            width: 100%;
             height: 3px;
-            background-color: var(--text-color);
-            transition: transform 0.3s, opacity 0.3s;
+            background-color: var(--burger-color);
+            transition: background-color 0.3s;
         }
-
-        .burger.open div:nth-child(1) {
-            transform: rotate(45deg) translate(5px, 5px);
+        .burger:hover div {
+            background-color: var(--burger-hover);
         }
-
-        .burger.open div:nth-child(2) {
-            opacity: 0;
-        }
-
-        .burger.open div:nth-child(3) {
-            transform: rotate(-45deg) translate(5px, -5px);
-        }
-
-        .mobile-menu {
-            position: fixed;
-            top: 0;
-            right: -100%;
-            width: 250px;
-            height: 100%;
-            background-color: var(--menu-bg);
-            backdrop-filter: blur(10px);
-            padding: 60px 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-            transition: right 0.3s;
-            z-index: 1002;
-        }
-
-        .mobile-menu.open {
-            right: 0;
-        }
-
-        .mobile-menu a {
-            text-decoration: none;
-            color: var(--text-color);
-            font-size: 1.1em;
+        /* Search Container */
+        .search-container {
             position: relative;
+            max-width: 300px;
+            width: 100%;
         }
-
+        .search-container form {
+            display: flex;
+            align-items: center;
+            background-color: var(--input-bg);
+            border: 1px solid var(--input-border);
+            border-radius: 8px;
+            overflow: hidden;
+            padding: 5px 10px;
+        }
+        .search-container input[type="text"] {
+            width: 100%;
+            padding: 8px 12px;
+            border: none;
+            outline: none;
+            font-size: 1em;
+            color: var(--text-color);
+            background-color: var(--input-bg);
+        }
+        .search-container button {
+            padding: 8px 12px;
+            border: none;
+            background-color: transparent;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .search-icon {
+            width: 20px;
+            height: 20px;
+            fill: var(--icon-color);
+        }
+        /* Overlay */
         .overlay {
             position: fixed;
             top: 0;
@@ -229,629 +153,604 @@
             transition: opacity 0.3s;
             z-index: 1001;
         }
-
         .overlay.active {
             opacity: 1;
             visibility: visible;
         }
-
+        /* Navigation Menu */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--header-bg);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transform: translateY(-100%);
+            transition: transform 0.3s;
+            z-index: 1002;
+            padding: 20px;
+        }
+        nav.active {
+            transform: translateY(0);
+        }
+        nav ul {
+            list-style: none;
+            width: 100%;
+            max-width: 300px;
+            text-align: center;
+        }
+        nav ul li {
+            padding: 15px 0;
+            cursor: pointer;
+            color: var(--text-color);
+            font-size: 1.2em;
+            transition: color 0.3s;
+        }
+        nav ul li:hover {
+            color: var(--link-color);
+        }
+        /* Favorites Section */
+        .favorites-section {
+            margin-top: 40px;
+            width: 100%;
+            max-width: 300px;
+        }
+        .favorites-section h3 {
+            margin-bottom: 15px;
+            font-size: 1.3em;
+            color: var(--text-color);
+        }
+        .favorites-list {
+            list-style: none;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        .favorites-list li {
+            padding: 10px 0;
+            border-bottom: 1px solid var(--border-color);
+            color: var(--text-color);
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+        .favorites-list li:hover {
+            color: var(--link-color);
+        }
+        /* Main Content */
         main {
-            padding: 100px 40px 40px 40px;
+            padding: 80px 50px 50px 50px;
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
             gap: 30px;
-            transition: filter 0.3s;
         }
-
-        #favoritesSection {
-            display: none;
-            padding: 100px 40px 40px 40px;
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 30px;
-            transition: filter 0.3s;
-        }
-
+        /* Article Card */
         .article {
             background-color: var(--article-bg);
             padding: 20px;
             border: 1px solid var(--border-color);
             border-radius: 12px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.05);
             cursor: pointer;
             display: flex;
             flex-direction: column;
-            transition: transform 0.3s, box-shadow 0.3s;
             position: relative;
+            transition: box-shadow 0.3s;
         }
-
         .article:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 12px rgba(0,0,0,0.15);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
         }
-
         .article img {
             width: 100%;
             height: 180px;
             object-fit: cover;
             border-radius: 8px;
             margin-bottom: 15px;
-            loading: lazy;
         }
-
-        .placeholder {
-            width: 100%;
-            height: 180px;
-            background-color: var(--placeholder-bg);
-            border-radius: 8px;
-            margin-bottom: 15px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #666;
-            font-size: 1em;
+        /* Placeholder for Articles Without Images */
+        .article.no-image .article-summary {
+            margin-top: 0;
         }
-
+        /* Close Button for Articles Without Images */
+        .close-article {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(0,0,0,0.5);
+            border: none;
+            color: #ffffff;
+            padding: 5px 8px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 0.9em;
+            display: none;
+            z-index: 10;
+        }
+        .article.no-image .close-article {
+            display: block;
+        }
+        /* Article Title */
         .article-title {
-            font-size: 1.25em;
+            font-size: 1.2em;
             margin-bottom: 10px;
             color: var(--link-color);
             text-decoration: none;
-            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
-
+        .article-title a {
+            text-decoration: none;
+            color: var(--link-color);
+            display: flex;
+            align-items: center;
+        }
+        .article-title a:hover {
+            text-decoration: underline;
+        }
+        /* External Link Icon */
+        .external-link-icon {
+            width: 16px;
+            height: 16px;
+            fill: var(--link-color);
+            cursor: pointer;
+            transition: fill 0.3s;
+        }
+        .external-link-icon:hover {
+            fill: #005bb5;
+        }
+        /* Article Summary */
         .article-summary {
             flex: 1;
             font-size: 0.95em;
             line-height: 1.5;
             color: var(--text-color);
-            margin-bottom: 10px;
         }
-
-        .favorite-icon {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            width: 24px;
-            height: 24px;
-            fill: var(--border-color);
-            cursor: pointer;
-            transition: fill 0.3s;
-        }
-
-        .favorite-icon.favorited {
-            fill: var(--favorite-color);
-        }
-
-        .favorite-icon:hover {
-            fill: var(--favorite-hover);
-        }
-
-        .loader {
-            position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            border: 8px solid #f3f3f3;
-            border-top: 8px solid var(--loader-color);
-            border-radius: 50%;
-            width: 60px;
-            height: 60px;
-            animation: spin 1s linear infinite;
-            display: none;
-            z-index: 1004;
-        }
-
-        @keyframes spin {
-            0% { transform: translateX(-50%) rotate(0deg); }
-            100% { transform: translateX(-50%) rotate(360deg); }
-        }
-
+        /* Footer */
         footer {
             background-color: var(--header-bg);
-            padding: 20px 40px;
+            padding: 20px 50px;
             text-align: center;
             border-top: 1px solid var(--border-color);
             font-size: 0.9em;
-            transition: filter 0.3s;
         }
-
+        /* Modal */
         .modal {
             position: fixed;
             top: 50%;
             left: 50%;
-            transform: translate(-50%, -50%) scale(0.8);
+            transform: translate(-50%, -50%) scale(0.95);
             width: 80%;
             max-width: 800px;
             background-color: var(--modal-bg);
             border-radius: 12px;
-            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
-            padding: 20px;
+            box-shadow: 0 12px 24px rgba(0,0,0,0.2);
+            padding: 30px;
             z-index: 1003;
             opacity: 0;
             visibility: hidden;
             transition: opacity 0.3s, transform 0.3s;
             max-height: 90vh;
             overflow-y: auto;
-            position: relative;
         }
-
         .modal.active {
             opacity: 1;
             visibility: visible;
             transform: translate(-50%, -50%) scale(1);
         }
-
         .modal img {
             width: 100%;
             height: auto;
             object-fit: cover;
             border-radius: 8px;
-            margin-bottom: 15px;
+            margin-bottom: 20px;
         }
-
         .modal-title {
-            font-size: 1.5em;
-            margin-bottom: 10px;
+            font-size: 1.8em;
+            margin-bottom: 15px;
             color: var(--link-color);
         }
-
         .modal-content {
             font-size: 1em;
             line-height: 1.6;
             color: var(--text-color);
-            margin-bottom: 20px;
         }
-
         .close-btn {
             position: absolute;
-            top: 15px;
-            right: 20px;
+            top: 20px;
+            right: 25px;
             font-size: 1.5em;
-            color: var(--text-color);
+            color: var(--close-btn-color);
             cursor: pointer;
             background: none;
             border: none;
+            transition: color 0.3s;
         }
-
-        #favoriteBtn {
-            padding: 10px 15px;
-            background-color: var(--favorite-color);
-            color: #fff;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-            display: flex;
-            align-items: center;
-            gap: 5px;
+        .close-btn:hover {
+            color: var(--close-btn-hover);
         }
-
-        #favoriteBtn.favorited {
-            background-color: var(--favorite-hover);
+        /* Favorites Highlight */
+        .favorite {
+            background-color: var(--favorite-bg);
+            color: var(--favorite-text);
         }
-
-        #favoriteBtn:hover {
-            background-color: #e08e00;
-        }
-
-        .blurred header,
-        .blurred main,
-        .blurred footer {
-            filter: blur(5px);
-            transition: filter 0.3s;
-        }
-
+        /* Responsive Design */
         @media (max-width: 768px) {
-            nav {
-                display: none;
-            }
-
             .burger {
                 display: flex;
             }
-
-            .search-container {
-                display: none;
+            nav {
+                padding: 20px;
+                background-color: var(--header-bg);
             }
-
-            main, #favoritesSection {
-                padding: 80px 20px 20px 20px;
+            main {
+                padding: 90px 20px 20px 20px;
                 gap: 20px;
             }
-
             .article img {
                 height: 150px;
             }
-
             .modal {
                 width: 90%;
-                padding: 15px;
+                padding: 20px;
             }
-
             .modal-title {
-                font-size: 1.25em;
+                font-size: 1.5em;
             }
-
-            #searchInput {
-                width: 150px;
+            .search-container {
+                max-width: 250px;
             }
         }
     </style>
 </head>
 <body>
+    <!-- Header -->
     <header>
-        <div class="logo" id="logo"></div>
-        <nav>
-            <a href="#" data-section="home">Home</a>
-            <a href="#" data-section="world">World</a>
-            <a href="#" data-section="technology">Technology</a>
-            <a href="#" data-section="science">Science</a>
-            <a href="#" data-section="health">Health</a>
-            <a href="#" data-section="sports">Sports</a>
-            <a href="#" data-section="favorites">Favorites</a>
-        </nav>
-        <div class="search-container">
-            <input type="text" id="searchInput" placeholder="Search articles...">
-            <button id="searchBtn">
-                <svg xmlns="http://www.w3.org/2000/svg" height="20" width="20" viewBox="0 0 24 24" fill="#fff">
-                    <path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0016 9.5 6.5 6.5 0 109.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C8.01 14 6 11.99 6 9.5S8.01 5 10.5 5 15 7.01 15 9.5 12.99 14 10.5 14z"/>
-                </svg>
-                Search
-            </button>
+        <div class="logo">
+            <a href="#" id="logoLink">NR</a>
         </div>
-        <div class="burger" id="burger">
+        <!-- Burger Menu Icon -->
+        <div class="burger" id="burgerMenu" aria-label="Open Menu" aria-expanded="false">
             <div></div>
             <div></div>
             <div></div>
+        </div>
+        <!-- Search Container -->
+        <div class="search-container">
+            <form id="searchForm">
+                <input type="text" id="searchInput" placeholder="Search articles..." aria-label="Search articles">
+                <button type="submit" aria-label="Search">
+                    <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                        <path d="M10 2a8 8 0 105.293 14.293l4.707 4.707 1.414-1.414-4.707-4.707A8 8 0 0010 2zm0 2a6 6 0 110 12A6 6 0 0110 4z"/>
+                    </svg>
+                </button>
+            </form>
         </div>
     </header>
 
-    <div class="mobile-menu" id="mobileMenu">
-        <a href="#" data-section="home">Home</a>
-        <a href="#" data-section="world">World</a>
-        <a href="#" data-section="technology">Technology</a>
-        <a href="#" data-section="science">Science</a>
-        <a href="#" data-section="health">Health</a>
-        <a href="#" data-section="sports">Sports</a>
-        <a href="#" data-section="favorites">Favorites</a>
-    </div>
+    <!-- Navigation Menu -->
+    <nav id="navMenu" aria-label="Article Categories">
+        <ul id="themeList">
+            <li data-theme="Technology">Technology</li>
+            <li data-theme="Sports">Sports</li>
+            <li data-theme="Health">Health</li>
+            <li data-theme="Science">Science</li>
+            <li data-theme="Business">Business</li>
+            <li data-theme="Entertainment">Entertainment</li>
+            <li data-theme="Politics">Politics</li>
+            <li data-theme="Environment">Environment</li>
+            <li data-theme="Education">Education</li>
+        </ul>
+        <!-- Favorites Section -->
+        <div class="favorites-section">
+            <h3>Favorites</h3>
+            <ul class="favorites-list" id="favoritesList">
+                <!-- Favorite articles will be appended here -->
+            </ul>
+        </div>
+    </nav>
 
+    <!-- Overlay -->
     <div class="overlay" id="overlay"></div>
 
-    <main id="articles"></main>
+    <!-- Main Content -->
+    <main id="articles">
+        <!-- Articles will be appended here dynamically -->
+    </main>
 
-    <main id="favoritesSection"></main>
-
-    <div class="loader" id="loader"></div>
-
+    <!-- Footer -->
     <footer>
         &copy; 2024 Newsroom. All rights reserved.
     </footer>
 
+    <!-- Modal for Article Details -->
     <div class="modal" id="modal">
-        <button class="close-btn" id="closeBtn">&times;</button>
+        <button class="close-btn" id="closeBtn" aria-label="Close Modal">&times;</button>
         <img src="" alt="" id="modalImage">
         <h2 class="modal-title" id="modalTitle"></h2>
         <p class="modal-content" id="modalContent"></p>
-        <button id="favoriteBtn">
-            <svg xmlns="http://www.w3.org/2000/svg" height="20" width="20" viewBox="0 0 24 24" fill="#fff">
-                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 
-                4.42 3 7.5 3c1.74 0 3.41.81 
-                4.5 2.09C13.09 3.81 14.76 3 
-                16.5 3 19.58 3 22 5.42 
-                22 8.5c0 3.78-3.4 6.86-8.55 
-                11.54L12 21.35z"/>
-            </svg>
-            <span id="favoriteBtnText">Add to Favorites</span>
-        </button>
     </div>
 
+    <!-- JavaScript -->
     <script>
-        const burger = document.getElementById('burger');
-        const mobileMenu = document.getElementById('mobileMenu');
-        const overlay = document.getElementById('overlay');
+        // Elements
         const modal = document.getElementById('modal');
         const closeBtn = document.getElementById('closeBtn');
         const modalImage = document.getElementById('modalImage');
         const modalTitle = document.getElementById('modalTitle');
         const modalContent = document.getElementById('modalContent');
-        const favoriteBtn = document.getElementById('favoriteBtn');
+        const overlay = document.getElementById('overlay');
+        const logoLink = document.getElementById('logoLink');
+        const burgerMenu = document.getElementById('burgerMenu');
+        const navMenu = document.getElementById('navMenu');
+        const themeList = document.getElementById('themeList');
+        const searchForm = document.getElementById('searchForm');
         const searchInput = document.getElementById('searchInput');
-        const searchBtn = document.getElementById('searchBtn');
         const articlesContainer = document.getElementById('articles');
-        const favoritesSection = document.getElementById('favoritesSection');
-        const loader = document.getElementById('loader');
-        const body = document.body;
-        const navLinks = document.querySelectorAll('nav a[data-section]');
-        const mobileNavLinks = document.querySelectorAll('.mobile-menu a[data-section]');
-        const favoriteBtnText = document.getElementById('favoriteBtnText');
+        const favoritesList = document.getElementById('favoritesList');
 
-        let currentSection = 'home';
-        let isFetching = false;
-        let page = 1;
-        const favorites = JSON.parse(localStorage.getItem('favorites')) || {};
+        // Favorites Array
+        let favorites = JSON.parse(localStorage.getItem('favorites')) || [];
 
-        const categories = {
-            home: '',
-            world: 'World',
-            technology: 'Technology',
-            science: 'Science',
-            health: 'Health',
-            sports: 'Sports'
-        };
+        // Functions
 
-        document.addEventListener('DOMContentLoaded', () => {
-            loadArticles();
-            renderFavorites();
-        });
+        // Toggle Navigation Menu
+        function toggleNav() {
+            const isActive = navMenu.classList.toggle('active');
+            overlay.classList.toggle('active', isActive);
+            burgerMenu.setAttribute('aria-expanded', isActive);
+        }
 
-        burger.addEventListener('click', () => {
-            burger.classList.toggle('open');
-            mobileMenu.classList.toggle('open');
-            overlay.classList.toggle('active');
-        });
-
-        overlay.addEventListener('click', () => {
-            burger.classList.remove('open');
-            mobileMenu.classList.remove('open');
+        // Close Navigation Menu
+        function closeNav() {
+            navMenu.classList.remove('active');
             overlay.classList.remove('active');
-        });
-
-        closeBtn.addEventListener('click', closeModal);
-
-        window.addEventListener('click', (e) => {
-            if (e.target === modal) {
-                closeModal();
-            }
-        });
-
-        navLinks.forEach(link => {
-            link.addEventListener('click', (e) => {
-                e.preventDefault();
-                const section = link.getAttribute('data-section');
-                navigateToSection(section);
-            });
-        });
-
-        mobileNavLinks.forEach(link => {
-            link.addEventListener('click', (e) => {
-                e.preventDefault();
-                const section = link.getAttribute('data-section');
-                navigateToSection(section);
-                burger.classList.remove('open');
-                mobileMenu.classList.remove('open');
-                overlay.classList.remove('active');
-            });
-        });
-
-        searchBtn.addEventListener('click', () => {
-            const query = searchInput.value.trim();
-            if (query) {
-                currentSection = 'search';
-                page = 1;
-                articlesContainer.innerHTML = '';
-                loadArticles(query);
-            }
-        });
-
-        searchInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                searchBtn.click();
-            }
-        });
-
-        function navigateToSection(section) {
-            currentSection = section;
-            page = 1;
-            articlesContainer.innerHTML = '';
-            if (section === 'favorites') {
-                renderFavorites();
-                favoritesSection.style.display = 'grid';
-                articlesContainer.parentElement.style.display = 'none';
-            } else {
-                favoritesSection.style.display = 'none';
-                articlesContainer.parentElement.style.display = 'grid';
-                loadArticles();
-            }
+            burgerMenu.setAttribute('aria-expanded', 'false');
         }
 
-        async function loadArticles(query = '') {
-            if (isFetching) return;
-            isFetching = true;
-            showLoader();
-
-            try {
-                let apiUrl = `https://en.wikipedia.org/w/api.php?action=query&origin=*&format=json&generator=random&grnnamespace=0&grnlimit=10&prop=pageimages|extracts&exintro=true&explaintext=true&pithumbsize=300`;
-
-                if (currentSection !== 'home' && currentSection !== 'favorites' && currentSection !== 'search') {
-                    const category = categories[currentSection];
-                    apiUrl = `https://en.wikipedia.org/w/api.php?action=query&origin=*&format=json&list=categorymembers&cmtitle=Category:${encodeURIComponent(category)}&cmlimit=10&prop=pageimages|extracts&exintro=true&explaintext=true&pithumbsize=300`;
-                }
-
-                if (currentSection === 'search' && query) {
-                    apiUrl = `https://en.wikipedia.org/w/api.php?action=query&origin=*&format=json&list=search&srsearch=${encodeURIComponent(query)}&srlimit=10&prop=pageimages|extracts&exintro=true&explaintext=true&pithumbsize=300&srprop=snippet`;
-                }
-
-                const response = await fetch(apiUrl);
-                const data = await response.json();
-
-                let pages = [];
-
-                if (currentSection === 'search' && data.query && data.query.search) {
-                    pages = data.query.search.map(item => ({
-                        pageid: item.pageid,
-                        title: item.title,
-                        extract: item.snippet.replace(/<[^>]+>/g, ''),
-                        thumbnail: null
-                    }));
-                } else if (data.query && data.query.pages) {
-                    pages = Object.values(data.query.pages);
-                }
-
-                if (pages.length === 0 && currentSection === 'search') {
-                    articlesContainer.innerHTML = '<p>No articles found.</p>';
-                }
-
-                pages.forEach(pageData => {
-                    const articleElement = createArticleElement(pageData);
-                    articlesContainer.appendChild(articleElement);
+        // Load Favorites from LocalStorage
+        function loadFavorites() {
+            favoritesList.innerHTML = '';
+            if (favorites.length === 0) {
+                const noFav = document.createElement('li');
+                noFav.textContent = 'No favorite articles.';
+                noFav.style.color = 'var(--text-color)';
+                favoritesList.appendChild(noFav);
+                return;
+            }
+            favorites.forEach((fav, index) => {
+                const favItem = document.createElement('li');
+                favItem.textContent = fav.title;
+                favItem.title = fav.title;
+                favItem.addEventListener('click', () => {
+                    openModal(fav);
                 });
-            } catch (error) {
-                console.error('Error fetching articles:', error);
-            } finally {
-                hideLoader();
-                isFetching = false;
-            }
+                favoritesList.appendChild(favItem);
+            });
         }
 
+        // Save Favorites to LocalStorage
+        function saveFavorites() {
+            localStorage.setItem('favorites', JSON.stringify(favorites));
+            loadFavorites();
+        }
+
+        // Open Modal with Article Details
+        function openModal(article) {
+            modalImage.src = article.thumbnail ? article.thumbnail.source : '';
+            modalImage.alt = article.title;
+            modalTitle.textContent = article.title;
+            modalContent.textContent = article.extract;
+            modal.classList.add('active');
+            overlay.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        // Close Modal
+        function closeModal() {
+            modal.classList.remove('active');
+            overlay.classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+
+        // Handle Article Click
+        function handleArticleClick(article) {
+            openModal(article);
+        }
+
+        // Create Article Element
         function createArticleElement(data) {
             const article = document.createElement('div');
             article.className = 'article';
-
+            // Check for image
             if (data.thumbnail && data.thumbnail.source) {
                 const img = document.createElement('img');
                 img.src = data.thumbnail.source;
                 img.alt = data.title;
-                img.onerror = () => {
-                    img.replaceWith(createPlaceholder());
-                };
                 article.appendChild(img);
             } else {
-                article.appendChild(createPlaceholder());
+                // No image, no placeholder
+                // Optionally, you can add a class to handle layout if needed
+                article.classList.add('no-image');
             }
 
+            // Close Button for Articles Without Images
+            if (!data.thumbnail || !data.thumbnail.source) {
+                const closeArticleBtn = document.createElement('button');
+                closeArticleBtn.className = 'close-article';
+                closeArticleBtn.innerHTML = '&times;';
+                closeArticleBtn.setAttribute('aria-label', 'Close Article');
+                closeArticleBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    article.remove();
+                });
+                article.appendChild(closeArticleBtn);
+            }
+
+            // Article Title
             const title = document.createElement('h3');
             title.className = 'article-title';
-            title.textContent = data.title;
+
+            const titleText = document.createElement('span');
+            titleText.textContent = data.title;
+
+            const externalLink = document.createElement('a');
+            externalLink.href = `https://en.wikipedia.org/wiki/${encodeURIComponent(data.title)}`;
+            externalLink.target = '_blank';
+            externalLink.rel = 'noopener noreferrer';
+            externalLink.setAttribute('aria-label', `Open ${data.title} on Wikipedia`);
+            externalLink.innerHTML = `
+                <svg class="external-link-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                    <path d="M14 3h7v7h-2V6.414l-9.293 9.293-1.414-1.414L17.586 5H14V3z"/>
+                    <path d="M5 5h4V3H5c-1.103 0-2 .897-2 2v14c0 1.103.897 2 2 2h14c1.103 0 2-.897 2-2v-4h-2v4H5V5z"/>
+                </svg>
+            `;
+
+            title.appendChild(titleText);
+            title.appendChild(externalLink);
             article.appendChild(title);
 
+            // Article Summary
             const summary = document.createElement('p');
             summary.className = 'article-summary';
-            summary.textContent = data.extract || 'No summary available.';
+            summary.textContent = data.extract;
             article.appendChild(summary);
 
-            const favoriteIcon = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-            favoriteIcon.setAttribute("viewBox", "0 0 24 24");
-            favoriteIcon.setAttribute("class", "favorite-icon");
-            favoriteIcon.innerHTML = `<path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 
-                4.42 3 7.5 3c1.74 0 3.41.81 
-                4.5 2.09C13.09 3.81 14.76 3 
-                16.5 3 19.58 3 22 5.42 
-                22 8.5c0 3.78-3.4 6.86-8.55 
-                11.54L12 21.35z"/>`;
-            if (favorites[data.pageid]) {
-                favoriteIcon.classList.add('favorited');
-            }
-            favoriteIcon.addEventListener('click', (e) => {
-                e.stopPropagation();
-                toggleFavorite(data, favoriteIcon);
-            });
-            article.appendChild(favoriteIcon);
-
+            // Event Listener for Opening Modal
             article.addEventListener('click', () => {
-                openModal(data);
+                handleArticleClick(data);
             });
+
+            // Swipe Gestures for Mobile
+            addSwipeGestures(article, data);
 
             return article;
         }
 
-        function createPlaceholder() {
-            const placeholder = document.createElement('div');
-            placeholder.className = 'placeholder';
-            placeholder.textContent = 'No Image Available';
-            return placeholder;
-        }
+        // Add Swipe Gestures to Article
+        function addSwipeGestures(element, articleData) {
+            let touchStartX = 0;
+            let touchEndX = 0;
 
-        function openModal(data) {
-            modalImage.src = data.thumbnail ? data.thumbnail.source : '';
-            modalImage.alt = data.title;
-            modalTitle.textContent = data.title;
-            modalContent.textContent = data.extract || 'No content available.';
-            modal.classList.add('active');
-            overlay.classList.add('active');
-            body.classList.add('blurred');
-            document.body.style.overflow = 'hidden';
+            element.addEventListener('touchstart', (e) => {
+                touchStartX = e.changedTouches[0].screenX;
+            });
 
-            if (favorites[data.pageid]) {
-                favoriteBtn.classList.add('favorited');
-                favoriteBtnText.textContent = 'Remove from Favorites';
-            } else {
-                favoriteBtn.classList.remove('favorited');
-                favoriteBtnText.textContent = 'Add to Favorites';
-            }
+            element.addEventListener('touchend', (e) => {
+                touchEndX = e.changedTouches[0].screenX;
+                handleGesture();
+            });
 
-            favoriteBtn.onclick = () => {
-                toggleFavorite(data);
-                if (favorites[data.pageid]) {
-                    favoriteBtn.classList.add('favorited');
-                    favoriteBtnText.textContent = 'Remove from Favorites';
-                } else {
-                    favoriteBtn.classList.remove('favorited');
-                    favoriteBtnText.textContent = 'Add to Favorites';
+            function handleGesture() {
+                if (touchEndX < touchStartX - 50) {
+                    // Swipe Left - Add to Favorites
+                    addToFavorites(articleData);
                 }
-            };
-        }
-
-        function closeModal() {
-            modal.classList.remove('active');
-            overlay.classList.remove('active');
-            body.classList.remove('blurred');
-            document.body.style.overflow = '';
-        }
-
-        function toggleFavorite(data, iconElement = null) {
-            if (favorites[data.pageid]) {
-                delete favorites[data.pageid];
-                if (iconElement) {
-                    iconElement.classList.remove('favorited');
-                }
-            } else {
-                favorites[data.pageid] = data;
-                if (iconElement) {
-                    iconElement.classList.add('favorited');
+                if (touchEndX > touchStartX + 50) {
+                    // Swipe Right - Dismiss Article
+                    element.remove();
                 }
             }
-            localStorage.setItem('favorites', JSON.stringify(favorites));
-            renderFavorites();
         }
 
-        function renderFavorites() {
-            favoritesSection.innerHTML = '';
-            if (Object.keys(favorites).length === 0) {
-                favoritesSection.innerHTML = '<p>You have no favorite articles.</p>';
+        // Add Article to Favorites
+        function addToFavorites(article) {
+            // Check if already in favorites
+            const exists = favorites.some(fav => fav.pageid === article.pageid);
+            if (!exists) {
+                favorites.push(article);
+                saveFavorites();
+                alert('Article added to favorites!');
+            } else {
+                alert('Article is already in favorites.');
+            }
+        }
+
+        // Render Articles
+        function renderArticles(articles) {
+            if (articles.length === 0) {
+                articlesContainer.innerHTML = '<p>No articles found for your search.</p>';
                 return;
             }
-            for (const key in favorites) {
-                const data = favorites[key];
-                const articleElement = createArticleElement(data);
-                favoritesSection.appendChild(articleElement);
+            articlesContainer.innerHTML = '';
+            articles.forEach(article => {
+                const articleElement = createArticleElement(article);
+                articlesContainer.appendChild(articleElement);
+            });
+        }
+
+        // Fetch Articles Function
+        async function fetchArticles(query, limit = 12) {
+            try {
+                const response = await fetch(`https://en.wikipedia.org/w/api.php?origin=*&action=query&list=search&srsearch=${encodeURIComponent(query)}&utf8=&format=json&srlimit=${limit}`);
+                if (!response.ok) return [];
+                const data = await response.json();
+                const pages = data.query.search;
+                const summaries = await Promise.all(pages.map(async (page) => {
+                    try {
+                        const res = await fetch(`https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(page.title)}`);
+                        if (!res.ok) return null;
+                        return await res.json();
+                    } catch {
+                        return null;
+                    }
+                }));
+                return summaries.filter(summary => summary !== null);
+            } catch {
+                return [];
             }
         }
 
-        window.addEventListener('scroll', () => {
-            if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 100 && !isFetching && currentSection !== 'favorites') {
-                page++;
-                loadArticles(searchInput.value.trim());
+        // Load Articles by Theme
+        async function loadArticlesByTheme(theme) {
+            articlesContainer.innerHTML = '<p>Loading...</p>';
+            const articles = await fetchArticles(`intitle:${theme}`, 12);
+            renderArticles(articles);
+        }
+
+        // Load Articles by Search Query
+        async function loadArticlesBySearch(query) {
+            articlesContainer.innerHTML = '<p>Loading...</p>';
+            const articles = await fetchArticles(query, 12);
+            renderArticles(articles);
+        }
+
+        // Initialize Favorites
+        loadFavorites();
+
+        // Event Listeners
+        burgerMenu.addEventListener('click', toggleNav);
+        closeBtn.addEventListener('click', closeModal);
+        logoLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            location.reload();
+        });
+
+        // Handle Theme Selection
+        themeList.addEventListener('click', async (e) => {
+            if (e.target.tagName === 'LI') {
+                const theme = e.target.getAttribute('data-theme');
+                closeNav();
+                await loadArticlesByTheme(theme);
             }
         });
 
-        function showLoader() {
-            loader.style.display = 'block';
-        }
-
-        function hideLoader() {
-            loader.style.display = 'none';
-        }
-
-        document.getElementById('logo').addEventListener('click', () => {
-            navigateToSection('home');
+        // Handle Search
+        searchForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const query = searchInput.value.trim();
+            if (query) {
+                closeNav();
+                await loadArticlesBySearch(query);
+            }
         });
 
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && modal.classList.contains('active')) {
-                closeModal();
-            }
+        // Initial Load with Default Theme
+        window.addEventListener('DOMContentLoaded', () => {
+            // Load default theme, e.g., "News"
+            loadArticlesByTheme('News');
         });
     </script>
 </body>
