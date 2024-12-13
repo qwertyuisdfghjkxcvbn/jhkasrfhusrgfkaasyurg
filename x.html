@@ -8,6 +8,25 @@
     <link rel="manifest" href="/site.webmanifest">
     <link href="https://fonts.googleapis.com/css2?family=Helvetica+Neue:wght@400;700&display=swap" rel="stylesheet">
     <style>
+.load-more-btn {
+    display: block;
+    margin: 20px auto;
+    padding: 10px 20px;
+    font-size: 1em;
+    font-weight: bold;
+    color: #ffffff; /* White text */
+    background-color: #000000; /* Black background */
+    border: 2px solid #ffffff; /* White border */
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+}
+
+.load-more-btn:hover {
+    background-color: #ffffff; /* White background */
+    color: #000000; /* Black text */
+    border-color: #000000; /* Black border */
+}
         :root {
             --bg-color: #ffffff;
             --text-color: #1c1c1e;
@@ -288,7 +307,8 @@
         </div>
     </header>
     <div class="overlay" id="overlay"></div>
-    <main id="articles"></main>
+<main id="articles"></main>
+<button id="loadMoreBtn" class="load-more-btn">Load More</button>
     <footer>
         &copy; 2024 Newsroom. All rights reserved.
     </footer>
@@ -447,6 +467,23 @@
         });
 
         loadArticles();
+      
+      const loadMoreBtn = document.getElementById('loadMoreBtn');
+let articlesCount = 12; // Initial number of articles
+
+async function loadMoreArticles(count = 6) {
+    for (let i = 0; i < count; i++) {
+        const data = await fetchRandomArticle();
+        if (data) {
+            const articleElement = createArticleElement(data);
+            articlesContainer.appendChild(articleElement);
+        }
+    }
+}
+
+loadMoreBtn.addEventListener('click', () => {
+    loadMoreArticles(6); // Load 6 more articles on each click
+});
     </script>
 </body>
 </html>
