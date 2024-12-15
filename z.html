@@ -557,32 +557,39 @@
         const themeSelect = document.getElementById('themeSelect');
         const unitsSelect = document.getElementById('unitsSelect');
         const animationToggle = document.getElementById('animationToggle');
+
         window.addEventListener('load', () => {
             loadSettings();
             getLocation();
         });
+
         searchBtn.addEventListener('click', () => {
             const city = cityInput.value.trim();
             if (city !== '') {
                 fetchWeatherByCity(city);
             }
         });
+
         cityInput.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') {
                 searchBtn.click();
             }
         });
+
         settingsBtn.addEventListener('click', () => {
             openSettings();
         });
+
         closeModal.addEventListener('click', () => {
             closeSettings();
         });
+
         window.addEventListener('click', (event) => {
             if (event.target === settingsModal) {
                 closeSettings();
             }
         });
+
         saveSettingsBtn.addEventListener('click', () => {
             saveSettings();
             closeSettings();
@@ -593,6 +600,7 @@
                 getLocation();
             }
         });
+
         function getLocation() {
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(position => {
@@ -606,6 +614,7 @@
                 descriptionElement.textContent = 'Geolocation is not supported by this browser.';
             }
         }
+
         function fetchWeatherByCity(city) {
             fetch(`https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(city)}&units=${currentUnit}&appid=${apiKey}`)
                 .then(response => {
@@ -622,33 +631,47 @@
                     descriptionElement.textContent = err.message;
                 });
         }
+
         function fetchWeather(lat, lon) {
             fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=${currentUnit}&appid=${apiKey}`)
-                .then(response => response.json())
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Unable to fetch weather data');
+                    }
+                    return response.json();
+                })
                 .then(data => {
                     updateCurrentWeather(data);
                     fetchForecast(lat, lon);
                 })
                 .catch(err => {
-                    descriptionElement.textContent = 'Unable to retrieve weather data.';
+                    descriptionElement.textContent = err.message;
                 });
         }
+
         function fetchForecast(lat, lon) {
             fetch(`https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&units=${currentUnit}&appid=${apiKey}`)
-                .then(response => response.json())
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Unable to fetch forecast data');
+                    }
+                    return response.json();
+                })
                 .then(data => {
                     displayForecast(data);
                 })
                 .catch(err => {
+                    console.error(err);
                 });
         }
+
         function updateCurrentWeather(data) {
             temperatureElement.textContent = `${Math.round(data.main.temp)}°${currentUnit === 'metric' ? 'C' : 'F'}`;
             descriptionElement.textContent = data.weather[0].description;
             humidityElement.textContent = `${data.main.humidity}%`;
             windElement.textContent = `${Math.round(data.wind.speed)} ${currentUnit === 'metric' ? 'km/h' : 'mph'}`;
             pressureElement.textContent = `${data.main.pressure} hPa`;
-            visibilityElement.textContent = `${data.visibility / 1000} km`;
+            visibilityElement.textContent = `${(data.visibility / 1000).toFixed(1)} km`;
             const iconCode = data.weather[0].icon;
             weatherIconElement.src = `https://openweathermap.org/img/wn/${iconCode}@2x.png`;
             weatherIconElement.alt = data.weather[0].description;
@@ -660,16 +683,35 @@
                 document.getElementById('weatherCard').style.animation = 'none';
             }
         }
+
         function displayForecast(data) {
             forecastCardsContainer.innerHTML = '';
             const dailyForecast = {};
             data.list.forEach(entry => {
                 const date = new Date(entry.dt_txt);
                 const day = date.toLocaleDateString(undefined, { weekday: 'long' });
-                if (!dailyForecast[day] && date.getHours() === 12) {
+                const hour = date.getHours();
+                if (!dailyForecast[day] && hour === 12) {
                     dailyForecast[day] = entry;
                 }
             });
+
+            // If not enough forecast data at 12:00 PM, fill missing days
+            const daysNeeded = 5;
+            let daysCollected = Object.keys(dailyForecast).length;
+            let index = 0;
+            while (daysCollected < daysNeeded && index < data.list.length) {
+                const entry = data.list[index];
+                const date = new Date(entry.dt_txt);
+                const day = date.toLocaleDateString(undefined, { weekday: 'long' });
+                const hour = date.getHours();
+                if (!dailyForecast[day] && hour === 15) { // Try 3:00 PM if 12:00 PM not available
+                    dailyForecast[day] = entry;
+                    daysCollected++;
+                }
+                index++;
+            }
+
             for (const day in dailyForecast) {
                 const forecast = dailyForecast[day];
                 const card = document.createElement('div');
@@ -689,6 +731,7 @@
                 forecastCardsContainer.appendChild(card);
             }
         }
+
         function changeFontSize(action) {
             let newSize = currentFontSize;
             if (action === 'increase' && newSize < 24) {
@@ -702,28 +745,35 @@
             temperatureElement.style.fontSize = `${currentFontSize}px`;
             descriptionElement.style.fontSize = `${currentFontSize / 2}px`;
         }
+
         function openSettings() {
             settingsModal.style.display = 'block';
             settingsModal.setAttribute('aria-hidden', 'false');
         }
+
         function closeSettings() {
             settingsModal.style.display = 'none';
             settingsModal.setAttribute('aria-hidden', 'true');
         }
+
         function saveSettings() {
             currentFontSize = parseInt(fontSizeSlider.value);
             localStorage.setItem('fontSize', currentFontSize);
             temperatureElement.style.fontSize = `${currentFontSize}px`;
             descriptionElement.style.fontSize = `${currentFontSize / 2}px`;
+
             const selectedTheme = themeSelect.value;
             localStorage.setItem('theme', selectedTheme);
             applyTheme(selectedTheme);
+
             currentUnit = unitsSelect.value;
             localStorage.setItem('units', currentUnit);
+
             animationsEnabled = animationToggle.checked;
             localStorage.setItem('animationsEnabled', animationsEnabled);
             applyAnimations();
         }
+
         function loadSettings() {
             const savedFontSize = localStorage.getItem('fontSize');
             if (savedFontSize) {
@@ -732,12 +782,15 @@
                 temperatureElement.style.fontSize = `${currentFontSize}px`;
                 descriptionElement.style.fontSize = `${currentFontSize / 2}px`;
             }
+
             const savedTheme = localStorage.getItem('theme') || 'auto';
             themeSelect.value = savedTheme;
             applyTheme(savedTheme);
+
             const savedUnits = localStorage.getItem('units') || 'metric';
             currentUnit = savedUnits;
             unitsSelect.value = savedUnits;
+
             const savedAnimations = localStorage.getItem('animationsEnabled');
             if (savedAnimations !== null) {
                 animationsEnabled = (savedAnimations === 'true');
@@ -745,6 +798,7 @@
             }
             applyAnimations();
         }
+
         function applyTheme(theme) {
             if (theme === 'light') {
                 document.documentElement.style.setProperty('--bg-color', '#ffffff');
@@ -780,6 +834,7 @@
                 }
             }
         }
+
         function applyAnimations() {
             if (animationsEnabled) {
                 weatherIconElement.style.animation = 'rotate 20s linear infinite';
@@ -789,6 +844,7 @@
                 document.getElementById('weatherCard').style.animation = 'none';
             }
         }
+
         window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
             const savedTheme = localStorage.getItem('theme') || 'auto';
             if (savedTheme === 'auto') {
