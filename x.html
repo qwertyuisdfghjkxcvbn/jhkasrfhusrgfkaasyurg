@@ -72,17 +72,12 @@
         .logo a {
             text-decoration: none;
             cursor: pointer;
-            display: flex;
-            align-items: center;
-            height: 100%;
-        }
-        .logo svg {
-            height: 40px;
-            width: 40px;
-            display: block;
+            font-size: 1.5em;
+            font-weight: 700;
+            color: var(--text-color);
             transition: transform 0.3s;
         }
-        .logo a:hover svg {
+        .logo a:hover {
             transform: scale(1.05);
         }
         nav {
@@ -303,20 +298,6 @@
         .footer-section ul li a:hover {
             color: var(--link-color);
         }
-        .social-icons {
-            display: flex;
-            gap: 15px;
-        }
-        .social-icons a {
-            display: inline-block;
-            width: 24px;
-            height: 24px;
-            fill: var(--footer-text);
-            transition: fill 0.3s;
-        }
-        .social-icons a:hover {
-            fill: var(--link-color);
-        }
         .newsletter {
             display: flex;
             flex-direction: column;
@@ -426,6 +407,23 @@
             .modal-title {
                 font-size: 1.25em;
             }
+            .hero-content h1 {
+                font-size: 2em;
+            }
+            .hero-content p {
+                font-size: 1em;
+            }
+            footer {
+                flex-direction: column;
+                align-items: center;
+            }
+            .footer-section {
+                flex: 1 1 100%;
+                text-align: center;
+            }
+            .newsletter {
+                align-items: center;
+            }
         }
         .load-more-btn {
             display: block;
@@ -433,35 +431,24 @@
             padding: 10px 20px;
             font-size: 1em;
             font-weight: bold;
-            color: #ffffff; /* White text */
-            background-color: #000000; /* Black background */
-            border: 2px solid #ffffff; /* White border */
+            color: #ffffff;
+            background-color: #000000;
+            border: 2px solid #ffffff;
             border-radius: 8px;
             cursor: pointer;
             transition: background-color 0.3s, color 0.3s, border-color 0.3s;
         }
-        
         .load-more-btn:hover {
-            background-color: #ffffff; /* White background */
-            color: #000000; /* Black text */
-            border-color: #000000; /* Black border */
+            background-color: #ffffff;
+            color: #000000;
+            border-color: #000000;
         }
     </style>
 </head>
 <body>
     <header>
         <div class="logo">
-            <a href="#" id="logoLink" aria-label="Insider by Ad Astra Home">
-                <!-- Simplified Insider by Ad Astra SVG Logo -->
-                <svg width="40" height="40" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-labelledby="logoTitle logoDesc" role="img">
-                    <title id="logoTitle">Insider by Ad Astra Logo</title>
-                    <desc id="logoDesc">Abstract logo representing Insider by Ad Astra with a star and circular elements.</desc>
-                    <!-- Outer Circle -->
-                    <circle cx="50" cy="50" r="45" stroke="#0a84ff" stroke-width="5" fill="none"/>
-                    <!-- Star -->
-                    <polygon points="50,20 61,40 85,40 66,55 75,80 50,65 25,80 34,55 15,40 39,40" fill="#0a84ff"/>
-                </svg>
-            </a>
+            <a href="#" id="logoLink" aria-label="Insider by Ad Astra Home">AD</a>
         </div>
         <nav id="navMenu">
             <a href="#home">Home</a>
@@ -487,14 +474,12 @@
     </header>
     <div class="overlay" id="overlay"></div>
     <main id="articles">
-        <!-- Hero Section -->
         <section class="hero" id="home">
             <div class="hero-content">
                 <h1>Welcome to Insider by Ad Astra</h1>
                 <p>Your gateway to the latest news and insights.</p>
             </div>
         </section>
-        <!-- Dynamic Articles will be loaded here -->
     </main>
     <button id="loadMoreBtn" class="load-more-btn">Load More</button>
     <footer>
@@ -511,33 +496,8 @@
             <ul>
                 <li><a href="#">Privacy Policy</a></li>
                 <li><a href="#">Terms of Service</a></li>
-                <li><a href="#">FAQ</a></li>
+                <li><a href="#">Contact Us</a></li>
             </ul>
-        </div>
-        <div class="footer-section">
-            <h3>Follow Us</h3>
-            <div class="social-icons">
-                <a href="#" aria-label="Facebook">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                        <path d="M22.675 0h-21.35C.597 0 0 .597 0 1.326v21.348C0 23.403.597 24 1.326 24h11.495v-9.294H9.691V11.08h3.13V8.414c0-3.1 1.893-4.788 4.659-4.788 1.325 0 2.464.099 2.795.143v3.24l-1.918.001c-1.504 0-1.795.715-1.795 1.763v2.313h3.587l-.467 3.626h-3.12V24h6.116C23.403 24 24 23.403 24 22.674V1.326C24 .597 23.403 0 22.675 0z"/>
-                    </svg>
-                </a>
-                <a href="#" aria-label="Twitter">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                        <path d="M24 4.557a9.93 9.93 0 01-2.828.775 4.932 4.932 0 002.165-2.724c-.951.564-2.005.974-3.127 1.195a4.916 4.916 0 00-8.384 4.482C7.691 8.094 4.066 6.13 1.64 3.161a4.822 4.822 0 00-.666 2.475c0 1.708.87 3.215 2.188 4.099a4.904 4.904 0 01-2.228-.616c-.054 2.385 1.693 4.374 4.157 4.827a4.935 4.935 0 01-2.224.084c.63 1.953 2.445 3.376 4.6 3.416a9.868 9.868 0 01-6.102 2.105c-.396 0-.788-.023-1.175-.068a13.945 13.945 0 007.548 2.212c9.056 0 14-7.496 14-13.986 0-.21 0-.423-.015-.634A10.025 10.025 0 0024 4.557z"/>
-                    </svg>
-                </a>
-                <a href="#" aria-label="Instagram">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                        <path d="M12 2.163c3.204 0 3.584.012 4.85.07 1.366.062 2.633.334 3.608 1.31.975.976 1.248 2.242 1.31 3.608.058 1.266.07 1.646.07 4.85s-.012 3.584-.07 4.85c-.062 1.366-.334 2.633-1.31 3.608-.976.975-2.242 1.248-3.608 1.31-1.266.058-1.646.07-4.85.07s-3.584-.012-4.85-.07c-1.366-.062-2.633-.334-3.608-1.31-.975-.976-1.248-2.242-1.31-3.608C2.175 15.747 2.163 15.367 2.163 12s.012-3.584.07-4.85c.062-1.366.334-2.633 1.31-3.608C4.52 2.497 5.787 2.225 7.153 2.163 8.419 2.105 8.799 2.163 12 2.163zm0-2.163C8.741 0 8.332.013 7.052.07 5.775.127 4.603.4 3.678 1.325c-.925.925-1.198 2.097-1.255 3.374C2.013 6.332 2 6.741 2 12s.013 5.668.07 6.948c.057 1.277.33 2.449 1.255 3.374.925.925 2.097 1.198 3.374 1.255C8.332 23.987 8.741 24 12 24s3.668-.013 4.948-.07c1.277-.057 2.449-.33 3.374-1.255.925-.925 1.198-2.097 1.255-3.374.057-1.28.07-1.689.07-6.948s-.013-5.668-.07-6.948c-.057-1.277-.33-2.449-1.255-3.374C19.401.4 18.229.127 16.952.07 15.672.013 15.263 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zm0 10.162a3.999 3.999 0 110-7.998 3.999 3.999 0 010 7.998zm6.406-11.845a1.44 1.44 0 11-2.88 0 1.44 1.44 0 012.88 0z"/>
-                    </svg>
-                </a>
-                <a href="#" aria-label="LinkedIn">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                        <path d="M20.447 20.452h-3.554v-5.569c0-1.327-.025-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667h-3.554V9h3.414v1.561h.049c.476-.901 1.637-1.852 3.368-1.852 3.601 0 4.268 2.371 4.268 5.455v6.284zM5.337 7.433a2.07 2.07 0 11.001-4.14 2.07 2.07 0 01-.001 4.14zm1.777 13.019H3.56V9h3.554v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.727v20.545C0 23.226.792 24 1.771 24h20.451C23.205 24 24 23.226 24 22.273V1.727C24 .774 23.205 0 22.225 0z"/>
-                    </svg>
-                </a>
-            </div>
         </div>
         <div class="footer-section newsletter">
             <h3>Subscribe to our Newsletter</h3>
@@ -554,7 +514,6 @@
         <p class="modal-content" id="modalContent"></p>
     </div>
     <script>
-        // Modal Functionality
         const modal = document.getElementById('modal');
         const closeBtn = document.getElementById('closeBtn');
         const modalImage = document.getElementById('modalImage');
@@ -562,6 +521,14 @@
         const modalContent = document.getElementById('modalContent');
         const overlay = document.getElementById('overlay');
         const logoLink = document.getElementById('logoLink');
+        const hamburger = document.getElementById('hamburger');
+        const navMenu = document.getElementById('navMenu');
+        const articlesContainer = document.getElementById('articles');
+        const loadMoreBtn = document.getElementById('loadMoreBtn');
+        const searchForm = document.getElementById('searchForm');
+        const searchInput = document.getElementById('searchInput');
+        const newsletterForm = document.getElementById('newsletterForm');
+        const newsletterEmail = document.getElementById('newsletterEmail');
 
         closeBtn.addEventListener('click', () => {
             modal.classList.remove('active');
@@ -582,17 +549,12 @@
             window.scrollTo({ top: 0, behavior: 'smooth' });
         });
 
-        // Navigation Menu Toggle for Mobile
-        const hamburger = document.getElementById('hamburger');
-        const navMenu = document.getElementById('navMenu');
-
         hamburger.addEventListener('click', () => {
             navMenu.classList.toggle('active');
             overlay.classList.toggle('active');
             document.body.style.overflow = navMenu.classList.contains('active') ? 'hidden' : 'auto';
         });
 
-        // Close navigation menu when a link is clicked
         navMenu.addEventListener('click', (e) => {
             if (e.target.tagName === 'A') {
                 navMenu.classList.remove('active');
@@ -600,9 +562,6 @@
                 document.body.style.overflow = 'auto';
             }
         });
-
-        // Articles Loading Functionality
-        const articlesContainer = document.getElementById('articles');
 
         async function fetchRandomArticle() {
             try {
@@ -721,9 +680,6 @@
             }
         }
 
-        const searchForm = document.getElementById('searchForm');
-        const searchInput = document.getElementById('searchInput');
-
         searchForm.addEventListener('submit', (e) => {
             e.preventDefault();
             const query = searchInput.value.trim();
@@ -732,12 +688,7 @@
             }
         });
 
-        // Load initial articles
         loadArticles();
-
-        // Load More Articles Functionality
-        const loadMoreBtn = document.getElementById('loadMoreBtn');
-        let articlesCount = 12; // Initial number of articles
 
         async function loadMoreArticles(count = 6) {
             for (let i = 0; i < count; i++) {
@@ -750,12 +701,8 @@
         }
 
         loadMoreBtn.addEventListener('click', () => {
-            loadMoreArticles(6); // Load 6 more articles on each click
+            loadMoreArticles(6);
         });
-
-        // Newsletter Signup Functionality (Dummy)
-        const newsletterForm = document.getElementById('newsletterForm');
-        const newsletterEmail = document.getElementById('newsletterEmail');
 
         newsletterForm.addEventListener('submit', (e) => {
             e.preventDefault();
