@@ -204,6 +204,11 @@
             max-height: 200px;
             overflow-y: auto;
             z-index: 1000;
+            display: none;
+        }
+
+        .autocomplete-suggestions.active {
+            display: block;
         }
 
         .autocomplete-suggestion {
@@ -220,6 +225,7 @@
         .user-profile {
             margin-left: 20px;
             position: relative;
+            display: none; /* Hidden by default */
         }
 
         .user-profile a {
@@ -234,6 +240,28 @@
             height: 32px;
             border-radius: 50%;
             object-fit: cover;
+        }
+
+        /* Authentication Buttons */
+        .auth-buttons {
+            display: flex;
+            gap: 10px;
+            margin-left: 20px;
+        }
+
+        .auth-buttons button {
+            padding: 8px 16px;
+            border: none;
+            background-color: var(--primary-color);
+            color: #ffffff;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.95em;
+            transition: background-color 0.3s;
+        }
+
+        .auth-buttons button:hover {
+            background-color: var(--hover-color);
         }
 
         /* Hamburger Menu */
@@ -298,8 +326,12 @@
             }
 
             .user-profile.mobile-visible {
-                display: block;
+                display: flex;
                 margin-left: 20px;
+            }
+
+            .auth-buttons {
+                display: none;
             }
         }
 
@@ -488,8 +520,8 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%) scale(0.8);
-            width: 80%;
-            max-width: 800px;
+            width: 90%;
+            max-width: 400px;
             background-color: var(--modal-bg);
             border-radius: 12px;
             box-shadow: 0 8px 16px rgba(0,0,0,0.2);
@@ -498,8 +530,6 @@
             opacity: 0;
             visibility: hidden;
             transition: opacity 0.3s, transform 0.3s;
-            max-height: 90vh;
-            overflow-y: auto;
         }
 
         .modal.active {
@@ -508,24 +538,43 @@
             transform: translate(-50%, -50%) scale(1);
         }
 
-        .modal img {
-            width: 100%;
-            height: auto;
-            object-fit: cover;
-            border-radius: 8px;
+        .modal h2 {
             margin-bottom: 15px;
-        }
-
-        .modal-title {
-            font-size: 1.8em;
-            margin-bottom: 10px;
-            color: var(--link-color);
-        }
-
-        .modal-content {
-            font-size: 1em;
-            line-height: 1.6;
+            font-size: 1.5em;
             color: var(--text-color);
+        }
+
+        .modal form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .modal input[type="text"],
+        .modal input[type="password"],
+        .modal input[type="email"] {
+            padding: 10px;
+            border: 1px solid var(--input-border);
+            border-radius: 4px;
+            outline: none;
+            font-size: 1em;
+            color: var(--text-color);
+            background-color: var(--input-bg);
+        }
+
+        .modal button {
+            padding: 10px;
+            border: none;
+            background-color: var(--primary-color);
+            color: #ffffff;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background-color 0.3s;
+        }
+
+        .modal button:hover {
+            background-color: var(--hover-color);
         }
 
         .close-btn {
@@ -566,6 +615,17 @@
         .autocomplete-suggestions.active {
             display: block;
         }
+
+        /* Responsive Adjustments */
+        @media (max-width: 768px) {
+            .modal {
+                width: 90%;
+                padding: 15px;
+            }
+            .modal h2 {
+                font-size: 1.25em;
+            }
+        }
     </style>
 </head>
 <body>
@@ -591,6 +651,8 @@
             <a href="#">Lifestyle</a>
             <a href="#">Travel</a>
             <a href="#">Contact</a>
+            <!-- Admin Exclusive Link -->
+            <a href="#" id="adminLink" style="display: none;">Admin Panel</a>
         </nav>
         <div class="search-container">
             <form id="searchForm" autocomplete="off">
@@ -605,11 +667,16 @@
                 </div>
             </form>
         </div>
+        <div class="auth-buttons" id="authButtons">
+            <button id="signupBtn">Sign Up</button>
+            <button id="loginBtn">Log In</button>
+        </div>
         <div class="user-profile" id="userProfile">
             <a href="#" aria-label="User Profile">
                 <img src="https://via.placeholder.com/32" alt="User Avatar">
-                <span>John Doe</span>
+                <span id="usernameDisplay">John Doe</span>
             </a>
+            <button id="logoutBtn" style="margin-left:10px; padding: 5px 10px; border: none; background-color: var(--hover-color); color: #fff; border-radius: 4px; cursor: pointer;">Log Out</button>
         </div>
         <div class="hamburger" id="hamburger" aria-label="Toggle navigation menu" aria-expanded="false">
             <span></span>
@@ -636,11 +703,18 @@
         <a href="#">Lifestyle</a>
         <a href="#">Travel</a>
         <a href="#">Contact</a>
+        <!-- Admin Exclusive Link -->
+        <a href="#" id="mobileAdminLink" style="display: none;">Admin Panel</a>
         <div class="user-profile mobile-visible" id="mobileUserProfile">
             <a href="#" aria-label="User Profile">
                 <img src="https://via.placeholder.com/32" alt="User Avatar">
-                <span>John Doe</span>
+                <span id="mobileUsernameDisplay">John Doe</span>
             </a>
+            <button id="mobileLogoutBtn" style="margin-left:10px; padding: 5px 10px; border: none; background-color: var(--hover-color); color: #fff; border-radius: 4px; cursor: pointer;">Log Out</button>
+        </div>
+        <div class="auth-buttons mobile-auth-buttons" id="mobileAuthButtons" style="display: none; flex-direction: column; gap: 10px;">
+            <button id="mobileSignupBtn">Sign Up</button>
+            <button id="mobileLoginBtn">Log In</button>
         </div>
     </nav>
 
@@ -714,9 +788,32 @@
         </div>
     </footer>
 
+    <!-- Authentication Modals -->
+    <!-- Sign Up Modal -->
+    <div class="modal" id="signupModal" aria-hidden="true">
+        <button class="close-btn" id="closeSignupBtn" aria-label="Close Sign Up Modal">&times;</button>
+        <h2>Sign Up</h2>
+        <form id="signupForm">
+            <input type="text" id="signupUsername" placeholder="Username" aria-label="Username" required>
+            <input type="password" id="signupPassword" placeholder="Password" aria-label="Password" required>
+            <button type="submit">Create Account</button>
+        </form>
+    </div>
+
+    <!-- Log In Modal -->
+    <div class="modal" id="loginModal" aria-hidden="true">
+        <button class="close-btn" id="closeLoginBtn" aria-label="Close Log In Modal">&times;</button>
+        <h2>Log In</h2>
+        <form id="loginForm">
+            <input type="text" id="loginUsername" placeholder="Username" aria-label="Username" required>
+            <input type="password" id="loginPassword" placeholder="Password" aria-label="Password" required>
+            <button type="submit">Log In</button>
+        </form>
+    </div>
+
     <!-- Modal for Article Details -->
-    <div class="modal" id="modal" aria-hidden="true">
-        <button class="close-btn" id="closeBtn" aria-label="Close Modal">&times;</button>
+    <div class="modal" id="articleModal" aria-hidden="true">
+        <button class="close-btn" id="closeArticleBtn" aria-label="Close Article Modal">&times;</button>
         <img src="" alt="" id="modalImage">
         <h2 class="modal-title" id="modalTitle"></h2>
         <p class="modal-content" id="modalContent"></p>
@@ -724,277 +821,468 @@
 
     <!-- JavaScript -->
     <script>
-        // Modal Functionality
-        const modal = document.getElementById('modal');
-        const closeBtn = document.getElementById('closeBtn');
-        const modalImage = document.getElementById('modalImage');
-        const modalTitle = document.getElementById('modalTitle');
-        const modalContent = document.getElementById('modalContent');
-        const overlay = document.getElementById('overlay');
-        const logoLink = document.getElementById('logoLink');
-
-        closeBtn.addEventListener('click', () => {
-            closeModal();
-        });
-
-        window.addEventListener('click', (e) => {
-            if (e.target === modal || e.target === overlay) {
-                closeModal();
+        // Initialize Admin Account
+        function initializeAdmin() {
+            const users = JSON.parse(localStorage.getItem('users')) || [];
+            const adminExists = users.some(user => user.username === 'admin');
+            if (!adminExists) {
+                users.push({ username: 'admin', password: 'admin' });
+                localStorage.setItem('users', JSON.stringify(users));
             }
-        });
-
-        function closeModal() {
-            modal.classList.remove('active');
-            overlay.classList.remove('active');
-            modal.setAttribute('aria-hidden', 'true');
-            document.body.style.overflow = 'auto';
         }
 
-        logoLink.addEventListener('click', (e) => {
-            e.preventDefault();
-            location.reload();
-        });
+        // Check Login State
+        function checkLogin() {
+            const currentUser = localStorage.getItem('currentUser');
+            if (currentUser) {
+                showLoggedInState(currentUser);
+            } else {
+                showLoggedOutState();
+            }
+        }
+
+        // Show Logged In State
+        function showLoggedInState(username) {
+            document.getElementById('authButtons').style.display = 'none';
+            document.getElementById('userProfile').style.display = 'flex';
+            document.getElementById('usernameDisplay').textContent = username;
+            // Show admin link if user is admin
+            if (username === 'admin') {
+                document.getElementById('adminLink').style.display = 'block';
+                document.getElementById('mobileAdminLink').style.display = 'block';
+            } else {
+                document.getElementById('adminLink').style.display = 'none';
+                document.getElementById('mobileAdminLink').style.display = 'none';
+            }
+        }
+
+        // Show Logged Out State
+        function showLoggedOutState() {
+            document.getElementById('authButtons').style.display = 'flex';
+            document.getElementById('userProfile').style.display = 'none';
+            document.getElementById('adminLink').style.display = 'none';
+            document.getElementById('mobileAdminLink').style.display = 'none';
+        }
+
+        // Sign Up Functionality
+        function setupSignup() {
+            const signupBtn = document.getElementById('signupBtn');
+            const mobileSignupBtn = document.getElementById('mobileSignupBtn');
+            const signupModal = document.getElementById('signupModal');
+            const closeSignupBtn = document.getElementById('closeSignupBtn');
+            const signupForm = document.getElementById('signupForm');
+
+            // Open Sign Up Modal
+            signupBtn.addEventListener('click', () => {
+                signupModal.classList.add('active');
+                document.getElementById('overlay').classList.add('active');
+                signupModal.setAttribute('aria-hidden', 'false');
+            });
+
+            mobileSignupBtn.addEventListener('click', () => {
+                signupModal.classList.add('active');
+                document.getElementById('overlay').classList.add('active');
+                signupModal.setAttribute('aria-hidden', 'false');
+                // Close mobile nav
+                closeMobileNav();
+            });
+
+            // Close Sign Up Modal
+            closeSignupBtn.addEventListener('click', () => {
+                signupModal.classList.remove('active');
+                document.getElementById('overlay').classList.remove('active');
+                signupModal.setAttribute('aria-hidden', 'true');
+            });
+
+            // Handle Sign Up Form Submission
+            signupForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const username = document.getElementById('signupUsername').value.trim();
+                const password = document.getElementById('signupPassword').value.trim();
+
+                if (username && password) {
+                    const users = JSON.parse(localStorage.getItem('users')) || [];
+                    const userExists = users.some(user => user.username === username);
+                    if (userExists) {
+                        alert('Username already exists. Please choose a different one.');
+                    } else {
+                        users.push({ username, password });
+                        localStorage.setItem('users', JSON.stringify(users));
+                        alert('Account created successfully! You can now log in.');
+                        signupModal.classList.remove('active');
+                        document.getElementById('overlay').classList.remove('active');
+                        signupModal.setAttribute('aria-hidden', 'true');
+                        signupForm.reset();
+                    }
+                }
+            });
+        }
+
+        // Log In Functionality
+        function setupLogin() {
+            const loginBtn = document.getElementById('loginBtn');
+            const mobileLoginBtn = document.getElementById('mobileLoginBtn');
+            const loginModal = document.getElementById('loginModal');
+            const closeLoginBtn = document.getElementById('closeLoginBtn');
+            const loginForm = document.getElementById('loginForm');
+
+            // Open Log In Modal
+            loginBtn.addEventListener('click', () => {
+                loginModal.classList.add('active');
+                document.getElementById('overlay').classList.add('active');
+                loginModal.setAttribute('aria-hidden', 'false');
+            });
+
+            mobileLoginBtn.addEventListener('click', () => {
+                loginModal.classList.add('active');
+                document.getElementById('overlay').classList.add('active');
+                loginModal.setAttribute('aria-hidden', 'false');
+                // Close mobile nav
+                closeMobileNav();
+            });
+
+            // Close Log In Modal
+            closeLoginBtn.addEventListener('click', () => {
+                loginModal.classList.remove('active');
+                document.getElementById('overlay').classList.remove('active');
+                loginModal.setAttribute('aria-hidden', 'true');
+            });
+
+            // Handle Log In Form Submission
+            loginForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const username = document.getElementById('loginUsername').value.trim();
+                const password = document.getElementById('loginPassword').value.trim();
+
+                if (username && password) {
+                    const users = JSON.parse(localStorage.getItem('users')) || [];
+                    const user = users.find(user => user.username === username && user.password === password);
+                    if (user) {
+                        localStorage.setItem('currentUser', username);
+                        alert('Logged in successfully!');
+                        loginModal.classList.remove('active');
+                        document.getElementById('overlay').classList.remove('active');
+                        loginModal.setAttribute('aria-hidden', 'true');
+                        loginForm.reset();
+                        checkLogin();
+                    } else {
+                        alert('Invalid username or password.');
+                    }
+                }
+            });
+        }
+
+        // Log Out Functionality
+        function setupLogout() {
+            const logoutBtn = document.getElementById('logoutBtn');
+            const mobileLogoutBtn = document.getElementById('mobileLogoutBtn');
+
+            logoutBtn.addEventListener('click', () => {
+                localStorage.removeItem('currentUser');
+                alert('Logged out successfully!');
+                checkLogin();
+            });
+
+            mobileLogoutBtn.addEventListener('click', () => {
+                localStorage.removeItem('currentUser');
+                alert('Logged out successfully!');
+                checkLogin();
+                closeMobileNav();
+            });
+        }
+
+        // Modal for Articles
+        function setupArticleModal() {
+            const articleModal = document.getElementById('articleModal');
+            const closeArticleBtn = document.getElementById('closeArticleBtn');
+            const overlay = document.getElementById('overlay');
+
+            closeArticleBtn.addEventListener('click', () => {
+                articleModal.classList.remove('active');
+                overlay.classList.remove('active');
+                articleModal.setAttribute('aria-hidden', 'true');
+                document.body.style.overflow = 'auto';
+            });
+
+            // Close modal when clicking outside
+            overlay.addEventListener('click', (e) => {
+                if (articleModal.classList.contains('active')) {
+                    articleModal.classList.remove('active');
+                    overlay.classList.remove('active');
+                    articleModal.setAttribute('aria-hidden', 'true');
+                    document.body.style.overflow = 'auto';
+                }
+            });
+        }
 
         // Navigation Menu Functionality
-        const hamburger = document.getElementById('hamburger');
-        const mobileNav = document.getElementById('mobileNav');
-        const mobileUserProfile = document.getElementById('mobileUserProfile');
+        function setupNavigation() {
+            const hamburger = document.getElementById('hamburger');
+            const mobileNav = document.getElementById('mobileNav');
+            const overlay = document.getElementById('overlay');
+            const mobileAuthButtons = document.getElementById('mobileAuthButtons');
 
-        hamburger.addEventListener('click', () => {
-            const isActive = mobileNav.classList.toggle('active');
-            hamburger.classList.toggle('active');
-            overlay.classList.toggle('active');
-            mobileUserProfile.classList.toggle('active');
-            hamburger.setAttribute('aria-expanded', isActive);
-            document.body.style.overflow = isActive ? 'hidden' : 'auto';
-        });
+            hamburger.addEventListener('click', () => {
+                const isActive = mobileNav.classList.toggle('active');
+                hamburger.classList.toggle('active');
+                overlay.classList.toggle('active');
+                document.body.style.overflow = isActive ? 'hidden' : 'auto';
+            });
 
-        // Overlay Click to Close Menu and Modal
-        overlay.addEventListener('click', () => {
-            if (mobileNav.classList.contains('active')) {
+            // Close mobile nav function
+            window.closeMobileNav = function() {
                 mobileNav.classList.remove('active');
                 hamburger.classList.remove('active');
                 overlay.classList.remove('active');
-                mobileUserProfile.classList.remove('active');
-                hamburger.setAttribute('aria-expanded', 'false');
                 document.body.style.overflow = 'auto';
             }
-            if (modal.classList.contains('active')) {
-                closeModal();
-            }
-        });
+        }
 
         // Autocomplete Functionality (Simulated)
-        const searchForm = document.getElementById('searchForm');
-        const searchInput = document.getElementById('searchInput');
-        const autocompleteList = document.getElementById('autocompleteList');
+        function setupAutocomplete() {
+            const searchInput = document.getElementById('searchInput');
+            const autocompleteList = document.getElementById('autocompleteList');
 
-        searchInput.addEventListener('input', () => {
-            const query = searchInput.value.trim();
-            if (query.length > 2) {
-                // Simulated suggestions (In real scenarios, fetch from an API)
-                const suggestions = [
-                    query + ' News',
-                    query + ' Politics',
-                    query + ' Technology',
-                    query + ' Sports',
-                    query + ' Entertainment'
-                ];
-                displaySuggestions(suggestions);
-            } else {
-                autocompleteList.innerHTML = '';
-                autocompleteList.classList.remove('active');
-            }
-        });
-
-        function displaySuggestions(suggestions) {
-            autocompleteList.innerHTML = '';
-            suggestions.forEach(suggestion => {
-                const div = document.createElement('div');
-                div.className = 'autocomplete-suggestion';
-                div.textContent = suggestion;
-                div.addEventListener('click', () => {
-                    searchInput.value = suggestion;
+            searchInput.addEventListener('input', () => {
+                const query = searchInput.value.trim();
+                if (query.length > 2) {
+                    // Simulated suggestions (In real scenarios, fetch from an API)
+                    const suggestions = [
+                        query + ' News',
+                        query + ' Politics',
+                        query + ' Technology',
+                        query + ' Sports',
+                        query + ' Entertainment'
+                    ];
+                    displaySuggestions(suggestions);
+                } else {
                     autocompleteList.innerHTML = '';
                     autocompleteList.classList.remove('active');
-                    loadSearchResults(suggestion);
-                });
-                autocompleteList.appendChild(div);
+                }
             });
-            autocompleteList.classList.add('active');
-        }
 
-        searchForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            const query = searchInput.value.trim();
-            if (query) {
-                loadSearchResults(query);
+            function displaySuggestions(suggestions) {
                 autocompleteList.innerHTML = '';
-                autocompleteList.classList.remove('active');
+                suggestions.forEach(suggestion => {
+                    const div = document.createElement('div');
+                    div.className = 'autocomplete-suggestion';
+                    div.textContent = suggestion;
+                    div.addEventListener('click', () => {
+                        searchInput.value = suggestion;
+                        autocompleteList.innerHTML = '';
+                        autocompleteList.classList.remove('active');
+                        loadSearchResults(suggestion);
+                    });
+                    autocompleteList.appendChild(div);
+                });
+                autocompleteList.classList.add('active');
             }
-        });
+        }
 
         // Articles Functionality
-        const articlesContainer = document.getElementById('articles');
+        function setupArticles() {
+            const articlesContainer = document.getElementById('articles');
 
-        async function fetchRandomArticle() {
-            try {
-                const response = await fetch('https://en.wikipedia.org/api/rest_v1/page/random/summary');
-                if (!response.ok) return null;
-                return await response.json();
-            } catch {
-                return null;
-            }
-        }
-
-        async function fetchSearchArticles(query, limit = 12) {
-            try {
-                const response = await fetch(`https://en.wikipedia.org/w/api.php?origin=*&action=query&list=search&srsearch=${encodeURIComponent(query)}&utf8=&format=json&srlimit=${limit}`);
-                if (!response.ok) return null;
-                const data = await response.json();
-                const pages = data.query.search;
-                const summaries = await Promise.all(pages.map(async (page) => {
-                    try {
-                        const res = await fetch(`https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(page.title)}`);
-                        if (!res.ok) return null;
-                        return await res.json();
-                    } catch {
-                        return null;
-                    }
-                }));
-                return summaries.filter(summary => summary !== null);
-            } catch {
-                return null;
-            }
-        }
-
-        function createArticleElement(data) {
-            const article = document.createElement('div');
-            article.className = 'article';
-            if (data.thumbnail && data.thumbnail.source) {
-                const img = document.createElement('img');
-                img.src = data.thumbnail.source;
-                img.alt = data.title;
-                article.appendChild(img);
-            }
-            const title = document.createElement('h3');
-            title.className = 'article-title';
-
-            const titleText = document.createElement('span');
-            titleText.textContent = data.title;
-
-            const externalLink = document.createElement('a');
-            externalLink.href = `https://en.wikipedia.org/wiki/${encodeURIComponent(data.title)}`;
-            externalLink.target = '_blank';
-            externalLink.rel = 'noopener noreferrer';
-            externalLink.setAttribute('aria-label', `Open ${data.title} on Wikipedia`);
-            externalLink.innerHTML = `
-                <svg class="external-link-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                    <path d="M14 3h7v7h-2V6.414l-9.293 9.293-1.414-1.414L17.586 5H14V3z"/>
-                    <path d="M5 5h4V3H5c-1.103 0-2 .897-2 2v14c0 1.103.897 2 2 2h14c1.103 0 2-.897 2-2v-4h-2v4H5V5z"/>
-                </svg>
-            `;
-
-            title.appendChild(titleText);
-            title.appendChild(externalLink);
-            article.appendChild(title);
-
-            const summary = document.createElement('p');
-            summary.className = 'article-summary';
-            summary.textContent = data.extract;
-            article.appendChild(summary);
-
-            article.addEventListener('click', (e) => {
-                if (e.target.closest('a')) return;
-                openModal(data);
-            });
-
-            return article;
-        }
-
-        async function loadArticles(count = 12) {
-            const fragment = document.createDocumentFragment();
-            for (let i = 0; i < count; i++) {
-                const data = await fetchRandomArticle();
-                if (data) {
-                    const articleElement = createArticleElement(data);
-                    fragment.appendChild(articleElement);
+            async function fetchRandomArticle() {
+                try {
+                    const response = await fetch('https://en.wikipedia.org/api/rest_v1/page/random/summary');
+                    if (!response.ok) return null;
+                    return await response.json();
+                } catch {
+                    return null;
                 }
             }
-            articlesContainer.appendChild(fragment);
-        }
 
-        async function loadSearchResults(query) {
-            articlesContainer.innerHTML = '';
-            const summaries = await fetchSearchArticles(query, 12);
-            if (summaries && summaries.length > 0) {
-                const fragment = document.createDocumentFragment();
-                summaries.forEach(data => {
-                    const articleElement = createArticleElement(data);
-                    fragment.appendChild(articleElement);
-                });
-                articlesContainer.appendChild(fragment);
-            } else {
-                const noResults = document.createElement('p');
-                noResults.textContent = 'No articles found for your search.';
-                articlesContainer.appendChild(noResults);
+            async function fetchSearchArticles(query, limit = 12) {
+                try {
+                    const response = await fetch(`https://en.wikipedia.org/w/api.php?origin=*&action=query&list=search&srsearch=${encodeURIComponent(query)}&utf8=&format=json&srlimit=${limit}`);
+                    if (!response.ok) return null;
+                    const data = await response.json();
+                    const pages = data.query.search;
+                    const summaries = await Promise.all(pages.map(async (page) => {
+                        try {
+                            const res = await fetch(`https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(page.title)}`);
+                            if (!res.ok) return null;
+                            return await res.json();
+                        } catch {
+                            return null;
+                        }
+                    }));
+                    return summaries.filter(summary => summary !== null);
+                } catch {
+                    return null;
+                }
             }
-        }
 
-        function openModal(data) {
-            modalImage.src = data.thumbnail ? data.thumbnail.source : '';
-            modalImage.alt = data.title;
-            modalTitle.textContent = data.title;
-            modalContent.textContent = data.extract;
-            modal.classList.add('active');
-            overlay.classList.add('active');
-            modal.setAttribute('aria-hidden', 'false');
-            document.body.style.overflow = 'hidden';
-        }
+            function createArticleElement(data) {
+                const article = document.createElement('div');
+                article.className = 'article';
+                if (data.thumbnail && data.thumbnail.source) {
+                    const img = document.createElement('img');
+                    img.src = data.thumbnail.source;
+                    img.alt = data.title;
+                    article.appendChild(img);
+                }
+                const title = document.createElement('h3');
+                title.className = 'article-title';
 
-        // Load initial articles on page load
-        loadArticles();
+                const titleText = document.createElement('span');
+                titleText.textContent = data.title;
+
+                const externalLink = document.createElement('a');
+                externalLink.href = `https://en.wikipedia.org/wiki/${encodeURIComponent(data.title)}`;
+                externalLink.target = '_blank';
+                externalLink.rel = 'noopener noreferrer';
+                externalLink.setAttribute('aria-label', `Open ${data.title} on Wikipedia`);
+                externalLink.innerHTML = `
+                    <svg class="external-link-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                        <path d="M14 3h7v7h-2V6.414l-9.293 9.293-1.414-1.414L17.586 5H14V3z"/>
+                        <path d="M5 5h4V3H5c-1.103 0-2 .897-2 2v14c0 1.103.897 2 2 2h14c1.103 0 2-.897 2-2v-4h-2v4H5V5z"/>
+                    </svg>
+                `;
+
+                title.appendChild(titleText);
+                title.appendChild(externalLink);
+                article.appendChild(title);
+
+                const summary = document.createElement('p');
+                summary.className = 'article-summary';
+                summary.textContent = data.extract;
+                article.appendChild(summary);
+
+                article.addEventListener('click', (e) => {
+                    if (e.target.closest('a')) return;
+                    openArticleModal(data);
+                });
+
+                return article;
+            }
+
+            async function loadArticles(count = 12) {
+                const fragment = document.createDocumentFragment();
+                for (let i = 0; i < count; i++) {
+                    const data = await fetchRandomArticle();
+                    if (data) {
+                        const articleElement = createArticleElement(data);
+                        fragment.appendChild(articleElement);
+                    }
+                }
+                articlesContainer.appendChild(fragment);
+            }
+
+            async function loadSearchResults(query) {
+                articlesContainer.innerHTML = '';
+                const summaries = await fetchSearchArticles(query, 12);
+                if (summaries && summaries.length > 0) {
+                    const fragment = document.createDocumentFragment();
+                    summaries.forEach(data => {
+                        const articleElement = createArticleElement(data);
+                        fragment.appendChild(articleElement);
+                    });
+                    articlesContainer.appendChild(fragment);
+                } else {
+                    const noResults = document.createElement('p');
+                    noResults.textContent = 'No articles found for your search.';
+                    articlesContainer.appendChild(noResults);
+                }
+            }
+
+            function openArticleModal(data) {
+                const articleModal = document.getElementById('articleModal');
+                const modalImage = document.getElementById('modalImage');
+                const modalTitle = document.getElementById('modalTitle');
+                const modalContent = document.getElementById('modalContent');
+                const overlay = document.getElementById('overlay');
+
+                modalImage.src = data.thumbnail ? data.thumbnail.source : '';
+                modalImage.alt = data.title;
+                modalTitle.textContent = data.title;
+                modalContent.textContent = data.extract;
+                articleModal.classList.add('active');
+                overlay.classList.add('active');
+                articleModal.setAttribute('aria-hidden', 'false');
+                document.body.style.overflow = 'hidden';
+            }
+
+            // Load initial articles on page load
+            loadArticles();
+        }
 
         // Load More Functionality
-        const loadMoreBtn = document.getElementById('loadMoreBtn');
+        function setupLoadMore() {
+            const loadMoreBtn = document.getElementById('loadMoreBtn');
 
-        async function loadMoreArticles(count = 6) {
-            await loadArticles(count);
+            async function loadMoreArticles(count = 6) {
+                const articlesContainer = document.getElementById('articles');
+                const fragment = document.createDocumentFragment();
+                for (let i = 0; i < count; i++) {
+                    const data = await fetchRandomArticle();
+                    if (data) {
+                        const articleElement = createArticleElement(data);
+                        fragment.appendChild(articleElement);
+                    }
+                }
+                articlesContainer.appendChild(fragment);
+            }
+
+            loadMoreBtn.addEventListener('click', () => {
+                loadMoreArticles(6);
+            });
         }
 
-        loadMoreBtn.addEventListener('click', () => {
-            loadMoreArticles(6);
-        });
-
         // Newsletter Subscription Functionality (Simulated)
-        const newsletterForm = document.getElementById('newsletterForm');
-        const newsletterEmail = document.getElementById('newsletterEmail');
+        function setupNewsletter() {
+            const newsletterForm = document.getElementById('newsletterForm');
+            const newsletterEmail = document.getElementById('newsletterEmail');
 
-        newsletterForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            const email = newsletterEmail.value.trim();
-            if (email) {
-                alert('Thank you for subscribing!');
-                newsletterEmail.value = '';
-            }
-        });
+            newsletterForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const email = newsletterEmail.value.trim();
+                if (email) {
+                    alert('Thank you for subscribing!');
+                    newsletterEmail.value = '';
+                }
+            });
+        }
 
-        // Accessibility Enhancements: Close mobile menu with Escape key
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') {
-                if (mobileNav.classList.contains('active')) {
-                    mobileNav.classList.remove('active');
-                    hamburger.classList.remove('active');
-                    overlay.classList.remove('active');
-                    mobileUserProfile.classList.remove('active');
-                    hamburger.setAttribute('aria-expanded', 'false');
-                    document.body.style.overflow = 'auto';
+        // Modal Functionality
+        function setupModal() {
+            // Already handled in setupArticleModal
+        }
+
+        // Initialize the App
+        function init() {
+            initializeAdmin();
+            checkLogin();
+            setupSignup();
+            setupLogin();
+            setupLogout();
+            setupNavigation();
+            setupAutocomplete();
+            setupArticles();
+            setupLoadMore();
+            setupNewsletter();
+            setupArticleModal();
+            setupModal();
+
+            // Accessibility: Close modals with Escape key
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') {
+                    const modals = document.querySelectorAll('.modal.active');
+                    modals.forEach(modal => {
+                        modal.classList.remove('active');
+                        document.getElementById('overlay').classList.remove('active');
+                        modal.setAttribute('aria-hidden', 'true');
+                        document.body.style.overflow = 'auto';
+                    });
+                    // Close mobile nav if open
+                    closeMobileNav();
                 }
-                if (modal.classList.contains('active')) {
-                    closeModal();
-                }
-            }
-        });
+            });
+        }
+
+        // Run the initialization on page load
+        window.addEventListener('DOMContentLoaded', init);
     </script>
 </body>
 </html>
