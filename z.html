@@ -3,40 +3,32 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ultimate Weather App</title>
+    <title>WeatherApp</title>
     <style>
         :root {
-            --bg-color: #ffffff;
-            --text-color: #000000;
-            --card-bg: #f0f0f0;
-            --button-bg: #e0e0e0;
-            --button-text: #000000;
-            --header-bg: #ffffff;
-            --footer-bg: #f0f0f0;
-            --transition: background-color 0.5s, color 0.5s;
-            --accent-color: #007BFF;
-            --shadow-color: rgba(0, 0, 0, 0.1);
+            --bg-color: #f0f4f8;
+            --text-color: #333333;
+            --card-bg: #ffffff;
+            --button-bg: #007BFF;
+            --button-text: #ffffff;
             --input-bg: #ffffff;
-            --input-text: #000000;
+            --input-text: #333333;
             --border-color: #dddddd;
-            --modal-bg: rgba(0, 0, 0, 0.5);
-            --forecast-card-bg: #f9f9f9;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
         }
 
         @media (prefers-color-scheme: dark) {
             :root {
-                --bg-color: #121212;
+                --bg-color: #1e1e1e;
                 --text-color: #ffffff;
-                --card-bg: #1e1e1e;
-                --button-bg: #333333;
+                --card-bg: #2c2c2c;
+                --button-bg: #1e90ff;
                 --button-text: #ffffff;
-                --header-bg: #1e1e1e;
-                --footer-bg: #1e1e1e;
-                --input-bg: #333333;
+                --input-bg: #3c3c3c;
                 --input-text: #ffffff;
-                --border-color: #444444;
-                --modal-bg: rgba(255, 255, 255, 0.1);
-                --forecast-card-bg: #2a2a2a;
+                --border-color: #555555;
+                --shadow-color: rgba(255, 255, 255, 0.1);
             }
         }
 
@@ -49,41 +41,23 @@
         body {
             background-color: var(--bg-color);
             color: var(--text-color);
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
+                         Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
             transition: var(--transition);
             display: flex;
             flex-direction: column;
             min-height: 100vh;
-        }
-
-        a {
-            color: var(--accent-color);
-            text-decoration: none;
-            transition: color 0.3s;
-        }
-
-        a:hover {
-            text-decoration: underline;
+            align-items: center;
+            padding: 20px;
         }
 
         header {
-            background-color: var(--header-bg);
-            padding: 20px;
-            box-shadow: 0 2px 4px var(--shadow-color);
-            position: fixed;
             width: 100%;
-            top: 0;
-            z-index: 1000;
-            transition: var(--transition);
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 20px;
+            max-width: 800px;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            margin-bottom: 40px;
         }
 
         .logo {
@@ -91,154 +65,124 @@
             font-weight: bold;
         }
 
-        nav ul {
-            list-style: none;
-            display: flex;
-            gap: 15px;
-        }
-
-        nav ul li {
-            position: relative;
-        }
-
-        nav ul li a {
-            padding: 8px 12px;
-            border-radius: 5px;
-            transition: background-color 0.3s;
-        }
-
-        nav ul li a:hover {
-            background-color: var(--button-bg);
-        }
-
-        main {
-            flex: 1;
-            padding: 100px 20px 20px 20px;
-            background-color: var(--bg-color);
-            transition: var(--transition);
-        }
-
         .search-bar {
-            margin: 40px auto;
-            max-width: 600px;
             display: flex;
-            gap: 10px;
+            width: 100%;
+            max-width: 500px;
+            margin-bottom: 20px;
         }
 
         .search-bar input {
             flex: 1;
             padding: 10px 15px;
-            border: 2px solid var(--border-color);
-            border-radius: 5px;
+            border: 1px solid var(--border-color);
+            border-radius: 5px 0 0 5px;
             background-color: var(--input-bg);
             color: var(--input-text);
-            transition: background-color 0.3s, color 0.3s, border-color 0.3s;
-            font-size: 1em;
+            outline: none;
+            transition: var(--transition);
         }
 
         .search-bar button {
             padding: 10px 20px;
             border: none;
-            border-radius: 5px;
-            background-color: var(--accent-color);
-            color: #ffffff;
+            border-radius: 0 5px 5px 0;
+            background-color: var(--button-bg);
+            color: var(--button-text);
             cursor: pointer;
             transition: background-color 0.3s;
-            font-size: 1em;
         }
 
         .search-bar button:hover {
-            background-color: #0056b3;
+            background-color: darken(var(--button-bg), 10%);
         }
 
         .weather-card {
             background-color: var(--card-bg);
-            padding: 30px 50px;
+            padding: 30px;
             border-radius: 15px;
             box-shadow: 0 4px 6px var(--shadow-color);
             text-align: center;
-            animation: fadeIn 1s ease-in-out;
-            transition: var(--transition);
+            width: 100%;
             max-width: 400px;
-            margin: 0 auto;
+            transition: var(--transition);
         }
 
         .weather-icon {
             width: 100px;
             height: 100px;
-            margin: 0 auto 20px;
-            animation: rotate 20s linear infinite;
+            margin-bottom: 20px;
+            transition: transform 1s;
         }
 
         .temperature {
-            font-size: 4em;
-            margin: 10px 0;
-            transition: font-size 0.3s;
+            font-size: 3em;
+            margin-bottom: 10px;
         }
 
         .description {
-            font-size: 1.5em;
+            font-size: 1.2em;
             margin-bottom: 20px;
             text-transform: capitalize;
-            transition: font-size 0.3s;
         }
 
         .additional-info {
             display: flex;
             justify-content: space-around;
-            margin-top: 20px;
+            margin-bottom: 20px;
             flex-wrap: wrap;
             gap: 10px;
         }
 
         .info-box {
-            background-color: var(--button-bg);
-            padding: 10px 20px;
-            border-radius: 10px;
-            width: 120px;
-            transition: background-color 0.3s;
+            background-color: var(--bg-color);
+            padding: 10px 15px;
+            border-radius: 8px;
             box-shadow: 0 2px 4px var(--shadow-color);
+            width: 100px;
+            transition: var(--transition);
         }
 
         .info-box h4 {
+            font-size: 0.9em;
             margin-bottom: 5px;
-            font-size: 1em;
         }
 
         .info-box p {
-            font-size: 1.2em;
+            font-size: 1.1em;
         }
 
         .controls {
-            margin-top: 30px;
             display: flex;
             justify-content: center;
-            gap: 15px;
-            flex-wrap: wrap;
+            gap: 10px;
         }
 
         .controls button {
-            padding: 10px 20px;
+            padding: 8px 12px;
             border: none;
             border-radius: 5px;
             background-color: var(--button-bg);
             color: var(--button-text);
             cursor: pointer;
-            transition: background-color 0.3s, color 0.3s;
+            transition: background-color 0.3s;
             font-size: 1em;
         }
 
         .controls button:hover {
-            opacity: 0.8;
+            background-color: darken(var(--button-bg), 10%);
         }
 
         .forecast {
-            margin-top: 50px;
+            width: 100%;
+            max-width: 800px;
+            margin-top: 40px;
         }
 
         .forecast h2 {
             text-align: center;
             margin-bottom: 20px;
+            font-size: 1.8em;
         }
 
         .forecast-cards {
@@ -249,18 +193,17 @@
         }
 
         .forecast-card {
-            background-color: var(--forecast-card-bg);
-            padding: 20px;
+            background-color: var(--card-bg);
+            padding: 15px;
             border-radius: 10px;
-            min-width: 150px;
-            text-align: center;
             box-shadow: 0 2px 4px var(--shadow-color);
+            text-align: center;
+            min-width: 120px;
             transition: transform 0.3s, box-shadow 0.3s;
-            flex-shrink: 0;
         }
 
         .forecast-card:hover {
-            transform: translateY(-10px);
+            transform: translateY(-5px);
             box-shadow: 0 4px 8px var(--shadow-color);
         }
 
@@ -276,9 +219,10 @@
         }
 
         .forecast-card .temp {
-            font-size: 1.2em;
+            font-size: 1.1em;
         }
 
+        /* Modal Styles */
         .modal {
             display: none;
             position: fixed;
@@ -288,90 +232,86 @@
             width: 100%;
             height: 100%;
             overflow: auto;
-            background-color: var(--modal-bg);
+            background-color: rgba(0, 0, 0, 0.5);
             transition: opacity 0.3s;
+            align-items: center;
+            justify-content: center;
         }
 
         .modal-content {
-            background-color: var(--bg-color);
-            margin: 10% auto;
-            padding: 20px;
-            border: 1px solid var(--button-bg);
-            width: 80%;
-            max-width: 500px;
+            background-color: var(--card-bg);
+            padding: 30px;
             border-radius: 10px;
+            width: 90%;
+            max-width: 400px;
             position: relative;
-            animation: slideDown 0.5s ease-out;
             transition: var(--transition);
         }
 
         .close {
-            color: var(--text-color);
             position: absolute;
             top: 15px;
             right: 20px;
             font-size: 1.5em;
             font-weight: bold;
+            color: var(--text-color);
             cursor: pointer;
         }
 
-        .modal-content h2 {
-            margin-bottom: 20px;
-            text-align: center;
-        }
-
         .settings-option {
-            margin-bottom: 15px;
+            margin-bottom: 20px;
         }
 
         .settings-option label {
             display: block;
             margin-bottom: 5px;
+            font-size: 1em;
         }
 
-        .settings-option input[type="range"] {
-            width: 100%;
-        }
-
+        .settings-option input[type="range"],
         .settings-option select {
             width: 100%;
             padding: 8px;
-            border: 2px solid var(--button-bg);
+            border: 1px solid var(--border-color);
             border-radius: 5px;
             background-color: var(--input-bg);
             color: var(--input-text);
-            transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+            outline: none;
+            transition: var(--transition);
         }
 
         .settings-option input[type="checkbox"] {
             transform: scale(1.2);
             margin-top: 5px;
+            cursor: pointer;
         }
 
         .settings-option button {
-            padding: 10px 20px;
+            width: 100%;
+            padding: 10px;
             border: none;
             border-radius: 5px;
-            background-color: var(--accent-color);
-            color: #ffffff;
+            background-color: var(--button-bg);
+            color: var(--button-text);
             cursor: pointer;
             transition: background-color 0.3s;
             font-size: 1em;
-            width: 100%;
         }
 
         .settings-option button:hover {
-            background-color: #0056b3;
+            background-color: darken(var(--button-bg), 10%);
         }
 
         footer {
-            background-color: var(--footer-bg);
-            padding: 20px;
+            width: 100%;
+            max-width: 800px;
             text-align: center;
-            box-shadow: 0 -2px 4px var(--shadow-color);
-            transition: var(--transition);
+            margin-top: auto;
+            padding: 20px 0;
+            font-size: 0.9em;
         }
 
+        /* Animations */
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(-20px); }
             to { opacity: 1; transform: translateY(0); }
@@ -387,67 +327,40 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        @media (max-width: 768px) {
+        /* Utility Classes */
+        .hidden {
+            display: none;
+        }
+
+        /* Responsive Adjustments */
+        @media (max-width: 600px) {
             .weather-card {
-                padding: 20px 30px;
+                padding: 20px;
             }
 
             .temperature {
-                font-size: 3em;
+                font-size: 2.5em;
             }
 
             .description {
-                font-size: 1.2em;
-            }
-
-            .controls button {
-                padding: 8px 16px;
-                font-size: 0.9em;
-            }
-
-            .forecast-cards {
-                flex-direction: column;
-                align-items: center;
+                font-size: 1em;
             }
 
             .forecast-card {
-                min-width: 100%;
+                min-width: 100px;
+                padding: 10px;
             }
 
-            .additional-info {
-                flex-direction: column;
-                align-items: center;
+            .forecast h2 {
+                font-size: 1.5em;
             }
-
-            .info-box {
-                width: 100%;
-            }
-
-            .search-bar {
-                flex-direction: column;
-            }
-
-            .search-bar button {
-                width: 100%;
-            }
-        }
-
-        .sr-only {
-            position: absolute;
-            width: 1px;
-            height: 1px;
-            padding: 0;
-            margin: -1px;
-            overflow: hidden;
-            clip: rect(0,0,0,0);
-            border: 0;
         }
     </style>
 </head>
 <body>
     <header>
         <div class="container">
-            <div class="logo">WeatherNow</div>
+            <div class="logo">WeatherApp</div>
             <nav>
                 <ul>
                     <li><a href="#current">Current</a></li>
@@ -495,6 +408,7 @@
         <section id="forecast" class="forecast">
             <h2>5-Day Forecast</h2>
             <div class="forecast-cards" id="forecastCards">
+                <!-- Forecast cards will be injected here -->
             </div>
         </section>
     </main>
@@ -531,14 +445,15 @@
         </div>
     </div>
     <footer>
-        <p>© 2024 WeatherNow. All rights reserved.</p>
+        <p>© 2024 WeatherApp. All rights reserved.</p>
         <p>Data provided by <a href="https://openweathermap.org/" target="_blank" rel="noopener noreferrer">OpenWeatherMap</a>.</p>
     </footer>
     <script>
-        const apiKey = 'YOUR_OPENWEATHERMAP_API_KEY';
+        const apiKey = e8a7c9f708665db8bca48619a6fe13f7; 
         let currentUnit = 'metric';
         let currentFontSize = 16;
         let animationsEnabled = true;
+
         const temperatureElement = document.getElementById('temperature');
         const descriptionElement = document.getElementById('description');
         const weatherIconElement = document.getElementById('weatherIcon');
@@ -558,11 +473,13 @@
         const unitsSelect = document.getElementById('unitsSelect');
         const animationToggle = document.getElementById('animationToggle');
 
+        // Initialize
         window.addEventListener('load', () => {
             loadSettings();
             getLocation();
         });
 
+        // Event Listeners
         searchBtn.addEventListener('click', () => {
             const city = cityInput.value.trim();
             if (city !== '') {
@@ -600,6 +517,8 @@
                 getLocation();
             }
         });
+
+        // Functions
 
         function getLocation() {
             if (navigator.geolocation) {
@@ -747,7 +666,7 @@
         }
 
         function openSettings() {
-            settingsModal.style.display = 'block';
+            settingsModal.style.display = 'flex';
             settingsModal.setAttribute('aria-hidden', 'false');
         }
 
@@ -801,31 +720,27 @@
 
         function applyTheme(theme) {
             if (theme === 'light') {
-                document.documentElement.style.setProperty('--bg-color', '#ffffff');
-                document.documentElement.style.setProperty('--text-color', '#000000');
-                document.documentElement.style.setProperty('--card-bg', '#f0f0f0');
-                document.documentElement.style.setProperty('--button-bg', '#e0e0e0');
-                document.documentElement.style.setProperty('--button-text', '#000000');
-                document.documentElement.style.setProperty('--header-bg', '#ffffff');
-                document.documentElement.style.setProperty('--footer-bg', '#f0f0f0');
+                document.documentElement.style.setProperty('--bg-color', '#f0f4f8');
+                document.documentElement.style.setProperty('--text-color', '#333333');
+                document.documentElement.style.setProperty('--card-bg', '#ffffff');
+                document.documentElement.style.setProperty('--button-bg', '#007BFF');
+                document.documentElement.style.setProperty('--button-text', '#ffffff');
                 document.documentElement.style.setProperty('--input-bg', '#ffffff');
-                document.documentElement.style.setProperty('--input-text', '#000000');
+                document.documentElement.style.setProperty('--input-text', '#333333');
                 document.documentElement.style.setProperty('--border-color', '#dddddd');
                 document.documentElement.style.setProperty('--modal-bg', 'rgba(0, 0, 0, 0.5)');
-                document.documentElement.style.setProperty('--forecast-card-bg', '#f9f9f9');
+                document.documentElement.style.setProperty('--forecast-card-bg', '#ffffff');
             } else if (theme === 'dark') {
-                document.documentElement.style.setProperty('--bg-color', '#121212');
+                document.documentElement.style.setProperty('--bg-color', '#1e1e1e');
                 document.documentElement.style.setProperty('--text-color', '#ffffff');
-                document.documentElement.style.setProperty('--card-bg', '#1e1e1e');
-                document.documentElement.style.setProperty('--button-bg', '#333333');
+                document.documentElement.style.setProperty('--card-bg', '#2c2c2c');
+                document.documentElement.style.setProperty('--button-bg', '#1e90ff');
                 document.documentElement.style.setProperty('--button-text', '#ffffff');
-                document.documentElement.style.setProperty('--header-bg', '#1e1e1e');
-                document.documentElement.style.setProperty('--footer-bg', '#1e1e1e');
-                document.documentElement.style.setProperty('--input-bg', '#333333');
+                document.documentElement.style.setProperty('--input-bg', '#3c3c3c');
                 document.documentElement.style.setProperty('--input-text', '#ffffff');
-                document.documentElement.style.setProperty('--border-color', '#444444');
+                document.documentElement.style.setProperty('--border-color', '#555555');
                 document.documentElement.style.setProperty('--modal-bg', 'rgba(255, 255, 255, 0.1)');
-                document.documentElement.style.setProperty('--forecast-card-bg', '#2a2a2a');
+                document.documentElement.style.setProperty('--forecast-card-bg', '#3c3c3c');
             } else {
                 if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
                     applyTheme('dark');
