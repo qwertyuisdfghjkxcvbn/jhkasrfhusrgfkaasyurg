@@ -8,25 +8,6 @@
     <link rel="manifest" href="/site.webmanifest">
     <link href="https://fonts.googleapis.com/css2?family=Helvetica+Neue:wght@400;700&display=swap" rel="stylesheet">
     <style>
-.load-more-btn {
-    display: block;
-    margin: 20px auto;
-    padding: 10px 20px;
-    font-size: 1em;
-    font-weight: bold;
-    color: #ffffff; /* White text */
-    background-color: #000000; /* Black background */
-    border: 2px solid #ffffff; /* White border */
-    border-radius: 8px;
-    cursor: pointer;
-    transition: background-color 0.3s, color 0.3s, border-color 0.3s;
-}
-
-.load-more-btn:hover {
-    background-color: #ffffff; /* White background */
-    color: #000000; /* Black text */
-    border-color: #000000; /* Black border */
-}
         :root {
             --bg-color: #ffffff;
             --text-color: #1c1c1e;
@@ -39,6 +20,8 @@
             --input-bg: #f9f9f9;
             --input-border: #e5e5e7;
             --icon-color: #999999;
+            --search-bg: rgba(0, 0, 0, 0.7);
+            --search-bar-bg: #ffffff;
         }
         @media (prefers-color-scheme: dark) {
             :root {
@@ -53,6 +36,8 @@
                 --input-bg: #3a3a3c;
                 --input-border: #444444;
                 --icon-color: #cccccc;
+                --search-bg: rgba(0, 0, 0, 0.8);
+                --search-bar-bg: #2c2c2e;
             }
         }
         * {
@@ -94,44 +79,6 @@
         }
         nav {
             display: none;
-        }
-        .search-container {
-            position: relative;
-            max-width: 300px;
-            width: 100%;
-        }
-        .search-container form {
-            display: flex;
-            align-items: center;
-            background-color: var(--input-bg);
-            border: 1px solid var(--input-border);
-            border-radius: 8px;
-            overflow: hidden;
-            padding: 4px 8px;
-        }
-        .search-container input[type="text"] {
-            width: 100%;
-            padding: 8px 12px;
-            border: none;
-            outline: none;
-            font-size: 1em;
-            color: var(--text-color);
-            background-color: var(--input-bg);
-        }
-        .search-container button {
-            padding: 8px 12px;
-            border: none;
-            background-color: transparent;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .search-icon {
-            width: 20px;
-            height: 20px;
-            fill: var(--icon-color);
-            margin-left: 5px;
         }
         .overlay {
             position: fixed;
@@ -264,26 +211,99 @@
             background: none;
             border: none;
         }
+        .load-more-btn {
+            display: block;
+            margin: 20px auto;
+            padding: 10px 20px;
+            font-size: 1em;
+            font-weight: bold;
+            color: #ffffff; /* White text */
+            background-color: #000000; /* Black background */
+            border: 2px solid #ffffff; /* White border */
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+        }
+        
+        .load-more-btn:hover {
+            background-color: #ffffff; /* White background */
+            color: #000000; /* Black text */
+            border-color: #000000; /* Black border */
+        }
+
+        /* New Search Icon and Search Bar Styles */
+        .search-icon-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            background-color: #0071e3;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+            transition: background-color 0.3s, transform 0.3s;
+            z-index: 1002;
+        }
+
+        .search-icon-btn:hover {
+            background-color: #005bb5;
+            transform: scale(1.05);
+        }
+
+        .search-icon-btn svg {
+            width: 24px;
+            height: 24px;
+            fill: #ffffff;
+        }
+
+        .search-bar {
+            position: fixed;
+            bottom: 90px;
+            right: 20px;
+            width: 0;
+            max-width: 300px;
+            background-color: var(--search-bar-bg);
+            border: 1px solid var(--input-border);
+            border-radius: 30px;
+            overflow: hidden;
+            transition: width 0.5s ease, opacity 0.5s ease;
+            opacity: 0;
+            z-index: 1002;
+            display: flex;
+            align-items: center;
+            padding: 0 15px;
+        }
+
+        .search-bar.active {
+            width: 300px;
+            opacity: 1;
+        }
+
+        .search-bar input[type="text"] {
+            flex: 1;
+            padding: 10px 15px;
+            border: none;
+            outline: none;
+            font-size: 1em;
+            color: var(--text-color);
+            background-color: transparent;
+        }
+
+        .search-bar button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 10px;
+        }
+
         @media (max-width: 768px) {
-            nav {
-                display: none;
-            }
-            .search-container {
-                max-width: 200px;
-            }
-            main {
-                padding: 80px 20px 20px 20px;
-                gap: 20px;
-            }
-            .article img {
-                height: 150px;
-            }
-            .modal {
-                width: 90%;
-                padding: 15px;
-            }
-            .modal-title {
-                font-size: 1.25em;
+            .search-bar {
+                max-width: 250px;
             }
         }
     </style>
@@ -295,29 +315,40 @@
         </div>
         <nav>
         </nav>
-        <div class="search-container">
-            <form id="searchForm">
-                <input type="text" id="searchInput" placeholder="Search" aria-label="Search articles">
-                <button type="submit" aria-label="Search">
-                    <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                        <path d="M10 2a8 8 0 105.293 14.293l4.707 4.707 1.414-1.414-4.707-4.707A8 8 0 0010 2zm0 2a6 6 0 110 12A6 6 0 0110 4z"/>
-                    </svg>
-                </button>
-            </form>
-        </div>
     </header>
     <div class="overlay" id="overlay"></div>
-<main id="articles"></main>
-<button id="loadMoreBtn" class="load-more-btn">Load More</button>
+    <main id="articles"></main>
+    <button id="loadMoreBtn" class="load-more-btn">Load More</button>
     <footer>
         &copy; 2024 Newsroom. All rights reserved.
     </footer>
+
+    <!-- Search Icon Button -->
+    <button class="search-icon-btn" id="searchIconBtn" aria-label="Open Search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M10 2a8 8 0 105.293 14.293l4.707 4.707 1.414-1.414-4.707-4.707A8 8 0 0010 2zm0 2a6 6 0 110 12A6 6 0 0110 4z"/>
+        </svg>
+    </button>
+
+    <!-- Search Bar -->
+    <div class="search-bar" id="searchBar">
+        <form id="searchForm">
+            <input type="text" id="searchInput" placeholder="Search" aria-label="Search articles">
+            <button type="submit" aria-label="Search">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                    <path d="M10 2a8 8 0 105.293 14.293l4.707 4.707 1.414-1.414-4.707-4.707A8 8 0 0010 2zm0 2a6 6 0 110 12A6 6 0 0110 4z"/>
+                </svg>
+            </button>
+        </form>
+    </div>
+
     <div class="modal" id="modal">
         <button class="close-btn" id="closeBtn" aria-label="Close Modal">&times;</button>
         <img src="" alt="" id="modalImage">
         <h2 class="modal-title" id="modalTitle"></h2>
         <p class="modal-content" id="modalContent"></p>
     </div>
+
     <script>
         const modal = document.getElementById('modal');
         const closeBtn = document.getElementById('closeBtn');
@@ -463,27 +494,64 @@
             const query = searchInput.value.trim();
             if (query) {
                 loadSearchResults(query);
+                toggleSearchBar(false);
             }
         });
 
         loadArticles();
       
-      const loadMoreBtn = document.getElementById('loadMoreBtn');
-let articlesCount = 12; // Initial number of articles
+        const loadMoreBtn = document.getElementById('loadMoreBtn');
+        let articlesCount = 12; // Initial number of articles
 
-async function loadMoreArticles(count = 6) {
-    for (let i = 0; i < count; i++) {
-        const data = await fetchRandomArticle();
-        if (data) {
-            const articleElement = createArticleElement(data);
-            articlesContainer.appendChild(articleElement);
+        async function loadMoreArticles(count = 6) {
+            for (let i = 0; i < count; i++) {
+                const data = await fetchRandomArticle();
+                if (data) {
+                    const articleElement = createArticleElement(data);
+                    articlesContainer.appendChild(articleElement);
+                }
+            }
         }
-    }
-}
 
-loadMoreBtn.addEventListener('click', () => {
-    loadMoreArticles(6); // Load 6 more articles on each click
-});
+        loadMoreBtn.addEventListener('click', () => {
+            loadMoreArticles(6); // Load 6 more articles on each click
+        });
+
+        // Search Icon and Search Bar Functionality
+        const searchIconBtn = document.getElementById('searchIconBtn');
+        const searchBar = document.getElementById('searchBar');
+
+        function toggleSearchBar(show) {
+            if (show === undefined) {
+                show = !searchBar.classList.contains('active');
+            }
+            if (show) {
+                searchBar.classList.add('active');
+                searchIconBtn.setAttribute('aria-label', 'Close Search');
+                searchInput.focus();
+            } else {
+                searchBar.classList.remove('active');
+                searchIconBtn.setAttribute('aria-label', 'Open Search');
+            }
+        }
+
+        searchIconBtn.addEventListener('click', () => {
+            toggleSearchBar();
+        });
+
+        // Close search bar when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!searchBar.contains(e.target) && !searchIconBtn.contains(e.target)) {
+                toggleSearchBar(false);
+            }
+        });
+
+        // Handle Escape key to close search bar
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                toggleSearchBar(false);
+            }
+        });
     </script>
 </body>
 </html>
