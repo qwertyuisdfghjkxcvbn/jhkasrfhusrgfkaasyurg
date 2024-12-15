@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Newsroom</title>
-    <link rel="manifest" href="/manifest.json">
     <link rel="manifest" href="/site.webmanifest">
     <link href="https://fonts.googleapis.com/css2?family=Helvetica+Neue:wght@400;700&display=swap" rel="stylesheet">
     <style>
@@ -20,9 +19,10 @@
             --input-bg: #f9f9f9;
             --input-border: #e5e5e7;
             --icon-color: #999999;
-            --search-bg: rgba(0, 0, 0, 0.7);
-            --search-bar-bg: #ffffff;
+            --primary-color: #0071e3;
+            --hover-color: #005bb5;
         }
+
         @media (prefers-color-scheme: dark) {
             :root {
                 --bg-color: #1c1c1e;
@@ -36,10 +36,11 @@
                 --input-bg: #3a3a3c;
                 --input-border: #444444;
                 --icon-color: #cccccc;
-                --search-bg: rgba(0, 0, 0, 0.8);
-                --search-bar-bg: #2c2c2e;
+                --primary-color: #0a84ff;
+                --hover-color: #005bb5;
             }
         }
+
         * {
             box-sizing: border-box;
             margin: 0;
@@ -47,6 +48,7 @@
             font-family: 'Helvetica Neue', Helvetica, sans-serif;
             transition: background-color 0.3s, color 0.3s;
         }
+
         body {
             background-color: var(--bg-color);
             color: var(--text-color);
@@ -55,6 +57,7 @@
             flex-direction: column;
             font-size: 16px;
         }
+
         header {
             position: fixed;
             top: 0;
@@ -69,6 +72,7 @@
             border-bottom: 1px solid var(--border-color);
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
+
         .logo a {
             text-decoration: none;
             font-family: 'Helvetica Neue', Helvetica, sans-serif;
@@ -77,9 +81,80 @@
             color: var(--text-color);
             cursor: pointer;
         }
+
         nav {
-            display: none;
+            display: flex;
+            gap: 20px;
         }
+
+        nav a {
+            text-decoration: none;
+            color: var(--text-color);
+            font-weight: 500;
+            position: relative;
+            padding: 5px 0;
+            transition: color 0.3s;
+        }
+
+        nav a::after {
+            content: '';
+            position: absolute;
+            width: 0%;
+            height: 2px;
+            background-color: var(--primary-color);
+            left: 0;
+            bottom: 0;
+            transition: width 0.3s;
+        }
+
+        nav a:hover::after {
+            width: 100%;
+        }
+
+        .search-container {
+            position: relative;
+            max-width: 300px;
+            width: 100%;
+            margin-left: 20px;
+        }
+
+        .search-container form {
+            display: flex;
+            align-items: center;
+            background-color: var(--input-bg);
+            border: 1px solid var(--input-border);
+            border-radius: 8px;
+            overflow: hidden;
+            padding: 4px 8px;
+        }
+
+        .search-container input[type="text"] {
+            width: 100%;
+            padding: 8px 12px;
+            border: none;
+            outline: none;
+            font-size: 1em;
+            color: var(--text-color);
+            background-color: var(--input-bg);
+        }
+
+        .search-container button {
+            padding: 8px 12px;
+            border: none;
+            background-color: transparent;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .search-icon {
+            width: 20px;
+            height: 20px;
+            fill: var(--icon-color);
+            margin-left: 5px;
+        }
+
         .overlay {
             position: fixed;
             top: 0;
@@ -92,16 +167,20 @@
             transition: opacity 0.3s;
             z-index: 1001;
         }
+
         .overlay.active {
             opacity: 1;
             visibility: visible;
         }
+
         main {
             padding: 80px 40px 40px 40px;
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
             gap: 30px;
+            flex: 1;
         }
+
         .article {
             background-color: var(--article-bg);
             padding: 20px;
@@ -112,7 +191,14 @@
             display: flex;
             flex-direction: column;
             position: relative;
+            transition: transform 0.2s, box-shadow 0.2s;
         }
+
+        .article:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+        }
+
         .article img {
             width: 100%;
             height: 180px;
@@ -120,6 +206,7 @@
             border-radius: 8px;
             margin-bottom: 15px;
         }
+
         .article-title {
             font-size: 1.25em;
             margin-bottom: 10px;
@@ -129,15 +216,18 @@
             align-items: center;
             gap: 8px;
         }
+
         .article-title a {
             text-decoration: none;
             color: var(--link-color);
             display: flex;
             align-items: center;
         }
+
         .article-title a:hover {
             text-decoration: underline;
         }
+
         .external-link-icon {
             width: 16px;
             height: 16px;
@@ -145,15 +235,18 @@
             cursor: pointer;
             transition: fill 0.3s;
         }
+
         .external-link-icon:hover {
-            fill: #005bb5;
+            fill: var(--hover-color);
         }
+
         .article-summary {
             flex: 1;
             font-size: 0.95em;
             line-height: 1.5;
             color: var(--text-color);
         }
+
         footer {
             background-color: var(--header-bg);
             padding: 20px 40px;
@@ -161,6 +254,7 @@
             border-top: 1px solid var(--border-color);
             font-size: 0.9em;
         }
+
         .modal {
             position: fixed;
             top: 50%;
@@ -179,11 +273,13 @@
             max-height: 90vh;
             overflow-y: auto;
         }
+
         .modal.active {
             opacity: 1;
             visibility: visible;
             transform: translate(-50%, -50%) scale(1);
         }
+
         .modal img {
             width: 100%;
             height: auto;
@@ -191,16 +287,19 @@
             border-radius: 8px;
             margin-bottom: 15px;
         }
+
         .modal-title {
             font-size: 1.5em;
             margin-bottom: 10px;
             color: var(--link-color);
         }
+
         .modal-content {
             font-size: 1em;
             line-height: 1.6;
             color: var(--text-color);
         }
+
         .close-btn {
             position: absolute;
             top: 15px;
@@ -211,6 +310,8 @@
             background: none;
             border: none;
         }
+
+        /* Load More Button */
         .load-more-btn {
             display: block;
             margin: 20px auto;
@@ -218,106 +319,101 @@
             font-size: 1em;
             font-weight: bold;
             color: #ffffff; /* White text */
-            background-color: #000000; /* Black background */
-            border: 2px solid #ffffff; /* White border */
+            background-color: var(--primary-color); /* Primary color background */
+            border: 2px solid var(--primary-color); /* Primary color border */
             border-radius: 8px;
             cursor: pointer;
             transition: background-color 0.3s, color 0.3s, border-color 0.3s;
         }
-        
+
         .load-more-btn:hover {
             background-color: #ffffff; /* White background */
-            color: #000000; /* Black text */
-            border-color: #000000; /* Black border */
+            color: var(--primary-color); /* Primary color text */
+            border-color: var(--primary-color); /* Primary color border */
         }
 
-        /* New Search Icon and Search Bar Styles */
-        .search-container-header {
-            position: relative;
-            display: flex;
-            align-items: center;
-        }
-
-        .search-icon-btn {
-            width: 40px;
-            height: 40px;
-            background-color: #0071e3;
-            border: none;
-            border-radius: 50%;
+        /* Hamburger Menu */
+        .hamburger {
+            display: none;
+            flex-direction: column;
+            justify-content: space-between;
+            width: 24px;
+            height: 18px;
             cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
-            transition: background-color 0.3s, transform 0.3s;
-            z-index: 1002;
         }
 
-        .search-icon-btn:hover {
-            background-color: #005bb5;
-            transform: scale(1.05);
+        .hamburger span {
+            display: block;
+            height: 3px;
+            background-color: var(--text-color);
+            border-radius: 2px;
+            transition: all 0.3s;
         }
 
-        .search-icon-btn svg {
-            width: 20px;
-            height: 20px;
-            fill: #ffffff;
-        }
-
-        .search-bar {
-            position: absolute;
-            top: 50%;
-            right: 50px;
-            transform: translateY(-50%);
-            width: 0;
-            max-width: 300px;
-            background-color: var(--search-bar-bg);
-            border: 1px solid var(--input-border);
-            border-radius: 30px;
-            overflow: hidden;
-            transition: width 0.5s ease, opacity 0.5s ease;
-            opacity: 0;
-            z-index: 1002;
-            display: flex;
-            align-items: center;
-            padding: 0 15px;
-        }
-
-        .search-bar.active {
-            width: 300px;
-            opacity: 1;
-        }
-
-        .search-bar input[type="text"] {
-            flex: 1;
-            padding: 10px 15px;
-            border: none;
-            outline: none;
-            font-size: 1em;
-            color: var(--text-color);
-            background-color: transparent;
-        }
-
-        .search-bar button {
-            background: none;
-            border: none;
-            cursor: pointer;
-            padding: 10px;
-        }
-
+        /* Mobile Navigation */
         @media (max-width: 768px) {
-            .search-bar {
-                max-width: 250px;
-                right: 60px;
+            nav {
+                position: fixed;
+                top: 0;
+                right: -100%;
+                height: 100vh;
+                width: 250px;
+                background-color: var(--header-bg);
+                flex-direction: column;
+                padding: 60px 20px 20px 20px;
+                gap: 20px;
+                transition: right 0.3s;
+                box-shadow: -2px 0 5px rgba(0,0,0,0.1);
+                z-index: 1002;
             }
-            .search-icon-btn {
-                width: 35px;
-                height: 35px;
+
+            nav.active {
+                right: 0;
             }
-            .search-icon-btn svg {
-                width: 18px;
-                height: 18px;
+
+            nav a {
+                font-size: 1.2em;
             }
+
+            .hamburger {
+                display: flex;
+            }
+
+            .search-container {
+                max-width: 200px;
+                margin-left: 10px;
+            }
+
+            main {
+                padding: 80px 20px 20px 20px;
+                gap: 20px;
+            }
+
+            .article img {
+                height: 150px;
+            }
+
+            .modal {
+                width: 90%;
+                padding: 15px;
+            }
+
+            .modal-title {
+                font-size: 1.25em;
+            }
+        }
+
+        /* Active Hamburger */
+        .hamburger.active span:nth-child(1) {
+            transform: translateY(7.5px) rotate(45deg);
+        }
+
+        .hamburger.active span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .hamburger.active span:nth-child(3) {
+            transform: translateY(-7.5px) rotate(-45deg);
         }
     </style>
 </head>
@@ -326,26 +422,28 @@
         <div class="logo">
             <a href="#" id="logoLink">NR</a>
         </div>
-        <nav>
+        <nav id="navMenu">
+            <a href="#">Home</a>
+            <a href="#">World</a>
+            <a href="#">Politics</a>
+            <a href="#">Technology</a>
+            <a href="#">Sports</a>
+            <a href="#">Contact</a>
         </nav>
-        <div class="search-container-header">
-            <!-- Search Icon Button -->
-            <button class="search-icon-btn" id="searchIconBtn" aria-label="Open Search">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                    <path d="M10 2a8 8 0 105.293 14.293l4.707 4.707 1.414-1.414-4.707-4.707A8 8 0 0010 2zm0 2a6 6 0 110 12A6 6 0 0110 4z"/>
-                </svg>
-            </button>
-            <!-- Search Bar -->
-            <div class="search-bar" id="searchBar">
-                <form id="searchForm">
-                    <input type="text" id="searchInput" placeholder="Search" aria-label="Search articles">
-                    <button type="submit" aria-label="Search">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                            <path d="M10 2a8 8 0 105.293 14.293l4.707 4.707 1.414-1.414-4.707-4.707A8 8 0 0010 2zm0 2a6 6 0 110 12A6 6 0 0110 4z"/>
-                        </svg>
-                    </button>
-                </form>
-            </div>
+        <div class="search-container">
+            <form id="searchForm">
+                <input type="text" id="searchInput" placeholder="Search" aria-label="Search articles">
+                <button type="submit" aria-label="Search">
+                    <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                        <path d="M10 2a8 8 0 105.293 14.293l4.707 4.707 1.414-1.414-4.707-4.707A8 8 0 0010 2zm0 2a6 6 0 110 12A6 6 0 0110 4z"/>
+                    </svg>
+                </button>
+            </form>
+        </div>
+        <div class="hamburger" id="hamburger">
+            <span></span>
+            <span></span>
+            <span></span>
         </div>
     </header>
     <div class="overlay" id="overlay"></div>
@@ -354,15 +452,14 @@
     <footer>
         &copy; 2024 Newsroom. All rights reserved.
     </footer>
-
     <div class="modal" id="modal">
         <button class="close-btn" id="closeBtn" aria-label="Close Modal">&times;</button>
         <img src="" alt="" id="modalImage">
         <h2 class="modal-title" id="modalTitle"></h2>
         <p class="modal-content" id="modalContent"></p>
     </div>
-
     <script>
+        // Modal Functionality
         const modal = document.getElementById('modal');
         const closeBtn = document.getElementById('closeBtn');
         const modalImage = document.getElementById('modalImage');
@@ -390,6 +487,33 @@
             location.reload();
         });
 
+        // Navigation Menu Functionality
+        const hamburger = document.getElementById('hamburger');
+        const navMenu = document.getElementById('navMenu');
+
+        hamburger.addEventListener('click', () => {
+            navMenu.classList.toggle('active');
+            hamburger.classList.toggle('active');
+            overlay.classList.toggle('active');
+            document.body.style.overflow = navMenu.classList.contains('active') ? 'hidden' : 'auto';
+        });
+
+        // Overlay Click to Close Menu
+        overlay.addEventListener('click', () => {
+            if (navMenu.classList.contains('active')) {
+                navMenu.classList.remove('active');
+                hamburger.classList.remove('active');
+                overlay.classList.remove('active');
+                document.body.style.overflow = 'auto';
+            }
+            if (modal.classList.contains('active')) {
+                modal.classList.remove('active');
+                overlay.classList.remove('active');
+                document.body.style.overflow = 'auto';
+            }
+        });
+
+        // Articles Functionality
         const articlesContainer = document.getElementById('articles');
 
         async function fetchRandomArticle() {
@@ -507,14 +631,14 @@
             const query = searchInput.value.trim();
             if (query) {
                 loadSearchResults(query);
-                toggleSearchBar(false);
             }
         });
 
+        // Load initial articles
         loadArticles();
-      
+
+        // Load More Functionality
         const loadMoreBtn = document.getElementById('loadMoreBtn');
-        let articlesCount = 12; // Initial number of articles
 
         async function loadMoreArticles(count = 6) {
             for (let i = 0; i < count; i++) {
@@ -528,42 +652,6 @@
 
         loadMoreBtn.addEventListener('click', () => {
             loadMoreArticles(6); // Load 6 more articles on each click
-        });
-
-        // Search Icon and Search Bar Functionality
-        const searchIconBtn = document.getElementById('searchIconBtn');
-        const searchBar = document.getElementById('searchBar');
-
-        function toggleSearchBar(show) {
-            if (show === undefined) {
-                show = !searchBar.classList.contains('active');
-            }
-            if (show) {
-                searchBar.classList.add('active');
-                searchIconBtn.setAttribute('aria-label', 'Close Search');
-                searchInput.focus();
-            } else {
-                searchBar.classList.remove('active');
-                searchIconBtn.setAttribute('aria-label', 'Open Search');
-            }
-        }
-
-        searchIconBtn.addEventListener('click', () => {
-            toggleSearchBar();
-        });
-
-        // Close search bar when clicking outside
-        document.addEventListener('click', (e) => {
-            if (!searchBar.contains(e.target) && !searchIconBtn.contains(e.target)) {
-                toggleSearchBar(false);
-            }
-        });
-
-        // Handle Escape key to close search bar
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') {
-                toggleSearchBar(false);
-            }
         });
     </script>
 </body>
