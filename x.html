@@ -3,11 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Insider by Ad Astra</title>
+    <title>Newsroom</title>
     <link rel="manifest" href="/manifest.json">
     <link rel="manifest" href="/site.webmanifest">
     <link href="https://fonts.googleapis.com/css2?family=Helvetica+Neue:wght@400;700&display=swap" rel="stylesheet">
     <style>
+.load-more-btn {
+    display: block;
+    margin: 20px auto;
+    padding: 10px 20px;
+    font-size: 1em;
+    font-weight: bold;
+    color: #ffffff; /* White text */
+    background-color: #000000; /* Black background */
+    border: 2px solid #ffffff; /* White border */
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+}
+
+.load-more-btn:hover {
+    background-color: #ffffff; /* White background */
+    color: #000000; /* Black text */
+    border-color: #000000; /* Black border */
+}
         :root {
             --bg-color: #ffffff;
             --text-color: #1c1c1e;
@@ -15,13 +34,11 @@
             --article-bg: #ffffff;
             --link-color: #0071e3;
             --border-color: #e5e5e7;
-            --overlay-bg: rgba(0, 0, 0, 0.5);
+            --overlay-bg: #ffffff;
             --modal-bg: #ffffff;
             --input-bg: #f9f9f9;
             --input-border: #e5e5e7;
             --icon-color: #999999;
-            --footer-bg: #f1f1f3;
-            --footer-text: #4a4a4a;
         }
         @media (prefers-color-scheme: dark) {
             :root {
@@ -31,13 +48,11 @@
                 --article-bg: #2c2c2e;
                 --link-color: #0a84ff;
                 --border-color: #3a3a3c;
-                --overlay-bg: rgba(0, 0, 0, 0.7);
+                --overlay-bg: #2c2c2e;
                 --modal-bg: #2c2c2e;
                 --input-bg: #3a3a3c;
                 --input-border: #444444;
                 --icon-color: #cccccc;
-                --footer-bg: #2c2c2e;
-                --footer-text: #cccccc;
             }
         }
         * {
@@ -71,49 +86,14 @@
         }
         .logo a {
             text-decoration: none;
-            cursor: pointer;
+            font-family: 'Helvetica Neue', Helvetica, sans-serif;
             font-size: 1.5em;
-            font-weight: 700;
+            font-weight: bold;
             color: var(--text-color);
-            transition: transform 0.3s;
-        }
-        .logo a:hover {
-            transform: scale(1.05);
+            cursor: pointer;
         }
         nav {
-            display: flex;
-            gap: 20px;
-        }
-        nav a {
-            text-decoration: none;
-            color: var(--text-color);
-            font-weight: 700;
-            position: relative;
-        }
-        nav a::after {
-            content: '';
-            position: absolute;
-            width: 0%;
-            height: 2px;
-            background-color: var(--link-color);
-            left: 0;
-            bottom: -5px;
-            transition: width 0.3s;
-        }
-        nav a:hover::after {
-            width: 100%;
-        }
-        .hamburger {
             display: none;
-            flex-direction: column;
-            cursor: pointer;
-            gap: 5px;
-        }
-        .hamburger div {
-            width: 25px;
-            height: 3px;
-            background-color: var(--text-color);
-            transition: all 0.3s;
         }
         .search-container {
             position: relative;
@@ -170,45 +150,10 @@
             visibility: visible;
         }
         main {
-            padding: 100px 40px 40px 40px;
+            padding: 80px 40px 40px 40px;
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
             gap: 30px;
-        }
-        .hero {
-            grid-column: 1 / -1;
-            background-image: url('https://source.unsplash.com/1600x900/?news,technology');
-            background-size: cover;
-            background-position: center;
-            position: relative;
-            height: 300px;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #ffffff;
-            text-align: center;
-        }
-        .hero::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(28, 28, 30, 0.5);
-            border-radius: 12px;
-        }
-        .hero-content {
-            position: relative;
-            z-index: 1;
-        }
-        .hero-content h1 {
-            font-size: 2.5em;
-            margin-bottom: 10px;
-        }
-        .hero-content p {
-            font-size: 1.2em;
         }
         .article {
             background-color: var(--article-bg);
@@ -220,11 +165,6 @@
             display: flex;
             flex-direction: column;
             position: relative;
-            transition: transform 0.3s, box-shadow 0.3s;
-        }
-        .article:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
         }
         .article img {
             width: 100%;
@@ -268,60 +208,11 @@
             color: var(--text-color);
         }
         footer {
-            background-color: var(--footer-bg);
-            padding: 40px 40px;
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: space-between;
-            gap: 20px;
-            color: var(--footer-text);
-        }
-        .footer-section {
-            flex: 1 1 200px;
-        }
-        .footer-section h3 {
-            margin-bottom: 15px;
-            font-size: 1.2em;
-            color: var(--text-color);
-        }
-        .footer-section ul {
-            list-style: none;
-        }
-        .footer-section ul li {
-            margin-bottom: 10px;
-        }
-        .footer-section ul li a {
-            text-decoration: none;
-            color: var(--footer-text);
-            transition: color 0.3s;
-        }
-        .footer-section ul li a:hover {
-            color: var(--link-color);
-        }
-        .newsletter {
-            display: flex;
-            flex-direction: column;
-        }
-        .newsletter input[type="email"] {
-            padding: 10px;
-            border: 1px solid var(--input-border);
-            border-radius: 4px;
-            margin-bottom: 10px;
-            outline: none;
-            font-size: 1em;
-        }
-        .newsletter button {
-            padding: 10px;
-            border: none;
-            background-color: var(--link-color);
-            color: #ffffff;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 1em;
-            transition: background-color 0.3s;
-        }
-        .newsletter button:hover {
-            background-color: #005bb5;
+            background-color: var(--header-bg);
+            padding: 20px 40px;
+            text-align: center;
+            border-top: 1px solid var(--border-color);
+            font-size: 0.9em;
         }
         .modal {
             position: fixed;
@@ -376,26 +267,13 @@
         @media (max-width: 768px) {
             nav {
                 display: none;
-                flex-direction: column;
-                position: fixed;
-                top: 60px;
-                right: 0;
-                background-color: var(--header-bg);
-                width: 200px;
-                border-left: 1px solid var(--border-color);
-                box-shadow: -2px 0 5px rgba(0,0,0,0.1);
-                height: calc(100% - 60px);
-                padding: 20px;
-                gap: 15px;
             }
-            nav.active {
-                display: flex;
+            .search-container {
+                max-width: 200px;
             }
-            .hamburger {
-                display: flex;
-            }
-            .hero {
-                height: 200px;
+            main {
+                padding: 80px 20px 20px 20px;
+                gap: 20px;
             }
             .article img {
                 height: 150px;
@@ -407,60 +285,16 @@
             .modal-title {
                 font-size: 1.25em;
             }
-            .hero-content h1 {
-                font-size: 2em;
-            }
-            .hero-content p {
-                font-size: 1em;
-            }
-            footer {
-                flex-direction: column;
-                align-items: center;
-            }
-            .footer-section {
-                flex: 1 1 100%;
-                text-align: center;
-            }
-            .newsletter {
-                align-items: center;
-            }
-        }
-        .load-more-btn {
-            display: block;
-            margin: 20px auto;
-            padding: 10px 20px;
-            font-size: 1em;
-            font-weight: bold;
-            color: #ffffff;
-            background-color: #000000;
-            border: 2px solid #ffffff;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: background-color 0.3s, color 0.3s, border-color 0.3s;
-        }
-        .load-more-btn:hover {
-            background-color: #ffffff;
-            color: #000000;
-            border-color: #000000;
         }
     </style>
 </head>
 <body>
     <header>
         <div class="logo">
-            <a href="#" id="logoLink" aria-label="Insider by Ad Astra Home">AD</a>
+            <a href="#" id="logoLink">NR</a>
         </div>
-        <nav id="navMenu">
-            <a href="#home">Home</a>
-            <a href="#articles">Articles</a>
-            <a href="#about">About</a>
-            <a href="#contact">Contact</a>
+        <nav>
         </nav>
-        <div class="hamburger" id="hamburger">
-            <div></div>
-            <div></div>
-            <div></div>
-        </div>
         <div class="search-container">
             <form id="searchForm">
                 <input type="text" id="searchInput" placeholder="Search" aria-label="Search articles">
@@ -473,39 +307,10 @@
         </div>
     </header>
     <div class="overlay" id="overlay"></div>
-    <main id="articles">
-        <section class="hero" id="home">
-            <div class="hero-content">
-                <h1>Welcome to Insider by Ad Astra</h1>
-                <p>Your gateway to the latest news and insights.</p>
-            </div>
-        </section>
-    </main>
-    <button id="loadMoreBtn" class="load-more-btn">Load More</button>
+<main id="articles"></main>
+<button id="loadMoreBtn" class="load-more-btn">Load More</button>
     <footer>
-        <div class="footer-section">
-            <h3>About Us</h3>
-            <ul>
-                <li><a href="#about">Our Story</a></li>
-                <li><a href="#contact">Contact</a></li>
-                <li><a href="#">Careers</a></li>
-            </ul>
-        </div>
-        <div class="footer-section">
-            <h3>Useful Links</h3>
-            <ul>
-                <li><a href="#">Privacy Policy</a></li>
-                <li><a href="#">Terms of Service</a></li>
-                <li><a href="#">Contact Us</a></li>
-            </ul>
-        </div>
-        <div class="footer-section newsletter">
-            <h3>Subscribe to our Newsletter</h3>
-            <form id="newsletterForm">
-                <input type="email" id="newsletterEmail" placeholder="Your email address" aria-label="Email Address" required>
-                <button type="submit">Subscribe</button>
-            </form>
-        </div>
+        &copy; 2024 Newsroom. All rights reserved.
     </footer>
     <div class="modal" id="modal">
         <button class="close-btn" id="closeBtn" aria-label="Close Modal">&times;</button>
@@ -521,14 +326,6 @@
         const modalContent = document.getElementById('modalContent');
         const overlay = document.getElementById('overlay');
         const logoLink = document.getElementById('logoLink');
-        const hamburger = document.getElementById('hamburger');
-        const navMenu = document.getElementById('navMenu');
-        const articlesContainer = document.getElementById('articles');
-        const loadMoreBtn = document.getElementById('loadMoreBtn');
-        const searchForm = document.getElementById('searchForm');
-        const searchInput = document.getElementById('searchInput');
-        const newsletterForm = document.getElementById('newsletterForm');
-        const newsletterEmail = document.getElementById('newsletterEmail');
 
         closeBtn.addEventListener('click', () => {
             modal.classList.remove('active');
@@ -546,22 +343,10 @@
 
         logoLink.addEventListener('click', (e) => {
             e.preventDefault();
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+            location.reload();
         });
 
-        hamburger.addEventListener('click', () => {
-            navMenu.classList.toggle('active');
-            overlay.classList.toggle('active');
-            document.body.style.overflow = navMenu.classList.contains('active') ? 'hidden' : 'auto';
-        });
-
-        navMenu.addEventListener('click', (e) => {
-            if (e.target.tagName === 'A') {
-                navMenu.classList.remove('active');
-                overlay.classList.remove('active');
-                document.body.style.overflow = 'auto';
-            }
-        });
+        const articlesContainer = document.getElementById('articles');
 
         async function fetchRandomArticle() {
             try {
@@ -645,6 +430,7 @@
         }
 
         async function loadArticles(count = 12) {
+            articlesContainer.innerHTML = '';
             for (let i = 0; i < count; i++) {
                 const data = await fetchRandomArticle();
                 if (data) {
@@ -655,14 +441,7 @@
         }
 
         async function loadSearchResults(query) {
-            articlesContainer.innerHTML = `
-                <section class="hero" id="home">
-                    <div class="hero-content">
-                        <h1>Search Results for "${query}"</h1>
-                        <p>Displaying the latest articles matching your query.</p>
-                    </div>
-                </section>
-            `;
+            articlesContainer.innerHTML = '';
             const summaries = await fetchSearchArticles(query, 12);
             if (summaries && summaries.length > 0) {
                 summaries.forEach(data => {
@@ -672,13 +451,12 @@
             } else {
                 const noResults = document.createElement('p');
                 noResults.textContent = 'No articles found for your search.';
-                noResults.style.gridColumn = '1 / -1';
-                noResults.style.textAlign = 'center';
-                noResults.style.fontSize = '1.2em';
-                noResults.style.marginTop = '20px';
                 articlesContainer.appendChild(noResults);
             }
         }
+
+        const searchForm = document.getElementById('searchForm');
+        const searchInput = document.getElementById('searchInput');
 
         searchForm.addEventListener('submit', (e) => {
             e.preventDefault();
@@ -689,29 +467,23 @@
         });
 
         loadArticles();
+      
+      const loadMoreBtn = document.getElementById('loadMoreBtn');
+let articlesCount = 12; // Initial number of articles
 
-        async function loadMoreArticles(count = 6) {
-            for (let i = 0; i < count; i++) {
-                const data = await fetchRandomArticle();
-                if (data) {
-                    const articleElement = createArticleElement(data);
-                    articlesContainer.appendChild(articleElement);
-                }
-            }
+async function loadMoreArticles(count = 6) {
+    for (let i = 0; i < count; i++) {
+        const data = await fetchRandomArticle();
+        if (data) {
+            const articleElement = createArticleElement(data);
+            articlesContainer.appendChild(articleElement);
         }
+    }
+}
 
-        loadMoreBtn.addEventListener('click', () => {
-            loadMoreArticles(6);
-        });
-
-        newsletterForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            const email = newsletterEmail.value.trim();
-            if (email) {
-                alert(`Thank you for subscribing with ${email}!`);
-                newsletterEmail.value = '';
-            }
-        });
+loadMoreBtn.addEventListener('click', () => {
+    loadMoreArticles(6); // Load 6 more articles on each click
+});
     </script>
 </body>
 </html>
