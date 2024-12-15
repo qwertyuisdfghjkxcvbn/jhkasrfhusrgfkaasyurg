@@ -27,6 +27,8 @@
             --footer-link: #0071e3;
             --footer-hover: #005bb5;
             --max-width: 1200px;
+            --avatar-bg: #0071e3;
+            --avatar-text-color: #ffffff;
         }
 
         @media (prefers-color-scheme: dark) {
@@ -48,6 +50,8 @@
                 --footer-text: #cccccc;
                 --footer-link: #0a84ff;
                 --footer-hover: #005bb5;
+                --avatar-bg: #0a84ff;
+                --avatar-text-color: #ffffff;
             }
         }
 
@@ -222,7 +226,7 @@
             background-color: var(--input-border);
         }
 
-        /* User Profile Placeholder */
+        /* User Profile with Initials */
         .user-profile {
             margin-left: 20px;
             position: relative;
@@ -231,18 +235,18 @@
             gap: 10px;
         }
 
-        .user-profile a {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            cursor: pointer;
-        }
-
-        .user-profile img {
+        .user-profile .avatar {
             width: 32px;
             height: 32px;
             border-radius: 50%;
-            object-fit: cover;
+            background-color: var(--avatar-bg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--avatar-text-color);
+            font-weight: bold;
+            font-size: 1em;
+            text-transform: uppercase;
         }
 
         /* Authentication Buttons */
@@ -349,8 +353,14 @@
                 margin-left: 20px;
             }
 
-            .auth-buttons {
-                display: none;
+            .auth-buttons.mobile-auth-buttons {
+                display: flex;
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .auth-buttons.mobile-auth-buttons button {
+                width: 100%;
             }
         }
 
@@ -710,19 +720,19 @@
             <div class="dropdown">
                 <a href="#" aria-haspopup="true" aria-expanded="false">Categories</a>
                 <div class="dropdown-content" aria-label="submenu">
-                    <a href="#">World</a>
-                    <a href="#">Politics</a>
-                    <a href="#">Business</a>
-                    <a href="#">Technology</a>
-                    <a href="#">Health</a>
-                    <a href="#">Sports</a>
-                    <a href="#">Entertainment</a>
+                    <a href="#world">World</a>
+                    <a href="#politics">Politics</a>
+                    <a href="#business">Business</a>
+                    <a href="#technology">Technology</a>
+                    <a href="#health">Health</a>
+                    <a href="#sports">Sports</a>
+                    <a href="#entertainment">Entertainment</a>
                 </div>
             </div>
-            <a href="#">Opinion</a>
-            <a href="#">Lifestyle</a>
-            <a href="#">Travel</a>
-            <a href="#">Contact</a>
+            <a href="#opinion">Opinion</a>
+            <a href="#lifestyle">Lifestyle</a>
+            <a href="#travel">Travel</a>
+            <a href="#contact">Contact</a>
             <!-- Admin Exclusive Link -->
             <a href="#" id="adminLink" style="display: none;">Admin Panel</a>
         </nav>
@@ -744,10 +754,8 @@
             <button id="loginBtn">Log In</button>
         </div>
         <div class="user-profile" id="userProfile">
-            <a href="#" aria-label="User Profile">
-                <img src="https://via.placeholder.com/32" alt="User Avatar">
-                <span id="usernameDisplay">John Doe</span>
-            </a>
+            <div class="avatar" id="userAvatar">A</div>
+            <span id="usernameDisplay">Admin</span>
             <button id="logoutBtn" aria-label="Log Out">Log Out</button>
         </div>
         <div class="hamburger" id="hamburger" aria-label="Toggle navigation menu" aria-expanded="false">
@@ -762,29 +770,27 @@
         <div class="dropdown">
             <a href="#" aria-haspopup="true" aria-expanded="false">Categories</a>
             <div class="dropdown-content" aria-label="submenu">
-                <a href="#">World</a>
-                <a href="#">Politics</a>
-                <a href="#">Business</a>
-                <a href="#">Technology</a>
-                <a href="#">Health</a>
-                <a href="#">Sports</a>
-                <a href="#">Entertainment</a>
+                <a href="#world">World</a>
+                <a href="#politics">Politics</a>
+                <a href="#business">Business</a>
+                <a href="#technology">Technology</a>
+                <a href="#health">Health</a>
+                <a href="#sports">Sports</a>
+                <a href="#entertainment">Entertainment</a>
             </div>
         </div>
-        <a href="#">Opinion</a>
-        <a href="#">Lifestyle</a>
-        <a href="#">Travel</a>
-        <a href="#">Contact</a>
+        <a href="#opinion">Opinion</a>
+        <a href="#lifestyle">Lifestyle</a>
+        <a href="#travel">Travel</a>
+        <a href="#contact">Contact</a>
         <!-- Admin Exclusive Link -->
         <a href="#" id="mobileAdminLink" style="display: none;">Admin Panel</a>
-        <div class="user-profile mobile-visible" id="mobileUserProfile">
-            <a href="#" aria-label="User Profile">
-                <img src="https://via.placeholder.com/32" alt="User Avatar">
-                <span id="mobileUsernameDisplay">John Doe</span>
-            </a>
+        <div class="user-profile mobile-visible" id="mobileUserProfile" style="display: none;">
+            <div class="avatar" id="mobileUserAvatar">A</div>
+            <span id="mobileUsernameDisplay">Admin</span>
             <button id="mobileLogoutBtn" aria-label="Log Out">Log Out</button>
         </div>
-        <div class="auth-buttons mobile-auth-buttons" id="mobileAuthButtons">
+        <div class="auth-buttons mobile-auth-buttons" id="mobileAuthButtons" style="display: none;">
             <button id="mobileSignupBtn">Sign Up</button>
             <button id="mobileLoginBtn">Log In</button>
         </div>
@@ -806,22 +812,22 @@
         <div class="footer-section">
             <h3>About Us</h3>
             <ul>
-                <li><a href="#">Our Story</a></li>
-                <li><a href="#">Team</a></li>
-                <li><a href="#">Careers</a></li>
-                <li><a href="#">Press</a></li>
+                <li><a href="#our-story">Our Story</a></li>
+                <li><a href="#team">Team</a></li>
+                <li><a href="#careers">Careers</a></li>
+                <li><a href="#press">Press</a></li>
             </ul>
         </div>
         <div class="footer-section">
             <h3>Categories</h3>
             <ul>
-                <li><a href="#">World</a></li>
-                <li><a href="#">Politics</a></li>
-                <li><a href="#">Business</a></li>
-                <li><a href="#">Technology</a></li>
-                <li><a href="#">Health</a></li>
-                <li><a href="#">Sports</a></li>
-                <li><a href="#">Entertainment</a></li>
+                <li><a href="#world">World</a></li>
+                <li><a href="#politics">Politics</a></li>
+                <li><a href="#business">Business</a></li>
+                <li><a href="#technology">Technology</a></li>
+                <li><a href="#health">Health</a></li>
+                <li><a href="#sports">Sports</a></li>
+                <li><a href="#entertainment">Entertainment</a></li>
             </ul>
         </div>
         <div class="footer-section newsletter">
@@ -834,24 +840,24 @@
         <div class="footer-section">
             <h3>Follow Us</h3>
             <div class="social-media">
-                <a href="#" aria-label="Facebook">
+                <a href="https://www.facebook.com" aria-label="Facebook" target="_blank" rel="noopener noreferrer">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
                         <path d="M22.675 0h-21.35C.597 0 0 .597 0 1.325v21.351C0 23.403.597 24 1.325 24h11.495v-9.294H9.691v-3.622h3.129V8.413c0-3.1 1.893-4.788 4.659-4.788 1.325 0 2.463.099 2.795.143v3.24l-1.918.001c-1.504 0-1.796.715-1.796 1.764v2.313h3.587l-.467 3.622h-3.12V24h6.116C23.403 24 24 23.403 24 22.676V1.325C24 .597 23.403 0 22.675 0z"/>
                     </svg>
                 </a>
-                <a href="#" aria-label="Twitter">
+                <a href="https://www.twitter.com" aria-label="Twitter" target="_blank" rel="noopener noreferrer">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
                         <path d="M24 4.557a9.93 9.93 0 0 1-2.828.775 4.932 4.932 0 0 0 2.165-2.724c-.951.555-2.005.959-3.127 1.184A4.916 4.916 0 0 0 16.616 3c-2.737 0-4.95 2.214-4.95 4.95 0 .388.044.765.128 1.13C7.728 8.832 4.1 6.873 1.671 3.149a4.822 4.822 0 0 0-.666 2.475c0 1.708.87 3.213 2.188 4.096a4.904 4.904 0 0 1-2.24-.616v.062c0 2.385 1.697 4.374 3.946 4.827a4.935 4.935 0 0 1-2.224.084c.63 1.953 2.445 3.376 4.6 3.416A9.868 9.868 0 0 1 0 19.54a13.94 13.94 0 0 0 7.548 2.212c9.058 0 14.01-7.513 14.01-14.01 0-.213-.005-.425-.014-.636A10.012 10.012 0 0 0 24 4.557z"/>
                     </svg>
                 </a>
-                <a href="#" aria-label="Instagram">
+                <a href="https://www.instagram.com" aria-label="Instagram" target="_blank" rel="noopener noreferrer">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
                         <path d="M12 2.163c3.204 0 3.584.012 4.85.07 1.366.062 2.633.344 3.608 1.32.975.976 1.258 2.243 1.32 3.608.058 1.266.07 1.646.07 4.85s-.012 3.584-.07 4.85c-.062 1.366-.344 2.633-1.32 3.608-.976.975-2.243 1.258-3.608 1.32-1.266.058-1.646.07-4.85.07s-3.584-.012-4.85-.07c-1.366-.062-2.633-.344-3.608-1.32-.975-.976-1.258-2.243-1.32-3.608C2.175 15.584 2.163 15.204 2.163 12s.012-3.584.07-4.85c.062-1.366.344-2.633 1.32-3.608.976-.975 2.243-1.258 3.608-1.32C8.416 2.175 8.796 2.163 12 2.163zm0-2.163C8.741 0 8.332.013 7.052.072 5.771.131 4.603.423 3.678 1.347 2.754 2.271 2.462 3.439 2.403 4.72 2.344 6 .331 6.408 0 12s2.344 6 4.72 6c1.281.059 2.449-.233 3.373-1.158.924-.924 1.217-2.092 1.158-3.373-.059-1.281.013-1.69.072-4.72S16.719 1.281 18 1.222c1.281-.059 2.449.233 3.373 1.158.924.924 1.217 2.092 1.158 3.373-.059 1.281.013 1.69.072 4.72s-.131 3.439-.072 4.72c.059 1.281-.233 2.449-1.158 3.373-.924.924-2.092 1.217-3.373 1.158-1.281-.059-1.69.013-4.72.072s-3.439-.131-4.72-.072c-1.281.059-2.449-.233-3.373-1.158C1.281 19.449.988 18.281.947 17c-.059-1.281-.131-1.69-.072-4.72S0 8.332 0 6s.013-3.584.072-4.85c.059-1.266.344-2.533 1.32-3.509C1.798.423 3.065.138 4.331.072 5.597.013 6.006 0 9.051 0h.898z"/>
                         <path d="M12 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zm0 10.162a4 4 0 1 1 0-8 4 4 0 0 1 0 8z"/>
                         <circle cx="18.406" cy="5.594" r="1.44"/>
                     </svg>
                 </a>
-                <a href="#" aria-label="LinkedIn">
+                <a href="https://www.linkedin.com" aria-label="LinkedIn" target="_blank" rel="noopener noreferrer">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
                         <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.762 2.239 5 5 5h14c2.762 0 5-2.238 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-10h3v10zm-1.5-11.268c-.966 0-1.75-.785-1.75-1.75s.784-1.75 1.75-1.75 1.75.785 1.75 1.75-.784 1.75-1.75 1.75zm13.5 11.268h-3v-5.604c0-1.337-.025-3.065-1.87-3.065-1.872 0-2.158 1.46-2.158 2.967v5.705h-3v-10h2.88v1.367h.041c.401-.761 1.379-1.56 2.837-1.56 3.037 0 3.6 2.001 3.6 4.603v5.586z"/>
                     </svg>
@@ -917,7 +923,11 @@
             document.getElementById('authButtons').style.display = 'none';
             document.getElementById('userProfile').style.display = 'flex';
             document.getElementById('usernameDisplay').textContent = username;
-            document.getElementById('mobileUserProfile').querySelector('#mobileUsernameDisplay').textContent = username;
+            document.getElementById('userAvatar').textContent = username.charAt(0).toUpperCase();
+            // Update mobile user profile
+            document.getElementById('mobileUserProfile').style.display = 'flex';
+            document.getElementById('mobileUsernameDisplay').textContent = username;
+            document.getElementById('mobileUserAvatar').textContent = username.charAt(0).toUpperCase();
             // Show admin link if user is admin
             if (username === 'admin') {
                 document.getElementById('adminLink').style.display = 'block';
@@ -1098,13 +1108,22 @@
                 document.body.style.overflow = isActive ? 'hidden' : 'auto';
             });
 
-            // Close mobile nav function
-            window.closeMobileNav = function() {
-                mobileNav.classList.remove('active');
-                hamburger.classList.remove('active');
-                overlay.classList.remove('active');
-                document.body.style.overflow = 'auto';
-            }
+            // Close mobile nav when a link is clicked
+            mobileNav.addEventListener('click', (e) => {
+                if (e.target.tagName === 'A') {
+                    closeMobileNav();
+                }
+            });
+        }
+
+        // Close Mobile Navigation
+        function closeMobileNav() {
+            const mobileNav = document.getElementById('mobileNav');
+            const hamburger = document.getElementById('hamburger');
+            mobileNav.classList.remove('active');
+            hamburger.classList.remove('active');
+            document.getElementById('overlay').classList.remove('active');
+            document.body.style.overflow = 'auto';
         }
 
         // Autocomplete Functionality (Simulated)
@@ -1151,6 +1170,15 @@
         // Articles Functionality
         function setupArticles() {
             const articlesContainer = document.getElementById('articles');
+
+            async function fetchRandomArticles(count = 12) {
+                const promises = [];
+                for (let i = 0; i < count; i++) {
+                    promises.push(fetchRandomArticle());
+                }
+                const results = await Promise.all(promises);
+                return results.filter(data => data !== null);
+            }
 
             async function fetchRandomArticle() {
                 try {
@@ -1229,14 +1257,12 @@
             }
 
             async function loadArticles(count = 12) {
+                const articles = await fetchRandomArticles(count);
                 const fragment = document.createDocumentFragment();
-                for (let i = 0; i < count; i++) {
-                    const data = await fetchRandomArticle();
-                    if (data) {
-                        const articleElement = createArticleElement(data);
-                        fragment.appendChild(articleElement);
-                    }
-                }
+                articles.forEach(data => {
+                    const articleElement = createArticleElement(data);
+                    fragment.appendChild(articleElement);
+                });
                 articlesContainer.appendChild(fragment);
             }
 
@@ -1275,140 +1301,63 @@
             }
 
             // Load initial articles on page load
-            loadArticles();
-        }
+            function setupInitialArticles() {
+                loadArticles();
+            }
 
-        // Load More Functionality
-        function setupLoadMore() {
-            const loadMoreBtn = document.getElementById('loadMoreBtn');
+            // Load More Functionality
+            function setupLoadMore() {
+                const loadMoreBtn = document.getElementById('loadMoreBtn');
 
-            async function loadMoreArticles(count = 6) {
-                const articlesContainer = document.getElementById('articles');
-                const fragment = document.createDocumentFragment();
-                for (let i = 0; i < count; i++) {
-                    const data = await fetchRandomArticle();
-                    if (data) {
-                        const articleElement = createArticleElement(data);
-                        fragment.appendChild(articleElement);
+                loadMoreBtn.addEventListener('click', () => {
+                    loadArticles(6);
+                });
+            }
+
+            // Newsletter Subscription Functionality (Simulated)
+            function setupNewsletter() {
+                const newsletterForm = document.getElementById('newsletterForm');
+                const newsletterEmail = document.getElementById('newsletterEmail');
+
+                newsletterForm.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    const email = newsletterEmail.value.trim();
+                    if (email) {
+                        alert('Thank you for subscribing!');
+                        newsletterEmail.value = '';
                     }
-                }
-                articlesContainer.appendChild(fragment);
+                });
             }
 
-            loadMoreBtn.addEventListener('click', () => {
-                loadMoreArticles(6);
-            });
-        }
+            // Initialize the App
+            function init() {
+                initializeAdmin();
+                checkLogin();
+                setupSignup();
+                setupLogin();
+                setupLogout();
+                setupNavigation();
+                setupAutocomplete();
+                setupArticles();
+                setupLoadMore();
+                setupNewsletter();
+                setupArticleModal();
 
-        // Newsletter Subscription Functionality (Simulated)
-        function setupNewsletter() {
-            const newsletterForm = document.getElementById('newsletterForm');
-            const newsletterEmail = document.getElementById('newsletterEmail');
-
-            newsletterForm.addEventListener('submit', (e) => {
-                e.preventDefault();
-                const email = newsletterEmail.value.trim();
-                if (email) {
-                    alert('Thank you for subscribing!');
-                    newsletterEmail.value = '';
-                }
-            });
-        }
-
-        // Modal Functionality
-        function setupModal() {
-            // Already handled in setupArticleModal
-        }
-
-        // Articles Fetch Functions (Moved Outside to Make Accessible in loadMore)
-        async function fetchRandomArticle() {
-            try {
-                const response = await fetch('https://en.wikipedia.org/api/rest_v1/page/random/summary');
-                if (!response.ok) return null;
-                return await response.json();
-            } catch {
-                return null;
+                // Accessibility: Close modals with Escape key
+                document.addEventListener('keydown', (e) => {
+                    if (e.key === 'Escape') {
+                        const modals = document.querySelectorAll('.modal.active, .article-modal.active');
+                        modals.forEach(modal => {
+                            closeModal(modal);
+                        });
+                        // Close mobile nav if open
+                        closeMobileNav();
+                    }
+                });
             }
-        }
 
-        function createArticleElement(data) {
-            const article = document.createElement('div');
-            article.className = 'article';
-            if (data.thumbnail && data.thumbnail.source) {
-                const img = document.createElement('img');
-                img.src = data.thumbnail.source;
-                img.alt = data.title;
-                img.loading = "lazy"; // Lazy Loading for Performance
-                article.appendChild(img);
-            }
-            const title = document.createElement('h3');
-            title.className = 'article-title';
-
-            const titleText = document.createElement('span');
-            titleText.textContent = data.title;
-
-            const externalLink = document.createElement('a');
-            externalLink.href = `https://en.wikipedia.org/wiki/${encodeURIComponent(data.title)}`;
-            externalLink.target = '_blank';
-            externalLink.rel = 'noopener noreferrer';
-            externalLink.setAttribute('aria-label', `Open ${data.title} on Wikipedia`);
-            externalLink.innerHTML = `
-                <svg class="external-link-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                    <path d="M14 3h7v7h-2V6.414l-9.293 9.293-1.414-1.414L17.586 5H14V3z"/>
-                    <path d="M5 5h4V3H5c-1.103 0-2 .897-2 2v14c0 1.103.897 2 2 2h14c1.103 0 2-.897 2-2v-4h-2v4H5V5z"/>
-                </svg>
-            `;
-
-            title.appendChild(titleText);
-            title.appendChild(externalLink);
-            article.appendChild(title);
-
-            const summary = document.createElement('p');
-            summary.className = 'article-summary';
-            summary.textContent = data.extract;
-            article.appendChild(summary);
-
-            article.addEventListener('click', (e) => {
-                if (e.target.closest('a')) return;
-                openArticleModal(data);
-            });
-
-            return article;
-        }
-
-        // Initialize the App
-        function init() {
-            initializeAdmin();
-            checkLogin();
-            setupSignup();
-            setupLogin();
-            setupLogout();
-            setupNavigation();
-            setupAutocomplete();
-            setupArticles();
-            setupLoadMore();
-            setupNewsletter();
-            setupArticleModal();
-            setupModal();
-
-            // Accessibility: Close modals with Escape key
-            document.addEventListener('keydown', (e) => {
-                if (e.key === 'Escape') {
-                    const modals = document.querySelectorAll('.modal.active, .article-modal.active');
-                    modals.forEach(modal => {
-                        modal.classList.remove('active');
-                        document.getElementById('overlay').classList.remove('active');
-                        modal.setAttribute('aria-hidden', 'true');
-                        document.body.style.overflow = 'auto';
-                    });
-                    // Close mobile nav if open
-                    closeMobileNav();
-                }
-            });
-        }
-
-        // Run the initialization on page load
-        window.addEventListener('DOMContentLoaded', init);
-    </script>
+            // Run the initialization on page load
+            window.addEventListener('DOMContentLoaded', init);
+        </script>
 </body>
 </html>
