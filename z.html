@@ -360,13 +360,14 @@
                 margin-left: 20px;
             }
 
-            .auth-buttons {
-                display: none;
+            .auth-buttons.mobile-auth-buttons {
+                display: flex;
+                flex-direction: column;
+                gap: 10px;
             }
 
-            /* Adjust search button size for mobile */
-            .search-container button {
-                padding: 8px 10px;
+            .auth-buttons.mobile-auth-buttons button {
+                width: 100%;
             }
         }
 
@@ -912,8 +913,12 @@
             // Set avatar initial
             const initial = username.charAt(0).toUpperCase();
             document.getElementById('userAvatar').textContent = initial;
-            document.getElementById('mobileUsernameDisplay').textContent = username;
+            // Show mobile user profile
+            document.getElementById('mobileUserProfile').style.display = 'flex';
             document.getElementById('mobileUserAvatar').textContent = initial;
+            document.getElementById('mobileUsernameDisplay').textContent = username;
+            // Hide mobile auth buttons
+            document.getElementById('mobileAuthButtons').style.display = 'none';
             // Show admin link if user is admin
             if (username === 'admin') {
                 document.getElementById('adminLink').style.display = 'block';
@@ -928,11 +933,12 @@
         function showLoggedOutState() {
             document.getElementById('authButtons').style.display = 'flex';
             document.getElementById('userProfile').style.display = 'none';
+            document.getElementById('mobileUserProfile').style.display = 'none';
+            // Show mobile auth buttons
+            document.getElementById('mobileAuthButtons').style.display = 'flex';
+            // Hide admin links
             document.getElementById('adminLink').style.display = 'none';
             document.getElementById('mobileAdminLink').style.display = 'none';
-            // Show auth buttons in mobile nav
-            document.getElementById('mobileAuthButtons').style.display = 'flex';
-            document.getElementById('mobileUserProfile').style.display = 'none';
         }
 
         // Sign Up Functionality
@@ -1341,5 +1347,5 @@
             // Run the initialization on page load
             window.addEventListener('DOMContentLoaded', init);
         </script>
-    </body>
-    </html>
+</body>
+</html>
