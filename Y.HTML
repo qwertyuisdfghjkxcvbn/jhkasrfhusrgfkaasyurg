@@ -1,3 +1,15 @@
+Below is the full updated code, incorporating the requested feature:
+
+Changes:
+	•	Collapsible Schedule: The schedule (upcoming days and number of tests per day) is initially hidden. The user can tap a “Show Schedule” button to reveal it, and that button toggles to “Hide Schedule” when open.
+	•	Overall Design: Remains GitHub-inspired, borderless, and minimal.
+	•	Functionality:
+	•	When the user updates the progress, the schedule recalculates and remains accessible through the show/hide button.
+	•	The plus button and update button remain the same size.
+	•	The design maintains the auto dark/light mode and the minimalist approach.
+
+Full Code:
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -17,12 +29,12 @@
   header, .set, .new-set-form, .confirm-modal .modal-content {
     background: #ffffff;
   }
-  input, button.action, .increment-button {
+  input, button.action, .increment-button, .toggle-schedule {
     background:#f6f8fa; color:#24292f;
   }
   progress { background:#f6f8fa; }
   progress::-webkit-progress-value { background:#0969da; }
-  header button, .set-header button, a, .increment-button, button.action {
+  header button, .set-header button, .increment-button, button.action, .toggle-schedule {
     color:#0969da;
   }
 }
@@ -33,12 +45,12 @@
   header, .set, .new-set-form, .confirm-modal .modal-content {
     background:#0d1117;
   }
-  input, button.action, .increment-button {
+  input, button.action, .increment-button, .toggle-schedule {
     background:#30363d; color:#c9d1d9;
   }
   progress { background:#30363d; }
   progress::-webkit-progress-value { background:#58a6ff; }
-  header button, .set-header button, a, .increment-button, button.action {
+  header button, .set-header button, .increment-button, button.action, .toggle-schedule {
     color:#58a6ff;
   }
 }
@@ -48,7 +60,6 @@ body, html {
   overflow-x:hidden;
 }
 
-/* Layout */
 header {
   display:flex; align-items:center; justify-content:space-between;
   padding:1rem; box-sizing:border-box;
@@ -101,10 +112,15 @@ progress {
 }
 
 .schedule {
-  margin-top:0.5rem; font-size:0.9rem;
+  margin-top:0.5rem; font-size:0.9rem; display:none;
 }
 .schedule-day {
   display:flex; justify-content:space-between; margin-bottom:0.2rem;
+}
+
+.toggle-schedule {
+  display:inline-block; margin-top:0.5rem; padding:0.3rem 0.7rem; border-radius:0.3rem; border:none; cursor:pointer;
+  font-size:0.9rem; font-weight:600;
 }
 
 .update-progress-form {
@@ -223,6 +239,7 @@ progress {
 
       const setEl = document.createElement('div');
       setEl.className = 'set';
+
       setEl.innerHTML = `
         <div class="set-header">
           <input type="text" value="${s.name}" data-index="${index}" title="Rename this set"/>
@@ -237,18 +254,19 @@ progress {
           <progress value="${done}" max="${total}"></progress>
         </div>
         ${futureSchedule.length > 0 ? `
-        <div class="schedule">
-          <strong>Upcoming Schedule:</strong>
-          ${futureSchedule.map((testsCount, i) => {
-            const dayDate = addDaysToDate(now, i);
-            return `
-              <div class="schedule-day">
-                <div>${formatDate(dayDate)}:</div>
-                <div>${testsCount} test${testsCount!==1?'s':''}</div>
-              </div>
-            `;
-          }).join('')}
-        </div>
+          <button class="toggle-schedule" type="button">Show Schedule</button>
+          <div class="schedule">
+            <strong>Upcoming Schedule:</strong>
+            ${futureSchedule.map((testsCount, i) => {
+              const dayDate = addDaysToDate(now, i);
+              return `
+                <div class="schedule-day">
+                  <div>${formatDate(dayDate)}:</div>
+                  <div>${testsCount} test${testsCount!==1?'s':''}</div>
+                </div>
+              `;
+            }).join('')}
+          </div>
         ` : ''}
         <form class="update-progress-form">
           <input type="number" min="0" value="0" required>
@@ -286,6 +304,21 @@ progress {
         saveSets();
         renderSets();
       });
+
+      // Schedule toggle button
+      const toggleBtn = setEl.querySelector('.toggle-schedule');
+      const scheduleDiv = setEl.querySelector('.schedule');
+      if (toggleBtn && scheduleDiv) {
+        toggleBtn.addEventListener('click', () => {
+          if (scheduleDiv.style.display === 'none' || scheduleDiv.style.display === '') {
+            scheduleDiv.style.display = 'block';
+            toggleBtn.textContent = 'Hide Schedule';
+          } else {
+            scheduleDiv.style.display = 'none';
+            toggleBtn.textContent = 'Show Schedule';
+          }
+        });
+      }
 
       setsContainer.appendChild(setEl);
     });
