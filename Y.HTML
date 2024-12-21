@@ -9,37 +9,38 @@
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
   margin:0; padding:0;
   color-scheme: light dark;
+  --accent-color: #10a37f;
 }
 
 /* Light mode */
 @media (prefers-color-scheme: light) {
-  body { background:#ffffff; color:#24292f; }
+  body { background:#f9f9f9; color:#333; }
   header, .set, .new-set-form, .confirm-modal .modal-content {
-    background: #ffffff;
+    background:#f9f9f9;
   }
   input, button.action, .increment-button, .toggle-schedule {
-    background:#f6f8fa; color:#24292f;
+    background:#e7e7e7; color:#333;
   }
-  progress { background:#f6f8fa; }
-  progress::-webkit-progress-value { background:#0969da; }
+  progress { background:#ddd; }
+  progress::-webkit-progress-value { background:var(--accent-color); }
   header button, .set-header button, .increment-button, button.action, .toggle-schedule {
-    color:#0969da;
+    color:var(--accent-color);
   }
 }
 
 /* Dark mode */
 @media (prefers-color-scheme: dark) {
-  body { background:#0d1117; color:#c9d1d9; }
+  body { background:#202123; color:#e9e9e9; }
   header, .set, .new-set-form, .confirm-modal .modal-content {
-    background:#0d1117;
+    background:#202123;
   }
   input, button.action, .increment-button, .toggle-schedule {
-    background:#30363d; color:#c9d1d9;
+    background:#2d2f31; color:#e9e9e9;
   }
-  progress { background:#30363d; }
-  progress::-webkit-progress-value { background:#58a6ff; }
+  progress { background:#3a3b3c; }
+  progress::-webkit-progress-value { background:var(--accent-color); }
   header button, .set-header button, .increment-button, button.action, .toggle-schedule {
-    color:#58a6ff;
+    color:var(--accent-color);
   }
 }
 
@@ -88,6 +89,7 @@ main {
   border-radius:0.3rem; padding:0.3rem; flex:1; border:none;
   font-size:1rem;
 }
+
 .set-header button {
   background:none; border:none; cursor:pointer; font-size:1.2rem; width:2rem; height:2rem; text-align:center; line-height:2rem; border-radius:0.3rem;
 }
@@ -134,7 +136,10 @@ progress {
 }
 .confirm-modal .modal-content button {
   margin:0 0.5rem; padding:0.5rem 1rem; border-radius:0.3rem; cursor:pointer; border:none;
-  font-weight:600;
+  font-weight:600; background:var(--accent-color); color:#fff;
+}
+.confirm-modal .modal-content button:active {
+  opacity:0.8;
 }
 </style>
 </head>
@@ -196,7 +201,6 @@ progress {
     const base = Math.floor(testsLeft / remainingDays);
     let remainder = testsLeft % remainingDays;
     let schedule = [];
-    // Distribute remainder tests one by one to the first 'remainder' days
     for (let i=0; i<remainingDays; i++) {
       let val = base + (remainder > 0 ? 1 : 0);
       remainder--;
@@ -222,7 +226,6 @@ progress {
       const testsPerDay = (remainingDays > 0) ? (testsLeft / remainingDays) : 0;
       const progress = (done / total) * 100;
 
-      // Recalculate future schedule every time
       const futureSchedule = distributeTests(testsLeft, remainingDays);
       const finishDate = addDaysToDate(startDate, s.days);
 
