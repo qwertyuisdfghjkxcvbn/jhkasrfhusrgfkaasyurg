@@ -31,9 +31,6 @@
   }
   progress { background:#e0e0e0; border:1px solid #ccc; }
   progress::-webkit-progress-value { background:var(--accent-color); }
-  .menu-overlay {
-    background:rgba(0,0,0,0.4);
-  }
 }
 
 /* Dark Mode */
@@ -48,9 +45,6 @@
   }
   progress { background:#333; border:1px solid #444; }
   progress::-webkit-progress-value { background:var(--accent-color); }
-  .menu-overlay {
-    background:rgba(0,0,0,0.6);
-  }
 }
 
 body, html {
@@ -73,11 +67,6 @@ header {
 .header-center {
   flex:1; display:flex; align-items:center; justify-content:center;
 }
-header .burger-menu-btn {
-  background:none; border:none; cursor:pointer; padding:0.5rem;
-  width:2.5rem; height:2.5rem; display:flex; align-items:center; justify-content:center;
-  border-radius:0.5rem;
-}
 header button#addSetBtn {
   cursor:pointer; padding:0.5rem 1rem; border:none; border-radius:0.5rem;
   color: #fff; background-color: var(--primary-color);
@@ -85,10 +74,10 @@ header button#addSetBtn {
   display: flex; align-items: center; justify-content: center;
 }
 header button#addSetBtn:hover {
-  background-color: darken(var(--primary-color), 10%);
+  background-color: #006ae6; /* Darken manually since CSS function removed */
 }
 header button#addSetBtn:active {
-  background-color: darken(var(--primary-color), 20%);
+  background-color: #0055cc; /* Further darken manually */
 }
 
 /* Button Styles */
@@ -108,11 +97,11 @@ header button#addSetBtn:active {
 }
 
 .btn-primary:hover {
-  background-color: darken(var(--primary-color), 10%);
+  background-color: #006ae6; /* Darken manually */
 }
 
 .btn-primary:active {
-  background-color: darken(var(--primary-color), 20%);
+  background-color: #0055cc; /* Further darken manually */
   transform: scale(0.98);
 }
 
@@ -122,11 +111,11 @@ header button#addSetBtn:active {
 }
 
 .btn-secondary:hover {
-  background-color: darken(var(--secondary-color), 10%);
+  background-color: #444; /* Darken manually */
 }
 
 .btn-secondary:active {
-  background-color: darken(var(--secondary-color), 20%);
+  background-color: #333; /* Further darken manually */
   transform: scale(0.98);
 }
 
@@ -136,11 +125,11 @@ header button#addSetBtn:active {
 }
 
 .btn-danger:hover {
-  background-color: darken(var(--danger-color), 10%);
+  background-color: #e32d24; /* Darken manually */
 }
 
 .btn-danger:active {
-  background-color: darken(var(--danger-color), 20%);
+  background-color: #c6231f; /* Further darken manually */
   transform: scale(0.98);
 }
 
@@ -150,11 +139,11 @@ header button#addSetBtn:active {
 }
 
 .btn-success:hover {
-  background-color: darken(var(--success-color), 10%);
+  background-color: #2fa749; /* Darken manually */
 }
 
 .btn-success:active {
-  background-color: darken(var(--success-color), 20%);
+  background-color: #25843d; /* Further darken manually */
   transform: scale(0.98);
 }
 
@@ -182,11 +171,11 @@ header button#addSetBtn:active {
 }
 
 .btn-small.btn-primary:hover {
-  background-color: darken(var(--primary-color), 10%);
+  background-color: #006ae6; /* Darken manually */
 }
 
 .btn-small.btn-primary:active {
-  background-color: darken(var(--primary-color), 20%);
+  background-color: #0055cc; /* Further darken manually */
 }
 
 .btn-small.btn-secondary {
@@ -195,11 +184,11 @@ header button#addSetBtn:active {
 }
 
 .btn-small.btn-secondary:hover {
-  background-color: darken(var(--secondary-color), 10%);
+  background-color: #444; /* Darken manually */
 }
 
 .btn-small.btn-secondary:active {
-  background-color: darken(var(--secondary-color), 20%);
+  background-color: #333; /* Further darken manually */
 }
 
 .btn-small.btn-danger {
@@ -208,11 +197,11 @@ header button#addSetBtn:active {
 }
 
 .btn-small.btn-danger:hover {
-  background-color: darken(var(--danger-color), 10%);
+  background-color: #e32d24; /* Darken manually */
 }
 
 .btn-small.btn-danger:active {
-  background-color: darken(var(--danger-color), 20%);
+  background-color: #c6231f; /* Further darken manually */
 }
 
 .btn-small.btn-success {
@@ -221,39 +210,11 @@ header button#addSetBtn:active {
 }
 
 .btn-small.btn-success:hover {
-  background-color: darken(var(--success-color), 10%);
+  background-color: #2fa749; /* Darken manually */
 }
 
 .btn-small.btn-success:active {
-  background-color: darken(var(--success-color), 20%);
-}
-
-/* Utility Functions */
-@function darken($color, $percent) {
-  @return mix(black, $color, $percent);
-}
-
-/* Burger Menu and Overlay */
-.menu-overlay {
-  position:fixed; top:0; left:0; width:100%; height:100%; display:none; z-index:9998; 
-}
-.burger-menu {
-  position:fixed; top:0; left:-250px; width:250px; height:100%; z-index:9999;
-  box-sizing:border-box; padding:1rem;
-  display:flex; flex-direction:column;
-  transition:left 0.3s ease;
-}
-.burger-menu ul {
-  list-style:none; padding:0; margin:0; flex:1;
-  display:flex; flex-direction:column; gap:1rem;
-  margin-top:2rem;
-}
-.burger-menu li {
-  font-weight:600; letter-spacing:0.02rem; 
-}
-.close-menu-btn {
-  background:none; border:none; cursor:pointer; font-size:1.5rem; padding:0.5rem;
-  align-self:flex-end;
+  background-color: #25843d; /* Further darken manually */
 }
 
 /* Main */
@@ -329,7 +290,7 @@ progress {
   /* Replaced with btn-small and btn-success */
 }
 .update-progress-form button.action {
-  /* Replaced with btn-primary */
+  /* Removed since updates are automatic */
 }
 
 /* Confirmation Modal */
@@ -352,28 +313,11 @@ progress {
 .confirm-modal .modal-content #confirmRemoveNo {
   /* btn-secondary */
 }
-
 </style>
 </head>
 <body>
-<!-- Overlay for the burger menu -->
-<div class="menu-overlay" id="menuOverlay"></div>
-
-<!-- Burger menu container -->
-<div class="burger-menu" id="burgerMenu">
-  <button class="btn btn-icon close-menu-btn" id="closeMenuBtn">&times;</button>
-  <ul>
-    <li><button class="btn btn-secondary" type="button">Dashboard</button></li>
-    <li><button class="btn btn-secondary" type="button">Sets</button></li>
-    <li><button class="btn btn-secondary" type="button">Statistics</button></li>
-    <li><button class="btn btn-secondary" type="button">Settings</button></li>
-  </ul>
-</div>
 
 <header>
-  <div class="header-left">
-    <button class="btn btn-icon burger-menu-btn" id="burgerBtn">&#9776;</button>
-  </div>
   <div class="header-center">
     <!-- Replaced icon with "EP" text -->
     <strong style="font-size: 1.5rem; letter-spacing: 0.1rem;">EP</strong>
@@ -413,35 +357,6 @@ progress {
   const confirmModal = document.getElementById('confirmModal');
   const confirmRemoveYes = document.getElementById('confirmRemoveYes');
   const confirmRemoveNo = document.getElementById('confirmRemoveNo');
-  
-  const burgerBtn = document.getElementById('burgerBtn');
-  const burgerMenu = document.getElementById('burgerMenu');
-  const closeMenuBtn = document.getElementById('closeMenuBtn');
-  const menuOverlay = document.getElementById('menuOverlay');
-
-  // Menu functionality
-  function openMenu() {
-    burgerMenu.style.left = '0';
-    menuOverlay.style.display = 'block';
-  }
-  function closeMenu() {
-    burgerMenu.style.left = '-250px';
-    menuOverlay.style.display = 'none';
-  }
-
-  burgerBtn.addEventListener('click', openMenu);
-  closeMenuBtn.addEventListener('click', closeMenu);
-  menuOverlay.addEventListener('click', closeMenu);
-
-  // Button actions within the burger menu
-  const menuButtons = burgerMenu.querySelectorAll('ul li button');
-  menuButtons.forEach(button => {
-    button.addEventListener('click', () => {
-      // Placeholder for actual navigation
-      alert(`Navigating to ${button.textContent}`);
-      closeMenu();
-    });
-  });
 
   function saveSets() {
     localStorage.setItem('examPreparatorSets', JSON.stringify(sets));
@@ -525,11 +440,10 @@ progress {
             }).join('')}
           </div>
         ` : ''}
-        <form class="update-progress-form">
+        <div class="update-progress-form">
           <input type="number" min="0" value="0" required>
           <button type="button" class="btn btn-small btn-success increment-button">+</button>
-          <button type="submit" class="btn btn-primary action">Update</button>
-        </form>
+        </div>
       `;
 
       // Remove Set Button
@@ -547,23 +461,34 @@ progress {
       });
 
       // Update Progress Form
-      const updateForm = setEl.querySelector('.update-progress-form');
-      const updateInput = updateForm.querySelector('input[type="number"]');
-      const incrementBtn = updateForm.querySelector('.increment-button');
+      const updateDiv = setEl.querySelector('.update-progress-form');
+      const updateInput = updateDiv.querySelector('input[type="number"]');
+      const incrementBtn = updateDiv.querySelector('.increment-button');
+
+      // Handle increment button click
       incrementBtn.addEventListener('click', () => {
         let val = parseInt(updateInput.value, 10) || 0;
-        updateInput.value = val + 1;
+        val += 1;
+        updateInput.value = val;
+        updateProgress(val);
       });
 
-      updateForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-        const val = parseInt(updateInput.value,10);
-        if(isNaN(val) || val < 0) return;
+      // Handle input change
+      updateInput.addEventListener('change', () => {
+        const val = parseInt(updateInput.value, 10) || 0;
+        if(val < 0) {
+          updateInput.value = 0;
+          return;
+        }
+        updateProgress(val);
+      });
+
+      function updateProgress(val) {
         s.done += val;
         if(s.done > s.total) s.done = s.total;
         saveSets();
         renderSets();
-      });
+      }
 
       // Toggle Schedule
       const toggleBtn = setEl.querySelector('.toggle-schedule-btn');
