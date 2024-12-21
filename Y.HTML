@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Exam Preparator</title>
+<style>
+  /* 
+    Using Apple's system fonts and relying on SF Symbols (private Unicode) for icons.
+    On iOS Safari, these should render as SF Symbols. On other platforms, fallbacks may not appear properly.
+  */
+  body, input, button {
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro", "SF Pro Icons", "Helvetica Neue", "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  }
+  body {
+    margin: 0; 
+    padding: 0;
+    background: #000; 
+    color: #fff;
+    display: flex; 
+    flex-direction: column; 
+    height: 100vh;
+    -webkit-font-smoothing: antialiased;
+    overscroll-behavior: none;
+  }
+
+  /* Subtle iOS-like styling */
+  header {
+    display: flex; 
+    align-items: center; 
+    justify-content: space-between;
+    padding: 1rem; 
+    border-bottom: 1px solid #222;
+    background: linear-gradient(to bottom, #111, #000);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+
+  header h1 {
+    font-size: 1.3rem; 
+    margin: 0; 
+    font-weight: 600;
+    display: flex; 
+    align-items: center; 
+    gap: 0.3rem;
+  }
+
+  /* SF Symbol for graduation cap: "􀅉" (Private use, may only show on Apple platforms) */
+  header h1::before {
+    content: "􀅉";
+    display: inline-block;
+    font-size: 1.3rem;
+    line-height: 1;
+    vertical-align: middle;
+  }
+
+  /* Add new set button with SF Symbol plus.circle */
+  /* "􀅼" is plus.circle SF Symbol in private unicode area */
+  #addSetBtn {
+    background: none; 
+    border: none; 
+    cursor: pointer; 
+    color: #0af;
+    font-size: 1.5rem;
+    width: 2rem; 
+    height: 2rem; 
+    display: flex; 
+    align-items: center; 
+    justify-content: center;
+    border-radius: 50%;
+  }
+
+  #addSetBtn::before {
+    content: "􀅼";
+    font-size: 1.5rem;
+  }
+
+  #addSetBtn:active {
+    background: #111;
+  }
+
+  main {
+    padding: 1rem; 
+    flex: 1; 
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    max-width: 600px; 
+    margin: 0 auto;
+  }
+
+  /* Global Stats Card */
+  .global-stats {
+    background: #111; 
+    border: 1px solid #222;
+    border-radius: 1rem; 
+    padding: 1rem; 
+    margin-bottom: 1rem; 
+    display: flex; 
+    flex-direction: column; 
+    gap: 0.5rem;
+    backdrop-filter: blur(10px);
+  }
+
+  .global-stats h2 {
+    margin: 0; 
+    font-size: 1rem; 
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+  }
+
+  /* SF Symbol for chart.bar: "􀙊" */
+  .global-stats h2::before {
+    content: "􀙊";
+    font-size: 1rem;
+    color: #0af;
+  }
+
+  .global-stats .summary {
+    font-size: 0.9rem;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.3rem 1rem;
+  }
+
+  /* 
+    New set form styling 
+    We'll show/hide by adding/removing a class 
+  */
+  .new-set-form, .update-progress-form {
+    display: flex; 
+    gap: 0.5rem; 
+    margin-bottom: 1rem; 
+    align-items: center;
+  }
+
+  .hidden {
+    display: none !important;
+  }
+
+  input[type="number"], input[type="text"] {
+    background: #000; 
+    border: 1px solid #222; 
+    color: #fff; 
+    padding: 0.5rem; 
+    border-radius: 0.5rem; 
+    width: 5rem;
+    font-size: 0.9rem;
+  }
+
+  input[type="number"]:focus, input[type="text"]:focus {
+    border-color: #0af;
+    outline: none;
+  }
+
+  button.action {
+    background: #0af; 
+    border: none; 
+    color: #000; 
+    font-weight: 600; 
+    padding: 0.5rem 0.7rem; 
+    border-radius: 0.5rem; 
+    cursor: pointer;
+    font-size: 0.9rem;
+  }
+
+  button.action:active {
+    background: #08d;
+  }
+
+  .sets {
+    display: flex; 
+    flex-direction: column; 
+    gap: 1rem;
+  }
+
+  .set {
+    border: 1px solid #222; 
+    border-radius: 1rem; 
+    background: #111;
+    padding: 1rem; 
+    box-shadow: 0 0 10px rgba(0,0,0,0.3);
+    position: relative;
+    display: flex; 
+    flex-direction: column; 
+    gap: 0.5rem;
+    backdrop-filter: blur(10px);
+  }
+
+  .set-header {
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    font-size: 1rem;
+  }
+
+  /* SF Symbol for trash: "􀈑" */
+  .set-header button {
+    background: none; 
+    border: none; 
+    color: #f66; 
+    cursor: pointer; 
+    font-size: 1.2rem;
+    width: 2rem; 
+    height: 2rem; 
+    border-radius: 50%;
+    display: flex; 
+    align-items: center; 
+    justify-content: center;
+  }
+
+  .set-header button::before {
+    content: "􀈑";
+    font-size: 1.2rem;
+  }
+
+  .set-header button:active {
+    background: #400;
+  }
+
+  .set-details {
+    font-size: 0.9rem; 
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+  }
+
+  .set-details div {
+    display: flex; 
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .label {
+    color: #888;
+  }
+
+  progress {
+    width: 100%; 
+    height: 1rem; 
+    border: none; 
+    border-radius: 0.5rem; 
+    background: #222;
+    margin: 0.5rem 0;
+  }
+
+  progress::-webkit-progress-value {
+    background: #0af;
+    border-radius: 0.5rem;
+  }
+
+  progress::-moz-progress-bar {
+    background: #0af;
+    border-radius: 0.5rem;
+  }
+
+  .update-progress-form button {
+    background: #0a8; 
+    border: none; 
+    color: #000; 
+    font-weight: 600; 
+    padding: 0.3rem 0.7rem; 
+    border-radius: 0.5rem; 
+    cursor: pointer;
+    font-size: 0.9rem;
+  }
+
+  .update-progress-form button:active {
+    background: #07a;
+  }
+
+  .side-note {
+    font-size: 0.8rem; 
+    color: #aaa;
+  }
+
+  .chart-container {
+    width: 100%; 
+    display: flex; 
+    justify-content: center; 
+    align-items: center;
+    position: relative;
+    height: 120px;
+    margin-top: 0.5rem;
+  }
+
+  .chart-container canvas {
+    width: 120px; 
+    height: 120px; 
+    margin: 0 auto;
+  }
+
+  .chart-label {
+    position: absolute; 
+    color: #eee; 
+    font-size: 0.9rem; 
+    font-weight: 600;
+    text-align: center;
+    width: 120px; 
+    pointer-events: none;
+    top: calc(50% - 0.5rem);
+  }
+</style>
+</head>
+<body>
+<header>
+  <h1>Exam Preparator</h1>
+  <button id="addSetBtn" title="Add New Preparation Set"></button>
+</header>
+<main>
+  <div class="global-stats" id="globalStats">
+    <h2>Global Overview</h2>
+    <div class="summary">
+      <div>Total Sets: <span id="totalSets">0</span></div>
+      <div>Total Tests: <span id="totalTestsCount">0</span></div>
+      <div>Total Done: <span id="totalDoneCount">0</span></div>
+      <div>Overall Progress: <span id="overallProgress">0%</span></div>
+    </div>
+    <div class="chart-container">
+      <canvas id="overviewChart" width="120" height="120"></canvas>
+      <div class="chart-label" id="chartLabel">0%</div>
+    </div>
+  </div>
+
+  <form class="new-set-form hidden" id="newSetForm">
+    <input type="number" id="totalTests" placeholder="Tests" min="1" required>
+    <input type="number" id="totalDays" placeholder="Days" min="1" required>
+    <button class="action" type="submit">Create</button>
+  </form>
+  <div class="sets" id="setsContainer"></div>
+</main>
+
+<script>
+(function(){
+  let sets = JSON.parse(localStorage.getItem('examPreparatorSets') || '[]');
+
+  const setsContainer = document.getElementById('setsContainer');
+  const addSetBtn = document.getElementById('addSetBtn');
+  const newSetForm = document.getElementById('newSetForm');
+  const totalTestsInput = document.getElementById('totalTests');
+  const totalDaysInput = document.getElementById('totalDays');
+
+  const totalSetsEl = document.getElementById('totalSets');
+  const totalTestsCountEl = document.getElementById('totalTestsCount');
+  const totalDoneCountEl = document.getElementById('totalDoneCount');
+  const overallProgressEl = document.getElementById('overallProgress');
+  const chartLabel = document.getElementById('chartLabel');
+
+  const chartCanvas = document.getElementById('overviewChart');
+  const ctx = chartCanvas.getContext('2d');
+
+  function saveSets() {
+    localStorage.setItem('examPreparatorSets', JSON.stringify(sets));
+  }
+
+  function getGlobalStats() {
+    let totalSets = sets.length;
+    let totalTests = 0;
+    let totalDone = 0;
+    sets.forEach(s => {
+      totalTests += s.total;
+      totalDone += Math.min(s.done, s.total);
+    });
+    let progress = totalTests > 0 ? (totalDone / totalTests)*100 : 0;
+    return {totalSets, totalTests, totalDone, progress};
+  }
+
+  function drawChart(progress) {
+    const size = 120;
+    ctx.clearRect(0,0,size,size);
+
+    // Background circle
+    ctx.beginPath();
+    ctx.arc(size/2, size/2, size/2-10, 0, 2*Math.PI);
+    ctx.strokeStyle = '#333';
+    ctx.lineWidth = 10;
+    ctx.stroke();
+
+    // Progress arc
+    let angle = (progress/100)*2*Math.PI - 0.5*Math.PI;
+    ctx.beginPath();
+    ctx.arc(size/2, size/2, size/2-10, -0.5*Math.PI, angle);
+    ctx.strokeStyle = '#0af';
+    ctx.lineWidth = 10;
+    ctx.stroke();
+  }
+
+  function updateGlobalStats() {
+    const stats = getGlobalStats();
+    totalSetsEl.textContent = stats.totalSets;
+    totalTestsCountEl.textContent = stats.totalTests;
+    totalDoneCountEl.textContent = stats.totalDone;
+    overallProgressEl.textContent = stats.progress.toFixed(1) + '%';
+    drawChart(stats.progress);
+    chartLabel.textContent = stats.progress.toFixed(0) + '%';
+  }
+
+  function renderSets() {
+    setsContainer.innerHTML = '';
+    sets.forEach((s, index) => {
+      if(!s.startDate) {
+        s.startDate = Date.now();
+      }
+      let daysElapsed = Math.floor((Date.now() - s.startDate)/ (1000*60*60*24));
+      let daysLeft = Math.max(s.days - daysElapsed,0);
+      const done = s.done || 0;
+      const total = s.total;
+      const testsLeft = Math.max(total - done, 0);
+      const testsPerDay = daysLeft > 0 ? Math.ceil(testsLeft / daysLeft) : testsLeft;
+      const progress = (done / total)*100;
+
+      const setEl = document.createElement('div');
+      setEl.className = 'set';
+
+      setEl.innerHTML = `
+        <div class="set-header">
+          <div>Set #${index+1}</div>
+          <button title="Remove Set"></button>
+        </div>
+        <div class="set-details">
+          <div><span class="label">Total tests:</span><span>${total}</span></div>
+          <div><span class="label">Original days:</span><span>${s.days}</span></div>
+          <div><span class="label">Days left:</span><span>${daysLeft}</span></div>
+          <div><span class="label">Tests done:</span><span>${done}</span></div>
+          <div><span class="label">Tests left:</span><span>${testsLeft}</span></div>
+          <div><span class="label">Tests/day:</span><span>${testsPerDay}</span></div>
+          <div><span class="label">Progress:</span><span>${progress.toFixed(1)}%</span></div>
+          <progress value="${done}" max="${total}"></progress>
+        </div>
+        <form class="update-progress-form">
+          <input type="number" min="1" placeholder="Tests done today" required>
+          <button type="submit">Update</button>
+        </form>
+        <div class="side-note">Track daily to stay on pace.</div>
+      `;
+
+      const removeBtn = setEl.querySelector('.set-header button');
+      removeBtn.addEventListener('click', () => {
+        sets.splice(index,1);
+        saveSets();
+        renderSets();
+        updateGlobalStats();
+      });
+
+      const updateForm = setEl.querySelector('.update-progress-form');
+      updateForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const val = parseInt(updateForm.querySelector('input').value,10);
+        if(isNaN(val) || val <= 0) return;
+        s.done += val;
+        if(s.done > s.total) {
+          s.done = s.total; 
+        }
+        saveSets();
+        renderSets();
+        updateGlobalStats();
+      });
+
+      setsContainer.appendChild(setEl);
+    });
+  }
+
+  addSetBtn.addEventListener('click', () => {
+    newSetForm.classList.toggle('hidden');
+  });
+
+  newSetForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const totalTests = parseInt(totalTestsInput.value,10);
+    const totalDays = parseInt(totalDaysInput.value,10);
+    if (isNaN(totalTests) || isNaN(totalDays) || totalTests <= 0 || totalDays <= 0) return;
+    sets.push({total: totalTests, days: totalDays, done: 0, startDate: Date.now()});
+    saveSets();
+    renderSets();
+    updateGlobalStats();
+    totalTestsInput.value = '';
+    totalDaysInput.value = '';
+    newSetForm.classList.add('hidden');
+  });
+
+  // Initial render
+  renderSets();
+  updateGlobalStats();
+})();
+</script>
+</body>
+</html>
