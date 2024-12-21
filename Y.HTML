@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no"/>
 <title>Exam Preparator</title>
 <style>
-/* Use device’s preferred color scheme */
+/* Use the device’s preferred color scheme */
 :root {
   color-scheme: light dark;
 }
@@ -158,6 +158,17 @@ progress {
   border-radius:0.3rem;
   border:none;
 }
+
+.schedule {
+  margin-top:0.5rem;
+  font-size:0.9rem;
+}
+.schedule-day {
+  display:flex; 
+  justify-content:space-between; 
+  margin-bottom:0.2rem;
+}
+
 .update-progress-form {
   display:flex; 
   gap:0.5rem; 
@@ -253,6 +264,20 @@ progress {
     localStorage.setItem('examPreparatorSets', JSON.stringify(sets));
   }
 
+  // Distribute tests as evenly as possible across days
+  // We use a simple algorithm: for each test i (1-based),
+  // day = round(i * (days/(tests+1))) to space them out evenly.
+  function createSchedule(totalTests, totalDays) {
+    let schedule = new Array(totalDays).fill(0);
+    for (let i = 1; i <= totalTests; i++) {
+      let dayIndex = Math.round(i*(totalDays/(totalTests+1))) - 1;
+      if (dayIndex < 0) dayIndex = 0;
+      if (dayIndex >= totalDays) dayIndex = totalDays-1;
+      schedule[dayIndex] += 1;
+    }
+    return schedule;
+  }
+
   function renderSets() {
     setsContainer.innerHTML = '';
     sets.forEach((s, index) => {
@@ -262,6 +287,7 @@ progress {
       const testsLeft = Math.max(total - done, 0);
       const testsPerDay = daysLeft > 0 ? Math.ceil(testsLeft / daysLeft) : 0;
       const progress = (done / total)*100;
+      const schedule = s.schedule || [];
 
       const setEl = document.createElement('div');
       setEl.className = 'set';
@@ -276,6 +302,15 @@ progress {
           <div>Left: ${testsLeft}</div>
           <div>Tests/Day: ${testsPerDay}</div>
           <progress value="${done}" max="${total}"></progress>
+        </div>
+        <div class="schedule">
+          <strong>Schedule:</strong>
+          ${schedule.map((testsCount, dayIndex) => `
+            <div class="schedule-day">
+              <div>Day ${dayIndex+1}:</div>
+              <div>${testsCount} test${testsCount!==1?'s':''}</div>
+            </div>
+          `).join('')}
         </div>
         <form class="update-progress-form">
           <input type="number" min="0" value="0" required>
@@ -319,7 +354,7 @@ progress {
   }
 
   addSetBtn.addEventListener('click', () => {
-    newSetForm.style.display = newSetForm.style.display === 'none' ? 'flex' : 'none';
+    newSetForm.style.display = newSetForm.style.display === 'none' || newSetForm.style.display === '' ? 'flex' : 'none';
   });
 
   newSetForm.addEventListener('submit', (e) => {
@@ -328,7 +363,8 @@ progress {
     const totalTests = parseInt(document.getElementById('totalTests').value,10);
     const totalDays = parseInt(document.getElementById('totalDays').value,10);
     if(!name || isNaN(totalTests) || isNaN(totalDays) || totalTests <=0 || totalDays <=0) return;
-    sets.push({name, total: totalTests, days: totalDays, done:0});
+    const schedule = createSchedule(totalTests, totalDays);
+    sets.push({name, total: totalTests, days: totalDays, done:0, schedule});
     saveSets();
     renderSets();
     document.getElementById('setName').value = '';
