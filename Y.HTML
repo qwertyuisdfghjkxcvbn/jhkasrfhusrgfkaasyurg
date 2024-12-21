@@ -1,472 +1,327 @@
+Below is a simplified version of the code based on your requirements:
+
+What’s Changed:
+	•	No Theme Toggle: The theme now automatically follows the device’s dark/light mode settings using prefers-color-scheme.
+	•	No Sorting or Additional Settings: Removed all sorting options and tests/day calculation settings. The app is now very straightforward.
+	•	Simplicity in UI: A simpler, more mobile-friendly layout.
+	•	“Plus” Button for Updates: Only a plus button is provided for incrementing completed tests (in addition to typing in the number).
+	•	Naming Sets: Users can name their sets at creation. They can also rename them afterward by editing the set name input field.
+	•	Responsive: Ensured the layout doesn’t exceed the screen size and is more mobile-friendly.
+	•	No Unnecessary Overlays: Removed the iPhone-specific overlay message and other complexity.
+	•	Minimal Styling: Clean and basic styling to ensure it looks good and remains functional on iPhone screens.
+
+Key UI Elements:
+	•	A header with just the title and an add button.
+	•	A simple form to create a new set: set name, total tests, and days.
+	•	Each set shows: name (editable), total, done, left, tests/day needed, a progress bar, and a simple form to update progress by typing a number or pressing the plus button.
+	•	A simple remove button for each set (with a confirmation prompt).
+
+Code:
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no"/>
 <title>Exam Preparator</title>
 <style>
+/* Use device’s preferred color scheme */
 :root {
-  --bg-color: #111;
-  --text-color: #eee;
-  --accent-color: #0af;
-  --secondary-color: #333;
+  color-scheme: light dark;
 }
-body {
-  margin: 0; padding: 0; 
-  background: var(--bg-color); 
-  color: var(--text-color);
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
-  transition: background 0.3s, color 0.3s;
+@media (prefers-color-scheme: dark) {
+  body {
+    background: #111;
+    color: #eee;
+  }
+  header, .set, .new-set-form, .confirm-modal .modal-content {
+    background: #222;
+    border: 1px solid #333;
+  }
+  input, button.action {
+    background: #333;
+    color: #eee;
+    border: 1px solid #444;
+  }
+  progress {
+    background: #333;
+  }
+  progress::-webkit-progress-value {
+    background: #0af;
+  }
 }
-.light-mode {
-  --bg-color: #f5f5f5;
-  --text-color: #111;
-  --accent-color: #06c;
-  --secondary-color: #ccc;
+@media (prefers-color-scheme: light) {
+  body {
+    background: #f5f5f5;
+    color: #111;
+  }
+  header, .set, .new-set-form, .confirm-modal .modal-content {
+    background: #fff;
+    border: 1px solid #ccc;
+  }
+  input, button.action {
+    background: #eee;
+    color: #111;
+    border: 1px solid #ccc;
+  }
+  progress {
+    background: #ccc;
+  }
+  progress::-webkit-progress-value {
+    background: #06c;
+  }
 }
+
+body, html {
+  margin:0; padding:0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+}
+
 header {
-  display: flex; 
+  display: flex;
   align-items: center; 
   justify-content: space-between;
   padding: 1rem; 
-  border-bottom: 1px solid var(--secondary-color);
+  box-sizing: border-box;
 }
 header h1 {
-  font-size: 1.2rem; 
   margin: 0; 
+  font-size: 1.2rem; 
   font-weight: 600;
-}
-header .header-actions {
-  display: flex; 
-  gap: 1rem; 
-  align-items: center;
 }
 header button {
   background: none; 
   border: none; 
-  cursor: pointer; 
-  color: var(--accent-color);
-  font-size: 1.5rem;
-}
-.summary {
-  padding: 1rem; 
-  max-width: 600px; 
-  margin: 0 auto;
-  display: flex; 
-  flex-direction: column; 
-  gap: 0.5rem;
-  font-size: 0.9rem;
-}
-.summary-info {
-  display: flex; 
-  justify-content: space-between;
-}
-.sort-bar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1rem;
-}
-.sort-bar select {
-  background: var(--bg-color); 
-  border: 1px solid var(--secondary-color); 
-  color: var(--text-color); 
-  padding: 0.3rem; 
-  border-radius: 0.3rem;
+  color: #0af;
+  font-size: 1.5rem; 
   cursor: pointer;
 }
-.settings-bar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1rem;
-  font-size: 0.9rem;
-}
-.settings-bar select {
-  background: var(--bg-color); 
-  border: 1px solid var(--secondary-color); 
-  color: var(--text-color); 
-  padding: 0.3rem; 
-  border-radius: 0.3rem;
-  cursor: pointer;
-}
+
 main {
   padding: 1rem; 
   max-width: 600px; 
   margin: 0 auto;
+  box-sizing: border-box;
+  width: 100%;
 }
-.new-set-form, .update-progress-form {
-  display: flex; 
+
+.new-set-form {
+  display: none; 
+  flex-direction: column; 
   gap: 0.5rem; 
   margin-bottom: 1rem; 
-  align-items: center;
-  flex-wrap: wrap;
+  align-items: stretch;
 }
-input[type="number"], input[type="text"] {
-  background: var(--bg-color); 
-  border: 1px solid var(--secondary-color); 
-  color: var(--text-color); 
+.new-set-form input {
   padding: 0.5rem; 
   border-radius: 0.3rem; 
+  font-size: 1rem;
 }
-input[type="number"]::-webkit-inner-spin-button, input[type="number"]::-webkit-outer-spin-button {
-  -webkit-appearance: none; 
-  margin: 0;
+.new-set-form button.action {
+  font-weight:600; 
+  padding:0.5rem;
+  border-radius:0.3rem;
 }
-button.action, .update-progress-form button, .confirm-modal button {
-  background: var(--accent-color); 
-  border: none; 
-  color: var(--bg-color); 
-  font-weight: 600; 
-  padding: 0.5rem 0.7rem; 
-  border-radius: 0.3rem; 
-  cursor: pointer;
-}
-button.action:active, .update-progress-form button:active, .confirm-modal button:active {
-  opacity: 0.8;
-}
+
 .sets {
   display: flex; 
   flex-direction: column; 
   gap: 1rem;
+  margin-top: 1rem;
 }
+
 .set {
-  border: 1px solid var(--secondary-color); 
-  border-radius: 0.3rem; 
-  padding: 1rem; 
-  background: var(--bg-color);
-  position: relative;
+  border-radius:0.3rem; 
+  padding:1rem; 
+  display:flex; 
+  flex-direction:column; 
+  gap:0.5rem;
 }
+
 .set-header {
   display: flex; 
   justify-content: space-between; 
-  align-items: center;
-  margin-bottom: 0.5rem;
-  font-weight: 600;
-  gap: 0.5rem;
+  align-items: center; 
+  gap:0.5rem;
 }
 .set-header input {
-  background: var(--bg-color); 
-  border: 1px solid var(--secondary-color); 
-  color: var(--text-color); 
-  padding: 0.3rem; 
-  border-radius: 0.3rem; 
-  flex: 1;
+  border-radius:0.3rem;
+  padding:0.3rem;
+  flex:1;
 }
 .set-header button {
   background: none; 
-  border: none; 
-  color: #f33; 
-  cursor: pointer; 
-  font-size: 1.2rem;
-  width: 2rem;
-  height: 2rem;
-  line-height: 2rem;
-  text-align: center;
-  border-radius: 0.3rem;
+  border:none; 
+  color:#f33; 
+  cursor:pointer; 
+  font-size:1.2rem; 
+  width:2rem; 
+  height:2rem; 
+  text-align:center; 
+  line-height:2rem; 
+  border-radius:0.3rem;
 }
 .set-header button:hover {
-  background: #f33; 
-  color: var(--bg-color);
+  background:#f33; 
+  color:#fff;
 }
+
 .set-details {
-  font-size: 0.9rem; 
-  margin-bottom: 0.5rem;
-  display: flex; 
-  flex-direction: column; 
-  gap: 0.2rem;
-  position: relative;
-}
-.set-details div.tooltip-container {
-  position: relative;
-  display: inline-block;
-}
-.set-details div.tooltip-container:hover .tooltip {
-  visibility: visible;
-  opacity: 1;
-}
-.tooltip {
-  visibility: hidden;
-  background: var(--secondary-color);
-  color: var(--text-color);
-  text-align: center;
-  border-radius: 0.3rem;
-  padding: 0.3rem;
-  position: absolute;
-  bottom: 120%; 
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 999;
-  opacity: 0;
-  transition: opacity 0.2s ease-in-out;
-  font-size: 0.8rem;
-  white-space: nowrap;
+  font-size:0.9rem; 
+  display:flex; 
+  flex-direction:column; 
+  gap:0.2rem;
 }
 progress {
-  width: 100%; 
-  height: 1rem; 
-  border: none; 
-  border-radius: 0.3rem; 
-  background: var(--secondary-color);
-}
-progress::-webkit-progress-value {
-  background: var(--accent-color);
-  border-radius: 0.3rem;
+  width:100%;
+  height:1rem;
+  border-radius:0.3rem;
+  border:none;
 }
 .update-progress-form {
-  flex-wrap: nowrap;
+  display:flex; 
+  gap:0.5rem; 
+  align-items:center; 
+  flex-wrap:wrap;
 }
-.update-progress-form .increment-controls {
-  display: flex;
-  flex-direction: column;
-  gap: 0.2rem;
+.update-progress-form input[type="number"] {
+  width:4rem;
+  border-radius:0.3rem;
+  padding:0.3rem;
 }
-.update-progress-form .increment-controls button {
-  width: 2rem; 
-  height: 2rem; 
-  border-radius: 0.3rem; 
-  background: var(--accent-color); 
-  color: var(--bg-color);
-  font-size: 1.2rem;
-  text-align: center; 
-  line-height: 2rem;
-  border: none;
-  cursor: pointer;
+.update-progress-form button.action {
+  border:none; 
+  font-weight:600; 
+  padding:0.3rem 0.7rem;
+  border-radius:0.3rem; 
+  cursor:pointer;
+  background:#0af; 
+  color:#111;
 }
-.update-progress-form .increment-controls button:active {
-  opacity: 0.8;
+.update-progress-form button.action:active {
+  background:#08d;
 }
-.overlay-message {
-  position:fixed;top:0;left:0;width:100%;height:100%;background:var(--bg-color);display:flex;align-items:center;justify-content:center;z-index:9999;flex-direction:column;text-align:center;color:#fff;padding:20px;font-size:1.2rem
+.update-progress-form .increment-button {
+  width:2rem; 
+  height:2rem; 
+  border-radius:0.3rem; 
+  background:#0af; 
+  color:#111; 
+  font-size:1.2rem; 
+  line-height:2rem; 
+  text-align:center; 
+  border:none; 
+  cursor:pointer;
 }
-.overlay-message p{margin-bottom:10px}
 
 .confirm-modal {
-  position: fixed;
-  top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);
-  display:none;align-items:center;justify-content:center;z-index:99999;
+  position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);
+  display:none;align-items:center;justify-content:center;z-index:9999;
 }
 .confirm-modal .modal-content {
-  background: var(--bg-color);
-  padding: 1rem;
-  border-radius: 0.3rem;
-  text-align: center;
+  padding:1rem;
+  border-radius:0.3rem;
+  text-align:center;
+  max-width:300px;
+  margin:0 auto;
 }
 .confirm-modal .modal-content p {
-  margin-bottom: 1rem;
+  margin-bottom:1rem;
 }
-.theme-toggle {
-  cursor: pointer;
-  font-size: 1.2rem;
-  background: none; 
-  border: none;
-  color: var(--accent-color);
+.confirm-modal .modal-content button {
+  margin:0 0.5rem;
+  padding:0.5rem 1rem;
+  border-radius:0.3rem;
+  cursor:pointer;
 }
-
 </style>
 </head>
 <body>
-<div class="overlay-message" id="overlayMessage">
-<p>Please open this on iPhone</p>
-</div>
+<header>
+  <h1>Exam Preparator</h1>
+  <button id="addSetBtn">+</button>
+</header>
+<main>
+  <form class="new-set-form" id="newSetForm">
+    <input type="text" id="setName" placeholder="Set Name" required>
+    <input type="number" id="totalTests" placeholder="Total Tests" min="1" required>
+    <input type="number" id="totalDays" placeholder="Days" min="1" required>
+    <button class="action" type="submit">Create</button>
+  </form>
+  <div class="sets" id="setsContainer"></div>
+</main>
 <div class="confirm-modal" id="confirmModal">
   <div class="modal-content">
-    <p>Are you sure you want to remove this set?</p>
+    <p>Remove this set?</p>
     <button id="confirmRemoveYes">Yes</button>
     <button id="confirmRemoveNo">No</button>
   </div>
 </div>
-<header>
-  <h1>Exam Preparator</h1>
-  <div class="header-actions">
-    <button class="theme-toggle" id="themeToggle" title="Toggle Theme">🌓</button>
-    <button id="addSetBtn" title="Add New Preparation Set">+</button>
-  </div>
-</header>
-<div class="summary" id="summaryBar">
-  <div class="summary-info">
-    <div>Total Tests: <span id="totalTestsDisplay">0</span></div>
-    <div>Total Done: <span id="totalDoneDisplay">0</span></div>
-    <div>Overall Progress: <span id="overallProgressDisplay">0%</span></div>
-  </div>
-  <progress id="overallProgressBar" value="0" max="100"></progress>
-</div>
-<main>
-  <form class="new-set-form" id="newSetForm" style="display:none;">
-    <input type="number" id="totalTests" placeholder="Tests" min="1" required>
-    <input type="number" id="totalDays" placeholder="Days" min="1" required>
-    <button class="action" type="submit">Create</button>
-  </form>
-  <div class="settings-bar">
-    <div><strong>Sort Sets:</strong></div>
-    <select id="sortSelect">
-      <option value="none">None</option>
-      <option value="progress">By Progress</option>
-      <option value="days">By Days Left</option>
-      <option value="testsLeft">By Tests Left</option>
-    </select>
-
-    <div><strong>Tests/Day Calculation:</strong></div>
-    <select id="testsPerDayCalc">
-      <option value="ceil">Round Up</option>
-      <option value="floor">Round Down</option>
-      <option value="round">Round Nearest</option>
-    </select>
-  </div>
-  <div class="sets" id="setsContainer"></div>
-</main>
 <script>
 (function(){
   let sets = JSON.parse(localStorage.getItem('examPreparatorSets') || '[]');
+  let removeIndex = null;
+
+  const newSetForm = document.getElementById('newSetForm');
   const setsContainer = document.getElementById('setsContainer');
   const addSetBtn = document.getElementById('addSetBtn');
-  const newSetForm = document.getElementById('newSetForm');
-  const totalTestsInput = document.getElementById('totalTests');
-  const totalDaysInput = document.getElementById('totalDays');
-  const overlayMessage = document.getElementById('overlayMessage');
   const confirmModal = document.getElementById('confirmModal');
   const confirmRemoveYes = document.getElementById('confirmRemoveYes');
   const confirmRemoveNo = document.getElementById('confirmRemoveNo');
-  const themeToggle = document.getElementById('themeToggle');
-  const sortSelect = document.getElementById('sortSelect');
-  const testsPerDayCalcSelect = document.getElementById('testsPerDayCalc');
-  
-  let removeIndex = null; // For confirmation modal
-
-  function isiOS(){return/iphone|ipad|ipod/i.test(navigator.userAgent)}
-  function checkDevice(){
-    if(!isiOS()||window.innerWidth>600){overlayMessage.style.display='flex'}else{overlayMessage.style.display='none'}
-  }
-  checkDevice();
-  window.addEventListener('resize',checkDevice);
 
   function saveSets() {
     localStorage.setItem('examPreparatorSets', JSON.stringify(sets));
-    updateSummary();
-  }
-
-  // Calculate and update the global summary
-  function updateSummary() {
-    const totalTests = sets.reduce((acc, s) => acc + s.total, 0);
-    const totalDone = sets.reduce((acc, s) => acc + (s.done||0), 0);
-    const overallProgress = totalTests > 0 ? ((totalDone / totalTests)*100) : 0;
-    document.getElementById('totalTestsDisplay').textContent = totalTests;
-    document.getElementById('totalDoneDisplay').textContent = totalDone;
-    document.getElementById('overallProgressDisplay').textContent = overallProgress.toFixed(1) + '%';
-    const progressBar = document.getElementById('overallProgressBar');
-    progressBar.value = overallProgress;
-  }
-
-  // Estimate completion date based on average done per day
-  function estimateCompletionDate(total, done, daysLeft) {
-    if (daysLeft === 0) return 'No Data';
-    if (done === 0) return 'No Data';
-
-    // Assume startDate is when the first set was created if not available
-    const startDate = sets.startDate ? new Date(sets.startDate) : null;
-    if (!startDate) return 'No Data';
-
-    const daysPassed = Math.max(1, Math.round((new Date().getTime() - startDate.getTime())/(24*60*60*1000)));
-    const avgPerDay = done / daysPassed;
-    if (avgPerDay <= 0) return 'No Data';
-
-    const testsLeft = total - done;
-    const daysNeeded = Math.ceil(testsLeft / avgPerDay);
-    const completionDate = new Date();
-    completionDate.setDate(completionDate.getDate() + daysNeeded);
-    return completionDate.toDateString();
-  }
-
-  // Sort sets
-  function sortSets(criteria) {
-    if (criteria === 'progress') {
-      sets.sort((a,b) => (a.done/a.total) - (b.done/b.total));
-    } else if (criteria === 'days') {
-      sets.sort((a,b) => a.days - b.days);
-    } else if (criteria === 'testsLeft') {
-      sets.sort((a,b) => (a.total - a.done) - (b.total - b.done));
-    }
-  }
-
-  // Adjusting the tests needed per day based on selected rounding method
-  function calculateTestsPerDay(testsLeft, daysLeft, method) {
-    if (daysLeft <= 0) return 0;
-    const raw = testsLeft / daysLeft;
-    if (method === 'ceil') return Math.ceil(raw);
-    if (method === 'floor') return Math.floor(raw);
-    if (method === 'round') return Math.round(raw);
-    return Math.ceil(raw); // default
   }
 
   function renderSets() {
-    sortSets(sortSelect.value);
     setsContainer.innerHTML = '';
-    const calcMethod = testsPerDayCalcSelect.value;
-
     sets.forEach((s, index) => {
       const done = s.done || 0;
       const total = s.total;
       const daysLeft = s.days;
       const testsLeft = Math.max(total - done, 0);
-      const testsPerDay = calculateTestsPerDay(testsLeft, daysLeft, calcMethod);
+      const testsPerDay = daysLeft > 0 ? Math.ceil(testsLeft / daysLeft) : 0;
       const progress = (done / total)*100;
-      const completionDate = estimateCompletionDate(total, done, daysLeft);
 
       const setEl = document.createElement('div');
       setEl.className = 'set';
       setEl.innerHTML = `
         <div class="set-header">
-          <input type="text" value="${s.name || ('Set #'+(index+1))}" data-index="${index}" title="Click to rename this set"/>
+          <input type="text" value="${s.name}" data-index="${index}" title="Rename this set"/>
           <button title="Remove Set">&times;</button>
         </div>
         <div class="set-details">
-          <div>Total tests: ${total}</div>
-          <div>Days: ${daysLeft}</div>
-          <div>Tests done: ${done}</div>
-          <div>Tests left: ${testsLeft}</div>
-          <div class="tooltip-container">Tests/day needed: ${testsPerDay}
-            <span class="tooltip">Calculated as tests left / days left, then rounded by selected method</span>
-          </div>
-          <div>Progress: ${progress.toFixed(1)}%</div>
-          <div>Estimated Completion: ${completionDate}</div>
+          <div>Total: ${total}</div>
+          <div>Done: ${done}</div>
+          <div>Left: ${testsLeft}</div>
+          <div>Tests/Day: ${testsPerDay}</div>
           <progress value="${done}" max="${total}"></progress>
         </div>
         <form class="update-progress-form">
-          <input type="number" min="0" placeholder="Tests done today" required value="0">
-          <div class="increment-controls">
-            <button type="button" class="increment-up">+</button>
-            <button type="button" class="increment-down">-</button>
-          </div>
-          <button type="submit">Update</button>
-          <button type="button" class="action reset-progress" style="background:#f33;color:#fff;margin-left:auto;">Reset</button>
+          <input type="number" min="0" value="0" required>
+          <button type="button" class="increment-button">+</button>
+          <button type="submit" class="action">Update</button>
         </form>
       `;
 
-      // Remove button
       const removeBtn = setEl.querySelector('.set-header button');
       removeBtn.addEventListener('click', () => {
         removeIndex = index;
         confirmModal.style.display = 'flex';
       });
 
-      // Rename set
       const nameInput = setEl.querySelector('.set-header input');
       nameInput.addEventListener('change', () => {
         s.name = nameInput.value.trim();
         saveSets();
       });
 
-      // Update form
       const updateForm = setEl.querySelector('.update-progress-form');
       const updateInput = updateForm.querySelector('input[type="number"]');
-      const incrementUp = updateForm.querySelector('.increment-up');
-      const incrementDown = updateForm.querySelector('.increment-down');
-      incrementUp.addEventListener('click', () => {
-        updateInput.value = parseInt(updateInput.value,10) + 1;
-      });
-      incrementDown.addEventListener('click', () => {
-        let val = parseInt(updateInput.value,10);
-        if (val > 0) updateInput.value = val - 1;
+      const incrementBtn = updateForm.querySelector('.increment-button');
+      incrementBtn.addEventListener('click', () => {
+        let val = parseInt(updateInput.value, 10) || 0;
+        updateInput.value = val + 1;
       });
 
       updateForm.addEventListener('submit', (e) => {
@@ -479,85 +334,45 @@ progress::-webkit-progress-value {
         renderSets();
       });
 
-      // Reset progress button
-      const resetBtn = updateForm.querySelector('.reset-progress');
-      resetBtn.addEventListener('click', () => {
-        s.done = 0;
-        saveSets();
-        renderSets();
-      });
-
       setsContainer.appendChild(setEl);
     });
-    updateSummary();
   }
 
   addSetBtn.addEventListener('click', () => {
-    if (newSetForm.style.display === 'none') {
-      newSetForm.style.display = 'flex';
-    } else {
-      newSetForm.style.display = 'none';
-    }
+    newSetForm.style.display = newSetForm.style.display === 'none' ? 'flex' : 'none';
   });
 
   newSetForm.addEventListener('submit', (e) => {
     e.preventDefault();
-    const totalTests = parseInt(totalTestsInput.value,10);
-    const totalDays = parseInt(totalDaysInput.value,10);
-    if (isNaN(totalTests) || isNaN(totalDays) || totalTests <= 0 || totalDays <= 0) return;
-    sets.push({total: totalTests, days: totalDays, done: 0});
-    if(!sets.startDate) {
-      sets.startDate = new Date().toISOString();
-    }
+    const name = document.getElementById('setName').value.trim();
+    const totalTests = parseInt(document.getElementById('totalTests').value,10);
+    const totalDays = parseInt(document.getElementById('totalDays').value,10);
+    if(!name || isNaN(totalTests) || isNaN(totalDays) || totalTests <=0 || totalDays <=0) return;
+    sets.push({name, total: totalTests, days: totalDays, done:0});
     saveSets();
     renderSets();
-    totalTestsInput.value = '';
-    totalDaysInput.value = '';
+    document.getElementById('setName').value = '';
+    document.getElementById('totalTests').value = '';
+    document.getElementById('totalDays').value = '';
     newSetForm.style.display = 'none';
   });
 
-  // Confirm Remove modal
   confirmRemoveYes.addEventListener('click', () => {
-    if (removeIndex !== null) {
+    if(removeIndex !== null) {
       sets.splice(removeIndex,1);
       saveSets();
       renderSets();
       removeIndex = null;
     }
-    confirmModal.style.display = 'none';
+    confirmModal.style.display='none';
   });
+
   confirmRemoveNo.addEventListener('click', () => {
-    confirmModal.style.display = 'none';
-    removeIndex = null;
+    confirmModal.style.display='none';
+    removeIndex=null;
   });
 
-  // Toggle Theme
-  let isLight = false;
-  themeToggle.addEventListener('click', () => {
-    isLight = !isLight;
-    if (isLight) {
-      document.body.classList.add('light-mode');
-    } else {
-      document.body.classList.remove('light-mode');
-    }
-  });
-
-  // Sorting
-  sortSelect.addEventListener('change', () => {
-    renderSets();
-  });
-
-  // Tests per day calculation change
-  testsPerDayCalcSelect.addEventListener('change', () => {
-    renderSets();
-  });
-
-  // Initialize startDate if not present
-  if (!sets.startDate && sets.length > 0) {
-    sets.startDate = new Date().toISOString();
-    saveSets();
-  }
-
+  // Initialize
   renderSets();
 })();
 </script>
