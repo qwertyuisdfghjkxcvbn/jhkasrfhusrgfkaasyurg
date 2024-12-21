@@ -66,6 +66,16 @@ body, html {
   min-height:100%;
 }
 
+/* Alps background container */
+#mountains {
+  position:fixed;
+  top:0; left:0;
+  width:100%; height:100%;
+  z-index:-1; 
+  pointer-events:none;
+  overflow:hidden;
+}
+
 header {
   display:flex; align-items:center; justify-content:space-between;
   padding:0.5rem 1rem; box-sizing:border-box;
@@ -222,6 +232,17 @@ footer {
 </style>
 </head>
 <body>
+<div id="mountains">
+  <!-- Simple SVG line representation of Swiss Alps -->
+  <svg width="100%" height="100%" preserveAspectRatio="xMidYMid slice" viewBox="0 0 1440 900" xmlns="http://www.w3.org/2000/svg">
+    <g stroke-width="2" stroke-opacity="0.3" fill="none" stroke="currentColor">
+      <!-- Draw stylized mountain lines -->
+      <path d="M0,600 L200,400 L400,500 L600,300 L800,500 L1000,400 L1200,600 L1440,500" />
+      <path d="M0,700 L300,500 L500,600 L700,400 L900,600 L1100,500 L1300,700 L1440,600" />
+      <path d="M0,800 L200,600 L400,700 L600,500 L800,700 L1000,600 L1200,800 L1440,700" />
+    </g>
+  </svg>
+</div>
 <header>
   <div class="header-left">
     <button class="burger-menu-btn" id="burgerBtn">&#9776;</button>
