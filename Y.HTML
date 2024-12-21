@@ -15,11 +15,11 @@
 /* Light Mode */
 @media (prefers-color-scheme: light) {
   body { background:#fafafa; color:#111; }
-  header, .set, .new-set-form, .confirm-modal .modal-content {
+  header, footer, .set, .new-set-form, .confirm-modal .modal-content {
     background:#fff;
     border:1px solid #ddd;
   }
-  input, button.action, .increment-button, .toggle-schedule {
+  input, button.action, .increment-button, .toggle-schedule, .burger-menu-btn {
     background:#f9f9f9; color:#111; border:1px solid #ccc;
   }
   progress { background:#ddd; border:1px solid #ccc; }
@@ -27,16 +27,22 @@
   header button, .set-header button, .increment-button, button.action, .toggle-schedule {
     color:var(--accent-color); border:none;
   }
+  .burger-menu {
+    background:#fff; border:1px solid #ddd; 
+  }
+  footer {
+    background:#fff; border-top:1px solid #ddd;
+  }
 }
 
 /* Dark Mode */
 @media (prefers-color-scheme: dark) {
   body { background:#121212; color:#e0e0e0; }
-  header, .set, .new-set-form, .confirm-modal .modal-content {
+  header, footer, .set, .new-set-form, .confirm-modal .modal-content {
     background:#1c1c1c;
     border:1px solid #444;
   }
-  input, button.action, .increment-button, .toggle-schedule {
+  input, button.action, .increment-button, .toggle-schedule, .burger-menu-btn {
     background:#2a2a2a; color:#e0e0e0; border:1px solid #444;
   }
   progress { background:#333; border:1px solid #444; }
@@ -44,29 +50,69 @@
   header button, .set-header button, .increment-button, button.action, .toggle-schedule {
     color:var(--accent-color); border:none;
   }
+  .burger-menu {
+    background:#1c1c1c; border:1px solid #444; 
+  }
+  footer {
+    background:#1c1c1c; border-top:1px solid #444;
+  }
 }
 
 body, html {
   margin:0; padding:0;
   overflow-x:hidden;
   line-height:1.5;
+  position:relative;
+  min-height:100%;
 }
 
 header {
   display:flex; align-items:center; justify-content:space-between;
   padding:1rem; box-sizing:border-box;
-  border-bottom:none;
+  position:relative;
 }
 header h1 {
   margin:0; font-size:1.2rem; font-weight:600;
   letter-spacing:0.05rem;
+  text-align:center; flex:1;
 }
-header button {
-  background:none; border:none; font-size:1.5rem; cursor:pointer; padding:0;
+header .header-left, header .header-right {
+  flex:0 0 auto;
+  display:flex; align-items:center;
+}
+.burger-menu-btn {
+  background:none; border:none; font-size:1.5rem; cursor:pointer; padding:0.3rem;
+  width:2rem; height:2rem; display:flex; align-items:center; justify-content:center;
+  border-radius:0.3rem;
+}
+header button#addSetBtn {
+  font-size:1.5rem; cursor:pointer; padding:0;
+  background:none; border:none;
 }
 
+/* Burger Menu */
+.burger-menu {
+  display:none; 
+  position:absolute; 
+  top:100%; 
+  left:0; 
+  width:100%;
+  padding:1rem;
+  box-sizing:border-box;
+}
+.burger-menu ul {
+  list-style:none; padding:0; margin:0;
+}
+.burger-menu li {
+  margin-bottom:0.5rem;
+  font-weight:600;
+  letter-spacing:0.02rem;
+}
+
+/* Main */
 main {
   padding:1rem; max-width:600px; margin:0 auto; box-sizing:border-box; width:100%;
+  padding-bottom:4rem; /* space for footer */
 }
 
 .new-set-form {
@@ -152,12 +198,41 @@ progress {
 .confirm-modal .modal-content button:active {
   opacity:0.8;
 }
+
+/* Footer */
+footer {
+  border-top:1px solid #ddd;
+  padding:1rem;
+  text-align:center;
+  font-size:0.9rem;
+  letter-spacing:0.02rem;
+  position:fixed;
+  bottom:0;
+  width:100%;
+  max-width:600px;
+  left:50%;
+  transform:translateX(-50%);
+}
+
 </style>
 </head>
 <body>
 <header>
+  <div class="header-left">
+    <button class="burger-menu-btn" id="burgerBtn">&#9776;</button>
+  </div>
   <h1>Exam Preparator</h1>
-  <button id="addSetBtn">+</button>
+  <div class="header-right">
+    <button id="addSetBtn">+</button>
+  </div>
+  <div class="burger-menu" id="burgerMenu">
+    <ul>
+      <li>Dashboard</li>
+      <li>All Sets</li>
+      <li>Statistics</li>
+      <li>Settings</li>
+    </ul>
+  </div>
 </header>
 <main>
   <form class="new-set-form" id="newSetForm">
@@ -175,6 +250,9 @@ progress {
     <button id="confirmRemoveNo">No</button>
   </div>
 </div>
+<footer>
+  <div>© 2023 Exam Preparator. All rights reserved.</div>
+</footer>
 <script>
 (function(){
   let sets = JSON.parse(localStorage.getItem('examPreparatorSets') || '[]');
@@ -186,6 +264,16 @@ progress {
   const confirmModal = document.getElementById('confirmModal');
   const confirmRemoveYes = document.getElementById('confirmRemoveYes');
   const confirmRemoveNo = document.getElementById('confirmRemoveNo');
+  const burgerBtn = document.getElementById('burgerBtn');
+  const burgerMenu = document.getElementById('burgerMenu');
+
+  burgerBtn.addEventListener('click', () => {
+    if (burgerMenu.style.display === 'none' || burgerMenu.style.display === '') {
+      burgerMenu.style.display = 'block';
+    } else {
+      burgerMenu.style.display = 'none';
+    }
+  });
 
   function saveSets() {
     localStorage.setItem('examPreparatorSets', JSON.stringify(sets));
