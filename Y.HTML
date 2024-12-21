@@ -2,708 +2,275 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-   <link rel="manifest" href="/manifest.json">
-    <link rel="manifest" href="/site.webmanifest">
-<title>Exam Preparator</title>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" integrity="sha512-PR6nUJPNA7VSORRdv27BfxyJ5+MQ/3BpF1um9HUYkuFGbVmb9E/x/zdXdXn4yPF3AA9Frde6angH1HsmJyCQJQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+<title>Exam Preparation Tracker</title>
 <style>
-  body, input, button {
-    font-family: "Helvetica Neue", "Segoe UI", Roboto, Arial, sans-serif;
-  }
-  body {
-    margin: 0; 
-    padding: 0;
-    background: #121212; 
-    color: #eee;
-    display: flex; 
-    flex-direction: column; 
-    height: 100vh;
-    -webkit-font-smoothing: antialiased;
-    overscroll-behavior: none;
-  }
-
-  header {
-    display: flex; 
-    align-items: center; 
-    justify-content: space-between;
-    padding: 1rem; 
-    border-bottom: 1px solid #222;
-    background: #1e1e1e;
-    position: sticky;
-    top: 0;
-    z-index: 10;
-  }
-
-  header h1 {
-    font-size: 1.3rem; 
-    margin: 0; 
-    font-weight: 600;
-    display: flex; 
-    align-items: center; 
-    gap: 0.5rem;
-  }
-
-  header h1::before {
-    content: "\f19d"; /* fa-graduation-cap */
-    font-family: "Font Awesome 5 Free";
-    font-weight: 900;
-    font-size: 1.3rem;
-    color: #0af;
-  }
-
-  #addSetBtn {
-    background: none; 
-    border: none; 
-    cursor: pointer; 
-    color: #0af;
-    font-size: 1.4rem;
-    width: 2rem; 
-    height: 2rem; 
-    display: flex; 
-    align-items: center; 
-    justify-content: center;
-    border-radius: 50%;
-  }
-
-  #addSetBtn::before {
-    content: "\f067";
-    font-family: "Font Awesome 5 Free";
-    font-weight: 900;
-  }
-
-  #addSetBtn:active {
-    background: #333;
-  }
-
-  main {
-    padding: 1rem; 
-    flex: 1; 
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
-    max-width: 600px; 
-    margin: 0 auto;
-  }
-
-  .global-stats {
-    background: #1e1e1e; 
-    border: 1px solid #222;
-    border-radius: 0.7rem; 
-    padding: 1rem; 
-    margin-bottom: 1rem; 
-    display: flex; 
-    flex-direction: column; 
-    gap: 0.7rem;
-  }
-
-  .global-stats h2 {
-    margin: 0; 
-    font-size: 1.1rem; 
-    font-weight: 600;
-    display: flex;
-    align-items: center;
-    gap: 0.3rem;
-  }
-
-  .global-stats h2::before {
-    content: "\f201"; /* fa-chart-bar */
-    font-family: "Font Awesome 5 Free";
-    font-weight: 900;
-    font-size: 1rem;
-    color: #0af;
-  }
-
-  .global-stats .summary {
-    font-size: 0.9rem;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem 1rem;
-  }
-
-  .global-stats .summary div {
-    display: flex; 
-    gap: 0.3rem;
-    align-items: center;
-  }
-
-  .global-stats .summary div span.label {
-    color: #aaa;
-  }
-
-  .chart-container {
-    width: 100%; 
-    display: flex; 
-    justify-content: center; 
-    align-items: center;
-    position: relative;
-    height: 120px;
-  }
-
-  .chart-container canvas {
-    width: 120px; 
-    height: 120px; 
-    margin: 0 auto;
-  }
-
-  .chart-label {
-    position: absolute; 
-    color: #eee; 
-    font-size: 1rem; 
-    font-weight: 600;
-    text-align: center;
-    width: 120px; 
-    pointer-events: none;
-    top: calc(50% - 0.5rem);
-  }
-
-  .new-set-form {
-    display: flex; 
-    gap: 0.5rem; 
-    margin-bottom: 1rem; 
-    align-items: center;
-    background: #1e1e1e; 
-    border: 1px solid #222;
-    border-radius: 0.5rem;
-    padding: 0.5rem;
-  }
-
-  .hidden {
-    display: none !important;
-  }
-
-  input[type="number"], input[type="text"] {
-    background: #121212; 
-    border: 1px solid #333; 
-    color: #eee; 
-    padding: 0.5rem; 
-    border-radius: 0.5rem; 
-    font-size: 0.9rem;
-    width: 5rem;
-  }
-
-  input[type="number"]:focus, input[type="text"]:focus {
-    border-color: #0af;
-    outline: none;
-  }
-
-  button.action {
-    background: #0af; 
-    border: none; 
-    color: #000; 
-    font-weight: 600; 
-    padding: 0.5rem 0.7rem; 
-    border-radius: 0.5rem; 
-    cursor: pointer;
-    font-size: 0.9rem;
-  }
-
-  button.action:active {
-    background: #08d;
-  }
-
-  .sets {
-    display: flex; 
-    flex-direction: column; 
-    gap: 1rem;
-  }
-
-  .set {
-    border: 1px solid #222; 
-    border-radius: 0.7rem; 
-    background: #1e1e1e;
-    padding: 1rem; 
-    position: relative;
-    display: flex; 
-    flex-direction: column; 
-    gap: 0.5rem;
-  }
-
-  .set-header {
-    display: flex; 
-    justify-content: space-between; 
-    align-items: center;
-    margin-bottom: 0.5rem;
-    font-weight: 600;
-    font-size: 1rem;
-  }
-
-  .set-header .set-name {
-    font-size: 1rem;
-    font-weight: 600;
-    color: #fff;
-  }
-
-  .set-header button.remove-set {
-    background: none; 
-    border: none; 
-    color: #f66; 
-    cursor: pointer; 
-    font-size: 1.2rem;
-    width: 2rem; 
-    height: 2rem; 
-    border-radius: 50%;
-    display: flex; 
-    align-items: center; 
-    justify-content: center;
-  }
-
-  .set-header button.remove-set::before {
-    content: "\f2ed"; /* fa-trash-alt */
-    font-family: "Font Awesome 5 Free";
-    font-weight: 900;
-    font-size: 1.2rem;
-  }
-
-  .set-header button.remove-set:active {
-    background: #400;
-  }
-
-  .set-details {
-    font-size: 0.9rem; 
-    display: flex;
-    flex-direction: column;
-    gap: 0.3rem;
-  }
-
-  .set-details div {
-    display: flex; 
-    justify-content: space-between;
-    align-items: center;
-  }
-
-  .label {
-    color: #888;
-  }
-
-  progress {
-    width: 100%; 
-    height: 1rem; 
-    border: none; 
-    border-radius: 0.5rem; 
-    background: #222;
-    margin: 0.5rem 0;
-  }
-
-  progress::-webkit-progress-value {
-    background: #0af;
-    border-radius: 0.5rem;
-  }
-
-  progress::-moz-progress-bar {
-    background: #0af;
-    border-radius: 0.5rem;
-  }
-
-  .update-progress-form {
-    display: flex; 
-    gap: 0.5rem; 
-    margin-bottom: 0.5rem;
-    align-items: center;
-  }
-
-  .update-progress-form button {
-    background: #0a8; 
-    border: none; 
-    color: #000; 
-    font-weight: 600; 
-    padding: 0.3rem 0.7rem; 
-    border-radius: 0.5rem; 
-    cursor: pointer;
-    font-size: 0.9rem;
-  }
-
-  .update-progress-form button:active {
-    background: #07a;
-  }
-
-  .side-note {
-    font-size: 0.8rem; 
-    color: #aaa;
-  }
-
-  .set-chart-container {
-    width: 100%;
-    height: 120px;
-    background: #121212;
-    border: 1px solid #222;
-    border-radius: 0.5rem;
-    position: relative;
-    overflow: hidden;
-    margin-top: 0.5rem;
-  }
-
-  .set-chart-container canvas {
-    width: 100%;
-    height: 100%;
-    display: block;
-  }
-
-  .sort-options {
-    display:flex; 
-    gap:0.5rem; 
-    margin-bottom:1rem; 
-    align-items:center; 
-    font-size:0.9rem;
-    color: #ccc;
-  }
-
-  .sort-options select {
-    background:#121212; 
-    color:#eee; 
-    border:1px solid #333; 
-    border-radius:0.5rem; 
-    padding:0.3rem;
-  }
-
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;font-family:'Helvetica','Arial',sans-serif;background:#111;color:#eee}
+body{display:flex;flex-direction:column}
+header,main,footer{padding:20px}
+header{background:#222;position:sticky;top:0;z-index:100}
+main{flex:1}
+.container{max-width:1200px;margin:0 auto}
+.global-stats{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between}
+.global-progress{flex:1 1 300px;min-width:300px;text-align:center;margin-right:20px;margin-bottom:20px}
+.global-progress canvas{display:block;margin:0 auto 10px auto}
+.global-stats-info{flex:2;display:flex;flex-wrap:wrap;align-items:center;justify-content:flex-start}
+.global-stats-info .stat{margin-right:30px;margin-bottom:10px}
+.global-stats-info .stat h3{font-size:1.2rem;margin-bottom:5px}
+.global-stats-info .stat p{font-size:1rem;opacity:0.8}
+.add-set-container{margin:20px 0;position:relative}
+.add-set-btn{display:inline-flex;align-items:center;background:#0af;color:#111;padding:8px 12px;border-radius:4px;cursor:pointer;font-weight:bold;text-decoration:none;transition:background 0.3s}
+.add-set-btn:hover{background:#08d}
+.add-set-form{background:#222;border-radius:4px;padding:20px;margin-top:10px;display:none;opacity:0;transform:translateY(-10px);transition:all 0.3s}
+.add-set-form.visible{display:block;opacity:1;transform:translateY(0)}
+.add-set-form label{display:block;margin-bottom:10px;font-weight:bold}
+.add-set-form input[type="text"],.add-set-form input[type="number"]{width:100%;padding:8px;margin-bottom:20px;background:#333;border:none;color:#eee;border-radius:4px}
+.add-set-form button{display:inline-block;background:#0af;color:#111;padding:8px 12px;border-radius:4px;cursor:pointer;font-weight:bold;text-decoration:none;transition:background 0.3s;border:none}
+.add-set-form button:hover{background:#08d}
+.sets-list{display:flex;flex-wrap:wrap;gap:20px}
+.set-card{background:#222;border-radius:6px;padding:20px;flex:1 1 300px;max-width:350px;position:relative;overflow:hidden;display:flex;flex-direction:column;justify-content:space-between}
+.set-card h2{font-size:1.4rem;margin-bottom:10px}
+.set-card .stats{display:flex;flex-wrap:wrap;margin-bottom:20px}
+.set-card .stat-item{flex:1 1 50%;margin-bottom:10px}
+.set-card .stat-item strong{display:block;font-size:1.1rem;margin-bottom:5px}
+.set-card .progress-wrapper{text-align:center;margin-bottom:20px}
+.set-card canvas{display:block;margin:0 auto}
+.set-card .actions{display:flex;align-items:center;justify-content:space-between}
+.set-card .actions .increment-btn,.set-card .actions .delete-btn{background:none;border:none;color:#0af;cursor:pointer;font-size:1.2rem;transition:color 0.3s}
+.set-card .actions .increment-btn:hover,.set-card .actions .delete-btn:hover{color:#08d}
+.set-card .actions .increment-btn i,.set-card .actions .delete-btn i{pointer-events:none}
+.sort-container{margin-bottom:20px}
+.sort-container select{padding:8px;background:#333;color:#eee;border:none;border-radius:4px}
+.toast{position:fixed;bottom:20px;right:20px;background:#0af;color:#111;padding:10px 20px;border-radius:4px;opacity:0;transform:translateY(20px);transition:all 0.3s}
+.toast.show{opacity:1;transform:translateY(0)}
+@media (max-width:768px){.global-stats-info{justify-content:center}}
+.overlay-message{position:fixed;top:0;left:0;width:100%;height:100%;background:#111;display:flex;align-items:center;justify-content:center;z-index:9999;flex-direction:column;text-align:center;color:#fff; padding:20px; font-size:1.2rem}
+.overlay-message p{margin-bottom:10px}
 </style>
 </head>
 <body>
+<div class="overlay-message" id="overlayMessage">
+<p>Please open this on iPhone</p>
+</div>
 <header>
-  <h1>Exam Preparator</h1>
-  <button id="addSetBtn" title="Add New Preparation Set"></button>
+<div class="container">
+<div class="global-stats">
+<div class="global-progress">
+<canvas id="globalProgressCanvas" width="150" height="150"></canvas>
+<h1>Total Progress</h1>
+</div>
+<div class="global-stats-info">
+<div class="stat">
+<h3>Total Tests</h3>
+<p id="globalTotalTests">0</p>
+</div>
+<div class="stat">
+<h3>Total Done</h3>
+<p id="globalDoneTests">0</p>
+</div>
+<div class="stat">
+<h3>Total Left</h3>
+<p id="globalLeftTests">0</p>
+</div>
+<div class="stat">
+<h3>Avg Tests/Day Needed</h3>
+<p id="globalTestsPerDay">0</p>
+</div>
+</div>
+</div>
+</div>
 </header>
 <main>
-  <div class="global-stats" id="globalStats">
-    <h2>Global Overview</h2>
-    <div class="summary">
-      <div><span class="label">Sets:</span><span id="totalSets">0</span></div>
-      <div><span class="label">Tests:</span><span id="totalTestsCount">0</span></div>
-      <div><span class="label">Done:</span><span id="totalDoneCount">0</span></div>
-      <div><span class="label">Progress:</span><span id="overallProgress">0%</span></div>
-    </div>
-    <div class="chart-container">
-      <canvas id="overviewChart" width="120" height="120"></canvas>
-      <div class="chart-label" id="chartLabel">0%</div>
-    </div>
-  </div>
-
-  <form class="new-set-form hidden" id="newSetForm">
-    <input type="text" id="setName" placeholder="Set name" required>
-    <input type="number" id="totalTests" placeholder="Tests" min="1" required>
-    <input type="number" id="totalDays" placeholder="Days" min="1" required>
-    <button class="action" type="submit">Create</button>
-  </form>
-
-  <div class="sort-options">
-    <span>Sort sets by:</span>
-    <select id="sortSelect">
-      <option value="index">Default</option>
-      <option value="progress">Progress</option>
-      <option value="daysleft">Days Left</option>
-      <option value="testsleft">Tests Left</option>
-    </select>
-  </div>
-
-  <div class="sets" id="setsContainer"></div>
+<div class="container">
+<div class="add-set-container">
+<button class="add-set-btn"><i class="fas fa-plus"></i> Add New Set</button>
+<form class="add-set-form" id="addSetForm">
+<label for="setName">Set Name</label>
+<input type="text" id="setName" required>
+<label for="totalTests">Total Tests</label>
+<input type="number" id="totalTests" min="1" required>
+<label for="totalDays">Total Days</label>
+<input type="number" id="totalDays" min="1" required>
+<button type="submit">Create Set</button>
+</form>
+</div>
+<div class="sort-container">
+<label for="sortSelect">Sort By: </label>
+<select id="sortSelect">
+<option value="none">None</option>
+<option value="progress">Progress (Descending)</option>
+<option value="testsLeft">Tests Left (Ascending)</option>
+<option value="daysLeft">Days Left (Ascending)</option>
+</select>
+</div>
+<div class="sets-list" id="setsList"></div>
+</div>
 </main>
-
+<footer>
+<div class="container">
+<p style="text-align: center; font-size:0.9rem; opacity:0.7;">
+&copy; 2024 Exam Prep Tracker
+</p>
+</div>
+</footer>
+<div class="toast" id="toast">Action done!</div>
+<script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
 <script>
-(function(){
-  let sets = JSON.parse(localStorage.getItem('examPreparatorSets') || '[]');
-  sets.forEach(s => {
-    if(!s.logs) s.logs = [];
-    if(!s.name) s.name = "Untitled";
-  });
-
-  const setsContainer = document.getElementById('setsContainer');
-  const addSetBtn = document.getElementById('addSetBtn');
-  const newSetForm = document.getElementById('newSetForm');
-  const setNameInput = document.getElementById('setName');
-  const totalTestsInput = document.getElementById('totalTests');
-  const totalDaysInput = document.getElementById('totalDays');
-  const sortSelect = document.getElementById('sortSelect');
-
-  const totalSetsEl = document.getElementById('totalSets');
-  const totalTestsCountEl = document.getElementById('totalTestsCount');
-  const totalDoneCountEl = document.getElementById('totalDoneCount');
-  const overallProgressEl = document.getElementById('overallProgress');
-  const chartLabel = document.getElementById('chartLabel');
-
-  const chartCanvas = document.getElementById('overviewChart');
-  const ctx = chartCanvas.getContext('2d');
-
-  function saveSets() {
-    localStorage.setItem('examPreparatorSets', JSON.stringify(sets));
-  }
-
-  function getGlobalStats() {
-    let totalSets = sets.length;
-    let totalTests = 0;
-    let totalDone = 0;
-    sets.forEach(s => {
-      totalTests += s.total;
-      totalDone += Math.min(s.done, s.total);
-    });
-    let progress = totalTests > 0 ? (totalDone / totalTests)*100 : 0;
-    return {totalSets, totalTests, totalDone, progress};
-  }
-
-  function drawChart(progress) {
-    const size = 120;
-    ctx.clearRect(0,0,size,size);
-
-    // Background circle
-    ctx.beginPath();
-    ctx.arc(size/2, size/2, size/2-10, 0, 2*Math.PI);
-    ctx.strokeStyle = '#333';
-    ctx.lineWidth = 10;
-    ctx.stroke();
-
-    // Progress arc
-    let angle = (progress/100)*2*Math.PI - 0.5*Math.PI;
-    ctx.beginPath();
-    ctx.arc(size/2, size/2, size/2-10, -0.5*Math.PI, angle);
-    ctx.strokeStyle = '#0af';
-    ctx.lineWidth = 10;
-    ctx.stroke();
-  }
-
-  function updateGlobalStats() {
-    const stats = getGlobalStats();
-    totalSetsEl.textContent = stats.totalSets;
-    totalTestsCountEl.textContent = stats.totalTests;
-    totalDoneCountEl.textContent = stats.totalDone;
-    overallProgressEl.textContent = stats.progress.toFixed(1) + '%';
-    drawChart(stats.progress);
-    chartLabel.textContent = stats.progress.toFixed(0) + '%';
-  }
-
-  function drawSetChart(s, canvas) {
-    const cctx = canvas.getContext('2d');
-    const width = canvas.width;
-    const height = canvas.height;
-
-    cctx.clearRect(0,0,width,height);
-
-    if(!s.logs || s.logs.length === 0) {
-      cctx.fillStyle = '#fff';
-      cctx.font = '14px sans-serif';
-      cctx.fillText('No data yet', 10,20);
-      return;
-    }
-
-    const total = s.total;
-    const days = s.days;
-    let maxDayIndex = 0;
-    s.logs.forEach(l=>{if(l.dayIndex>maxDayIndex)maxDayIndex=l.dayIndex;});
-    const dayCount = Math.max(days, maxDayIndex+1);
-
-    const dailyData = [];
-    for(let d=0; d<dayCount; d++){
-      const logEntry = s.logs.find(l => l.dayIndex === d);
-      dailyData[d] = logEntry ? logEntry.cumulativeDone : (d>0?dailyData[d-1]:0);
-    }
-
-    const maxTests = Math.max(total, Math.max(...dailyData));
-    const leftPadding = 30;
-    const rightPadding = 10;
-    const topPadding = 10;
-    const bottomPadding = 20;
-
-    const chartW = width - leftPadding - rightPadding;
-    const chartH = height - topPadding - bottomPadding;
-
-    cctx.strokeStyle = '#444';
-    cctx.lineWidth = 1;
-    cctx.beginPath();
-    cctx.moveTo(leftPadding, topPadding);
-    cctx.lineTo(leftPadding, height - bottomPadding);
-    cctx.lineTo(width - rightPadding, height - bottomPadding);
-    cctx.stroke();
-
-    cctx.fillStyle = '#888';
-    cctx.font = '10px sans-serif';
-    cctx.textAlign = 'right';
-    cctx.fillText(maxTests.toFixed(0), leftPadding - 5, topPadding+5);
-    cctx.fillText('0', leftPadding - 5, height - bottomPadding);
-
-    function xForDay(d){return leftPadding + (d/(dayCount-1))*chartW;}
-    function yForValue(v){return (height - bottomPadding) - (v/maxTests)*chartH;}
-
-    // Expected line
-    cctx.strokeStyle = '#f66';
-    cctx.lineWidth = 1.5;
-    cctx.beginPath();
-    for(let d=0; d<dayCount; d++){
-      const expected = (d+1)*total/days;
-      const x = xForDay(d);
-      const y = yForValue(expected);
-      if(d===0) cctx.moveTo(x,y);
-      else cctx.lineTo(x,y);
-    }
-    cctx.stroke();
-
-    // Actual line
-    cctx.strokeStyle = '#0af';
-    cctx.lineWidth = 2;
-    cctx.beginPath();
-    for(let d=0; d<dayCount; d++){
-      const v = dailyData[d];
-      const x = xForDay(d);
-      const y = yForValue(v);
-      if(d===0) cctx.moveTo(x,y);
-      else cctx.lineTo(x,y);
-    }
-    cctx.stroke();
-
-    cctx.fillStyle = '#0af';
-    for(let d=0; d<dayCount; d++){
-      const v = dailyData[d];
-      const x = xForDay(d);
-      const y = yForValue(v);
-      cctx.beginPath();
-      cctx.arc(x,y,3,0,2*Math.PI);
-      cctx.fill();
-    }
-
-    cctx.fillStyle = '#888';
-    cctx.textAlign = 'center';
-    cctx.textBaseline = 'top';
-    cctx.font = '10px sans-serif';
-    cctx.fillText('Days', leftPadding+chartW/2, height - bottomPadding + 5);
-  }
-
-  function sortSets(criterion) {
-    if(criterion==='index') {
-      // no additional sorting needed, keep original order
-    } else if(criterion==='progress') {
-      sets.sort((a,b)=>{
-        let pa = a.done/a.total || 0; 
-        let pb = b.done/b.total || 0;
-        return pb - pa;
-      });
-    } else if(criterion==='daysleft') {
-      sets.sort((a,b)=>{
-        let da = Math.max(a.days - Math.floor((Date.now()-a.startDate)/(1000*60*60*24)),0);
-        let db = Math.max(b.days - Math.floor((Date.now()-b.startDate)/(1000*60*60*24)),0);
-        return da - db;
-      });
-    } else if(criterion==='testsleft') {
-      sets.sort((a,b)=>{
-        let ta = Math.max(a.total - a.done,0);
-        let tb = Math.max(b.total - b.done,0);
-        return ta - tb;
-      });
-    }
-  }
-
-  function renderSets() {
-    sortSets(sortSelect.value);
-
-    setsContainer.innerHTML = '';
-    sets.forEach((s, index) => {
-      if(!s.startDate) {
-        s.startDate = Date.now();
-      }
-      let daysElapsed = Math.floor((Date.now() - s.startDate)/ (1000*60*60*24));
-      let daysLeft = Math.max(s.days - daysElapsed,0);
-      const done = s.done || 0;
-      const total = s.total;
-      const testsLeft = Math.max(total - done, 0);
-      const testsPerDay = daysLeft > 0 ? Math.ceil(testsLeft / daysLeft) : testsLeft;
-      const progress = (done / total)*100;
-
-      const setEl = document.createElement('div');
-      setEl.className = 'set';
-
-      setEl.innerHTML = `
-        <div class="set-header">
-          <div class="set-name">${s.name}</div>
-          <button class="remove-set" title="Remove Set"></button>
-        </div>
-        <div class="set-details">
-          <div><span class="label">Total:</span><span>${total}</span></div>
-          <div><span class="label">Days left:</span><span>${daysLeft}</span></div>
-          <div><span class="label">Done:</span><span>${done}</span></div>
-          <div><span class="label">Left:</span><span>${testsLeft}</span></div>
-          <div><span class="label">/day:</span><span>${testsPerDay}</span></div>
-          <div><span class="label">Progress:</span><span>${progress.toFixed(1)}%</span></div>
-          <progress value="${done}" max="${total}"></progress>
-        </div>
-        <form class="update-progress-form">
-          <input type="number" min="1" placeholder="Tests done today" required>
-          <button type="submit">Update</button>
-        </form>
-        <div class="side-note">Update daily to stay on track.</div>
-        <div class="set-chart-container">
-          <canvas></canvas>
-        </div>
-      `;
-
-      const removeBtn = setEl.querySelector('.remove-set');
-      removeBtn.addEventListener('click', () => {
-        sets.splice(sets.indexOf(s),1);
-        saveSets();
-        renderSets();
-        updateGlobalStats();
-      });
-
-      const updateForm = setEl.querySelector('.update-progress-form');
-      updateForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-        const val = parseInt(updateForm.querySelector('input').value,10);
-        if(isNaN(val) || val <= 0) return;
-        s.done += val;
-        if(s.done > s.total) s.done = s.total; 
-
-        const dayIndex = Math.floor((Date.now() - s.startDate)/(1000*60*60*24));
-        let log = s.logs.find(l=>l.dayIndex===dayIndex);
-        if(log) {
-          log.doneThatDay += val;
-          log.cumulativeDone = s.done;
-        } else {
-          s.logs.push({
-            dayIndex: dayIndex,
-            doneThatDay: val,
-            cumulativeDone: s.done
-          });
-        }
-
-        saveSets();
-        renderSets();
-        updateGlobalStats();
-      });
-
-      setsContainer.appendChild(setEl);
-
-      const chartCanvas = setEl.querySelector('.set-chart-container canvas');
-      const rect = chartCanvas.getBoundingClientRect();
-      chartCanvas.width = rect.width * devicePixelRatio;
-      chartCanvas.height = rect.height * devicePixelRatio;
-      chartCanvas.style.width = rect.width + 'px';
-      chartCanvas.style.height = rect.height + 'px';
-      drawSetChart(s, chartCanvas);
-    });
-  }
-
-  addSetBtn.addEventListener('click', () => {
-    newSetForm.classList.toggle('hidden');
-  });
-
-  newSetForm.addEventListener('submit', (e) => {
-    e.preventDefault();
-    const setName = setNameInput.value.trim();
-    const totalTestsVal = parseInt(totalTestsInput.value,10);
-    const totalDaysVal = parseInt(totalDaysInput.value,10);
-    if (!setName || isNaN(totalTestsVal) || isNaN(totalDaysVal) || totalTestsVal <= 0 || totalDaysVal <= 0) return;
-    sets.push({name: setName, total: totalTestsVal, days: totalDaysVal, done: 0, startDate: Date.now(), logs:[]});
-    saveSets();
-    renderSets();
-    updateGlobalStats();
-    setNameInput.value = '';
-    totalTestsInput.value = '';
-    totalDaysInput.value = '';
-    newSetForm.classList.add('hidden');
-  });
-
-  sortSelect.addEventListener('change', ()=>{
-    renderSets();
-  });
-
-  // Initial render
-  renderSets();
-  updateGlobalStats();
-})();
+document.addEventListener('DOMContentLoaded',()=>{
+const addSetBtn=document.querySelector('.add-set-btn')
+const addSetForm=document.getElementById('addSetForm')
+const setsList=document.getElementById('setsList')
+const sortSelect=document.getElementById('sortSelect')
+const toast=document.getElementById('toast')
+const overlayMessage=document.getElementById('overlayMessage')
+let sets=JSON.parse(localStorage.getItem('examSets'))||[]
+function isiOS(){return/iphone|ipad|ipod/i.test(navigator.userAgent)}
+function checkDevice(){
+if(!isiOS()||window.innerWidth>600){overlayMessage.style.display='flex'}else{overlayMessage.style.display='none'}}
+checkDevice()
+window.addEventListener('resize',checkDevice)
+addSetBtn.addEventListener('click',()=>{addSetForm.classList.toggle('visible')})
+addSetForm.addEventListener('submit',(e)=>{
+e.preventDefault()
+const setName=document.getElementById('setName').value.trim()
+const totalTests=parseInt(document.getElementById('totalTests').value.trim(),10)
+const totalDays=parseInt(document.getElementById('totalDays').value.trim(),10)
+if(setName&&totalTests>0&&totalDays>0){
+const newSet={id:Date.now(),name:setName,totalTests:totalTests,totalDays:totalDays,testsDone:0,startDate:Date.now()}
+sets.push(newSet)
+saveSets()
+renderSets()
+updateGlobalStats()
+showToast("Set created successfully!")
+addSetForm.reset()
+addSetForm.classList.remove('visible')
+}})
+sortSelect.addEventListener('change',()=>{renderSets()})
+setsList.addEventListener('click',(e)=>{
+const target=e.target
+const card=target.closest('.set-card')
+if(!card)return
+const setId=parseInt(card.dataset.id,10)
+const setIndex=sets.findIndex(s=>s.id===setId)
+if(target.matches('.increment-btn,.increment-btn *')){
+if(sets[setIndex].testsDone<sets[setIndex].totalTests){
+sets[setIndex].testsDone+=1
+saveSets()
+renderSets()
+updateGlobalStats()
+showToast("Tests done updated!")
+}}
+if(target.matches('.delete-btn,.delete-btn *')){
+sets.splice(setIndex,1)
+saveSets()
+renderSets()
+updateGlobalStats()
+showToast("Set removed!")
+}})
+function saveSets(){localStorage.setItem('examSets',JSON.stringify(sets))}
+function renderSets(){
+setsList.innerHTML=''
+let sortedSets=[...sets]
+const sortBy=sortSelect.value
+if(sortBy==='progress'){sortedSets.sort((a,b)=>(b.testsDone/b.totalTests)-(a.testsDone/a.totalTests))}
+else if(sortBy==='testsLeft'){sortedSets.sort((a,b)=>(a.totalTests - a.testsDone)-(b.totalTests - b.testsDone))}
+else if(sortBy==='daysLeft'){sortedSets.sort((a,b)=>(getDaysLeft(a)-getDaysLeft(b)))}
+sortedSets.forEach(set=>{
+const card=document.createElement('div')
+card.classList.add('set-card')
+card.dataset.id=set.id
+const daysLeft=getDaysLeft(set)
+const testsLeft=set.totalTests - set.testsDone
+const requiredPerDay=daysLeft>0?(testsLeft/daysLeft).toFixed(2):testsLeft
+const completion=set.testsDone/set.totalTests
+card.innerHTML=`
+<h2>${set.name}</h2>
+<div class="stats">
+<div class="stat-item"><strong>Tests Done</strong><span>${set.testsDone}</span></div>
+<div class="stat-item"><strong>Tests Left</strong><span>${testsLeft}</span></div>
+<div class="stat-item"><strong>Days Left</strong><span>${daysLeft}</span></div>
+<div class="stat-item"><strong>Tests/Day</strong><span>${requiredPerDay}</span></div>
+</div>
+<div class="progress-wrapper">
+<canvas width="100" height="100"></canvas>
+</div>
+<div class="actions">
+<button class="increment-btn"><i class="fas fa-plus-circle"></i></button>
+<button class="delete-btn"><i class="fas fa-trash"></i></button>
+</div>
+`
+setsList.appendChild(card)
+const canvas=card.querySelector('canvas')
+drawCircularChart(canvas,completion,"#0af")
+})
+}
+function drawCircularChart(canvas,completionRatio,color){
+const ctx=canvas.getContext('2d')
+const radius=40
+const lineWidth=8
+ctx.beginPath()
+ctx.arc(canvas.width/2,canvas.height/2,radius,0,2*Math.PI)
+ctx.strokeStyle='#333'
+ctx.lineWidth=lineWidth
+ctx.stroke()
+const startAngle=-Math.PI/2
+const endAngle=startAngle+(2*Math.PI*completionRatio)
+ctx.beginPath()
+ctx.arc(canvas.width/2,canvas.height/2,radius,startAngle,endAngle)
+ctx.strokeStyle=color
+ctx.lineWidth=lineWidth
+ctx.stroke()
+}
+function getDaysLeft(set){
+const startDate=set.startDate
+const elapsedDays=Math.floor((Date.now()-startDate)/(1000*60*60*24))
+const remaining=set.totalDays - elapsedDays
+return remaining<0?0:remaining
+}
+function updateGlobalStats(){
+const totalTests=sets.reduce((sum,s)=>sum+s.totalTests,0)
+const totalDone=sets.reduce((sum,s)=>sum+s.testsDone,0)
+const totalLeft=totalTests - totalDone
+let totalDaysLeft=0
+sets.forEach(s=>{totalDaysLeft+=getDaysLeft(s)})
+let globalTestsPerDay=totalDaysLeft>0?(totalLeft/totalDaysLeft):totalLeft
+document.getElementById('globalTotalTests').textContent=totalTests
+document.getElementById('globalDoneTests').textContent=totalDone
+document.getElementById('globalLeftTests').textContent=totalLeft
+document.getElementById('globalTestsPerDay').textContent=isNaN(globalTestsPerDay)?0:globalTestsPerDay.toFixed(2)
+drawGlobalChart(totalDone,totalTests)
+}
+function drawGlobalChart(done,total){
+const canvas=document.getElementById('globalProgressCanvas')
+const ctx=canvas.getContext('2d')
+const completionRatio=total>0?(done/total):0
+const radius=60
+const lineWidth=10
+ctx.clearRect(0,0,canvas.width,canvas.height)
+ctx.beginPath()
+ctx.arc(canvas.width/2,canvas.height/2,radius,0,2*Math.PI)
+ctx.strokeStyle='#333'
+ctx.lineWidth=lineWidth
+ctx.stroke()
+const startAngle=-Math.PI/2
+const endAngle=startAngle+(2*Math.PI*completionRatio)
+ctx.beginPath()
+ctx.arc(canvas.width/2,canvas.height/2,radius,startAngle,endAngle)
+ctx.strokeStyle='#0af'
+ctx.lineWidth=lineWidth
+ctx.stroke()
+}
+let toastTimeout
+function showToast(message){
+toast.textContent=message
+toast.classList.add('show')
+clearTimeout(toastTimeout)
+toastTimeout=setTimeout(()=>{toast.classList.remove('show')},2000)
+}
+renderSets()
+updateGlobalStats()
+})
 </script>
 </body>
 </html>
