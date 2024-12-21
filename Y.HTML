@@ -1,15 +1,3 @@
-Below is the full updated code, incorporating the requested feature:
-
-Changes:
-	•	Collapsible Schedule: The schedule (upcoming days and number of tests per day) is initially hidden. The user can tap a “Show Schedule” button to reveal it, and that button toggles to “Hide Schedule” when open.
-	•	Overall Design: Remains GitHub-inspired, borderless, and minimal.
-	•	Functionality:
-	•	When the user updates the progress, the schedule recalculates and remains accessible through the show/hide button.
-	•	The plus button and update button remain the same size.
-	•	The design maintains the auto dark/light mode and the minimalist approach.
-
-Full Code:
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -202,12 +190,13 @@ progress {
     return date.toDateString();
   }
 
-  // Distribute testsLeft evenly over remainingDays
+  // Distribute tests evenly across remaining days
   function distributeTests(testsLeft, remainingDays) {
     if (remainingDays <= 0 || testsLeft <= 0) return [];
     const base = Math.floor(testsLeft / remainingDays);
     let remainder = testsLeft % remainingDays;
     let schedule = [];
+    // Distribute remainder tests one by one to the first 'remainder' days
     for (let i=0; i<remainingDays; i++) {
       let val = base + (remainder > 0 ? 1 : 0);
       remainder--;
@@ -233,7 +222,7 @@ progress {
       const testsPerDay = (remainingDays > 0) ? (testsLeft / remainingDays) : 0;
       const progress = (done / total) * 100;
 
-      // Recalculate future schedule:
+      // Recalculate future schedule every time
       const futureSchedule = distributeTests(testsLeft, remainingDays);
       const finishDate = addDaysToDate(startDate, s.days);
 
