@@ -5,14 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Study Planner</title>
     <!-- Font Awesome CDN -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
-          integrity="sha512-p8H6NwhSjk1YqWUM9ZkCphVjwN4R+0v2xevXjT+Z0X8VJ+l9x3H9uE3DvqJi7A9j6jSf2N3O5qK5f5lV6XvB3g=="
-          crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <!-- React and ReactDOM CDN -->
-    <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
-    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
-    <!-- Babel CDN for JSX support -->
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-p8H6NwhSjk1YqWUM9ZkCphVjwN4R+0v2xevXjT+Z0X8VJ+l9x3H9uE3DvqJi7A9j6jSf2N3O5qK5f5lV6XvB3g==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <style>
         :root {
             --primary-color: #ffffff;
@@ -94,12 +87,6 @@
 
         header .logo i {
             font-size: 1.2rem;
-        }
-
-        header .header-right {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
         }
 
         header button {
@@ -413,54 +400,74 @@
     </style>
 </head>
 <body>
-    <div id="root"></div>
+    <header>
+        <div class="logo">
+            <i class="fas fa-book-open"></i>
+            Study Planner
+        </div>
+        <div class="header-right" style="display: flex; align-items: center; gap: 1rem;">
+            <button class="theme-toggle-btn" id="themeToggleBtn" aria-label="Toggle Theme">
+                <i class="fas fa-moon"></i>
+            </button>
+            <button id="addSetBtn">
+                <i class="fas fa-plus"></i> Add Set
+            </button>
+        </div>
+    </header>
+    <main>
+        <form class="new-set-form" id="newSetForm">
+            <input type="text" id="setName" placeholder="Set Name" required>
+            <input type="number" id="totalTests" placeholder="Total Tests" min="1" required>
+            <input type="number" id="totalDays" placeholder="Days" min="1" required>
+            <button type="submit">
+                <i class="fas fa-check"></i> Create Set
+            </button>
+        </form>
+        <div class="sets" id="setsContainer"></div>
+    </main>
+    <div class="confirm-modal" id="confirmModal">
+        <div class="modal-content">
+            <p>Are you sure you want to remove this set?</p>
+            <button id="confirmRemoveYes">
+                <i class="fas fa-trash"></i> Yes
+            </button>
+            <button id="confirmRemoveNo">
+                <i class="fas fa-times"></i> No
+            </button>
+        </div>
+    </div>
+    <script>
+        (function(){
+            let sets = JSON.parse(localStorage.getItem('studyPlannerSets') || '[]');
+            let removeIndex = null;
 
-    <!-- React Application Script -->
-    <script type="text/babel">
-        const { useState, useEffect } = React;
+            const newSetForm = document.getElementById('newSetForm');
+            const setsContainer = document.getElementById('setsContainer');
+            const addSetBtn = document.getElementById('addSetBtn');
+            const confirmModal = document.getElementById('confirmModal');
+            const confirmRemoveYes = document.getElementById('confirmRemoveYes');
+            const confirmRemoveNo = document.getElementById('confirmRemoveNo');
+            const themeToggleBtn = document.getElementById('themeToggleBtn');
 
-        // Helper Functions
-        const daysBetween = (d1, d2) => {
-            const oneDay = 24 * 60 * 60 * 1000;
-            return Math.floor((d2 - d1) / oneDay);
-        };
-
-        const addDaysToDate = (date, days) => {
-            const result = new Date(date);
-            result.setDate(result.getDate() + days);
-            return result;
-        };
-
-        const formatDate = (date) => {
-            return date.toDateString();
-        };
-
-        const distributeTests = (testsLeft, remainingDays) => {
-            if (remainingDays <= 0 || testsLeft <= 0) return [];
-            const base = Math.floor(testsLeft / remainingDays);
-            const remainder = testsLeft % remainingDays;
-            let schedule = [];
-            for (let i = 0; i < remainingDays; i++) {
-                schedule.push(base + (i < remainder ? 1 : 0));
+            // Theme Toggle Logic
+            function setTheme(theme) {
+                if (theme === 'dark') {
+                    document.documentElement.setAttribute('data-theme', 'dark');
+                    themeToggleBtn.innerHTML = '<i class="fas fa-sun"></i>';
+                } else {
+                    document.documentElement.setAttribute('data-theme', 'light');
+                    themeToggleBtn.innerHTML = '<i class="fas fa-moon"></i>';
+                }
+                localStorage.setItem('preferredTheme', theme);
             }
-            return schedule;
-        };
 
-        // Main App Component
-        function App() {
-            const [sets, setSets] = useState([]);
-            const [showNewSetForm, setShowNewSetForm] = useState(false);
-            const [removeIndex, setRemoveIndex] = useState(null);
-            const [theme, setTheme] = useState('light');
+            function toggleTheme() {
+                const currentTheme = localStorage.getItem('preferredTheme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+                setTheme(currentTheme === 'dark' ? 'light' : 'dark');
+            }
 
-            // Load sets from localStorage on mount
-            useEffect(() => {
-                const storedSets = JSON.parse(localStorage.getItem('studyPlannerSets') || '[]');
-                setSets(storedSets);
-            }, []);
-
-            // Load theme from localStorage or system preference on mount
-            useEffect(() => {
+            // Initialize Theme
+            (function initializeTheme(){
                 const savedTheme = localStorage.getItem('preferredTheme');
                 if (savedTheme) {
                     setTheme(savedTheme);
@@ -468,292 +475,212 @@
                     const systemPreference = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
                     setTheme(systemPreference);
                 }
-            }, []);
+            })();
 
-            // Update CSS variables based on theme
-            useEffect(() => {
-                if (theme === 'dark') {
-                    document.documentElement.setAttribute('data-theme', 'dark');
-                } else {
-                    document.documentElement.setAttribute('data-theme', 'light');
-                }
-                localStorage.setItem('preferredTheme', theme);
-            }, [theme]);
+            themeToggleBtn.addEventListener('click', toggleTheme);
 
-            // Save sets to localStorage whenever they change
-            useEffect(() => {
+            function saveSets(){
                 localStorage.setItem('studyPlannerSets', JSON.stringify(sets));
-            }, [sets]);
+            }
 
-            const toggleTheme = () => {
-                setTheme(prev => prev === 'dark' ? 'light' : 'dark');
-            };
+            function daysBetween(d1, d2){
+                const oneDay = 24 * 60 * 60 * 1000;
+                return Math.floor((d2 - d1) / oneDay);
+            }
 
-            const addSet = (newSet) => {
-                setSets(prev => [...prev, newSet]);
-            };
+            function addDaysToDate(date, days){
+                let result = new Date(date);
+                result.setDate(result.getDate() + days);
+                return result;
+            }
 
-            const removeSet = (index) => {
-                setSets(prev => prev.filter((_, i) => i !== index));
-            };
+            function formatDate(date){
+                return date.toDateString();
+            }
 
-            const updateSet = (index, updatedSet) => {
-                setSets(prev => prev.map((set, i) => i === index ? updatedSet : set));
-            };
+            function distributeTests(testsLeft, remainingDays){
+                if (remainingDays <= 0 || testsLeft <= 0) return [];
+                const base = Math.floor(testsLeft / remainingDays);
+                const remainder = testsLeft % remainingDays;
+                let schedule = [];
+                for(let i = 0; i < remainingDays; i++){
+                    schedule.push(base + (i < remainder ? 1 : 0));
+                }
+                return schedule;
+            }
 
-            return (
-                <div>
-                    <Header 
-                        toggleTheme={toggleTheme} 
-                        currentTheme={theme} 
-                        onAddSet={() => setShowNewSetForm(prev => !prev)} 
-                    />
-                    <main>
-                        {showNewSetForm && <NewSetForm onAddSet={addSet} onClose={() => setShowNewSetForm(false)} />}
-                        <SetsList 
-                            sets={sets} 
-                            onRemoveSet={(index) => setRemoveIndex(index)} 
-                            onUpdateSet={updateSet} 
-                        />
-                    </main>
-                    {removeIndex !== null && 
-                        <ConfirmModal 
-                            onConfirm={() => { removeSet(removeIndex); setRemoveIndex(null); }} 
-                            onCancel={() => setRemoveIndex(null)} 
-                        />
+            function renderSets(){
+                setsContainer.innerHTML = '';
+                const now = new Date();
+
+                sets.forEach((s, index) => {
+                    const startDate = new Date(s.startDate);
+                    const daysPassed = daysBetween(startDate, now);
+                    const total = s.total;
+                    const done = s.done || 0;
+                    const testsLeft = Math.max(total - done, 0);
+                    const totalDays = s.days;
+                    const remainingDays = Math.max(totalDays - daysPassed, 0);
+                    const testsPerDay = remainingDays > 0 ? (testsLeft / remainingDays) : 0;
+                    const futureSchedule = distributeTests(testsLeft, remainingDays);
+                    const finishDate = addDaysToDate(startDate, totalDays);
+
+                    const setEl = document.createElement('div');
+                    setEl.className = 'set';
+
+                    setEl.innerHTML = `
+                        <div class="set-header">
+                            <input type="text" value="${s.name}" data-index="${index}" title="Rename this set"/>
+                            <button class="remove-set-btn" title="Remove Set">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                        <div class="set-details">
+                            <div><strong>Total:</strong> ${total}</div>
+                            <div><strong>Done:</strong> ${done}</div>
+                            <div><strong>Left:</strong> ${testsLeft}</div>
+                            <div><strong>Tests/Day:</strong> ${testsPerDay.toFixed(1)}</div>
+                            <div><strong>Finish by:</strong> ${formatDate(finishDate)}</div>
+                            <progress value="${done}" max="${total}"></progress>
+                        </div>
+                        ${futureSchedule.length > 0 ? `
+                            <button class="toggle-schedule-btn">
+                                <i class="fas fa-calendar-alt"></i> Show Schedule
+                            </button>
+                            <div class="schedule">
+                                ${futureSchedule.map((count, i) => `
+                                    <div class="schedule-day">
+                                        <div>${formatDate(addDaysToDate(now, i + 1))}:</div>
+                                        <div>${count} test${count !== 1 ? 's' : ''}</div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        ` : ''}
+                        <div class="update-progress-form">
+                            <input type="number" min="0" placeholder="Add done" required>
+                            <button type="button">
+                                <i class="fas fa-plus"></i>
+                            </button>
+                        </div>
+                    `;
+
+                    // Remove Set Button
+                    const removeBtn = setEl.querySelector('.remove-set-btn');
+                    removeBtn.addEventListener('click', () => {
+                        removeIndex = index;
+                        confirmModal.style.display = 'flex';
+                    });
+
+                    // Rename Set
+                    const nameInput = setEl.querySelector('.set-header input');
+                    nameInput.addEventListener('change', () => {
+                        const newName = nameInput.value.trim();
+                        if(newName){
+                            sets[index].name = newName;
+                            saveSets();
+                        }
+                    });
+
+                    // Update Progress
+                    const updateDiv = setEl.querySelector('.update-progress-form');
+                    const updateInput = updateDiv.querySelector('input[type="number"]');
+                    const incrementBtn = updateDiv.querySelector('button');
+
+                    incrementBtn.addEventListener('click', () => {
+                        let val = parseInt(updateInput.value, 10) || 0;
+                        if(val > 0){
+                            sets[index].done += val;
+                            if(sets[index].done > total){
+                                sets[index].done = total;
+                            }
+                            saveSets();
+                            renderSets();
+                        }
+                    });
+
+                    updateInput.addEventListener('keypress', (e) => {
+                        if(e.key === 'Enter'){
+                            e.preventDefault();
+                            incrementBtn.click();
+                        }
+                    });
+
+                    // Toggle Schedule
+                    const toggleBtn = setEl.querySelector('.toggle-schedule-btn');
+                    const scheduleDiv = setEl.querySelector('.schedule');
+
+                    if(toggleBtn && scheduleDiv){
+                        toggleBtn.addEventListener('click', () => {
+                            const isVisible = scheduleDiv.style.display === 'block';
+                            scheduleDiv.style.display = isVisible ? 'none' : 'block';
+                            toggleBtn.innerHTML = isVisible ? '<i class="fas fa-calendar-alt"></i> Show Schedule' : '<i class="fas fa-calendar-alt"></i> Hide Schedule';
+                        });
                     }
-                </div>
-            );
-        }
 
-        // Header Component
-        function Header({ toggleTheme, currentTheme, onAddSet }) {
-            return (
-                <header>
-                    <div className="logo">
-                        <i className="fas fa-book-open"></i>
-                        Study Planner
-                    </div>
-                    <div className="header-right">
-                        <button className="theme-toggle-btn" onClick={toggleTheme} aria-label="Toggle Theme">
-                            <i className={currentTheme === 'dark' ? 'fas fa-sun' : 'fas fa-moon'}></i>
-                        </button>
-                        <button onClick={onAddSet}>
-                            <i className="fas fa-plus"></i> Add Set
-                        </button>
-                    </div>
-                </header>
-            );
-        }
+                    setsContainer.appendChild(setEl);
+                });
+            }
 
-        // NewSetForm Component
-        function NewSetForm({ onAddSet, onClose }) {
-            const [name, setName] = useState('');
-            const [totalTests, setTotalTests] = useState('');
-            const [totalDays, setTotalDays] = useState('');
+            // Toggle New Set Form
+            addSetBtn.addEventListener('click', () => {
+                newSetForm.style.display = newSetForm.style.display === 'flex' ? 'none' : 'flex';
+            });
 
-            const handleSubmit = (e) => {
+            // Handle New Set Submission
+            newSetForm.addEventListener('submit', (e) => {
                 e.preventDefault();
-                if (!name.trim() || isNaN(totalTests) || isNaN(totalDays) || totalTests <= 0 || totalDays <= 0) {
+                const name = document.getElementById('setName').value.trim();
+                const totalTests = parseInt(document.getElementById('totalTests').value, 10);
+                const totalDays = parseInt(document.getElementById('totalDays').value, 10);
+
+                if(!name || isNaN(totalTests) || isNaN(totalDays) || totalTests <= 0 || totalDays <= 0){
                     alert('Please fill in all fields correctly.');
                     return;
                 }
-                const newSet = {
-                    name: name.trim(),
-                    total: parseInt(totalTests, 10),
-                    days: parseInt(totalDays, 10),
+
+                sets.push({
+                    name,
+                    total: totalTests,
+                    days: totalDays,
                     done: 0,
                     startDate: new Date().toISOString()
-                };
-                onAddSet(newSet);
-                setName('');
-                setTotalTests('');
-                setTotalDays('');
-                onClose();
-            };
+                });
 
-            return (
-                <form className="new-set-form" onSubmit={handleSubmit}>
-                    <input 
-                        type="text" 
-                        value={name} 
-                        onChange={(e) => setName(e.target.value)} 
-                        placeholder="Set Name" 
-                        required 
-                    />
-                    <input 
-                        type="number" 
-                        value={totalTests} 
-                        onChange={(e) => setTotalTests(e.target.value)} 
-                        placeholder="Total Tests" 
-                        min="1" 
-                        required 
-                    />
-                    <input 
-                        type="number" 
-                        value={totalDays} 
-                        onChange={(e) => setTotalDays(e.target.value)} 
-                        placeholder="Days" 
-                        min="1" 
-                        required 
-                    />
-                    <button type="submit">
-                        <i className="fas fa-check"></i> Create Set
-                    </button>
-                </form>
-            );
-        }
+                saveSets();
+                renderSets();
 
-        // SetsList Component
-        function SetsList({ sets, onRemoveSet, onUpdateSet }) {
-            return (
-                <div className="sets">
-                    {sets.length === 0 ? (
-                        <p>No study sets added yet. Click "Add Set" to get started!</p>
-                    ) : (
-                        sets.map((set, index) => (
-                            <Set 
-                                key={index} 
-                                set={set} 
-                                index={index} 
-                                onRemove={() => onRemoveSet(index)} 
-                                onUpdate={(updatedSet) => onUpdateSet(index, updatedSet)} 
-                            />
-                        ))
-                    )}
-                </div>
-            );
-        }
+                // Reset Form
+                newSetForm.reset();
+                newSetForm.style.display = 'none';
+            });
 
-        // Set Component
-        function Set({ set, index, onRemove, onUpdate }) {
-            const [showSchedule, setShowSchedule] = useState(false);
-            const [addDone, setAddDone] = useState('');
-
-            const now = new Date();
-            const startDate = new Date(set.startDate);
-            const daysPassed = daysBetween(startDate, now);
-            const total = set.total;
-            const done = set.done || 0;
-            const testsLeft = Math.max(total - done, 0);
-            const totalDays = set.days;
-            const remainingDays = Math.max(totalDays - daysPassed, 0);
-            const testsPerDay = remainingDays > 0 ? (testsLeft / remainingDays) : 0;
-            const futureSchedule = distributeTests(testsLeft, remainingDays);
-            const finishDate = addDaysToDate(startDate, totalDays);
-
-            const handleRename = (e) => {
-                const newName = e.target.value.trim();
-                if (newName) {
-                    onUpdate({ ...set, name: newName });
+            // Confirm Removal
+            confirmRemoveYes.addEventListener('click', () => {
+                if(removeIndex !== null){
+                    sets.splice(removeIndex, 1);
+                    saveSets();
+                    renderSets();
+                    removeIndex = null;
                 }
-            };
+                confirmModal.style.display = 'none';
+            });
 
-            const handleAddDone = () => {
-                const value = parseInt(addDone, 10) || 0;
-                if (value > 0) {
-                    const updatedDone = Math.min(done + value, total);
-                    onUpdate({ ...set, done: updatedDone });
-                    setAddDone('');
+            confirmRemoveNo.addEventListener('click', () => {
+                confirmModal.style.display = 'none';
+                removeIndex = null;
+            });
+
+            // Close Modal on Outside Click
+            window.addEventListener('click', (e) => {
+                if(e.target === confirmModal){
+                    confirmModal.style.display = 'none';
+                    removeIndex = null;
                 }
-            };
+            });
 
-            const handleKeyPress = (e) => {
-                if (e.key === 'Enter') {
-                    e.preventDefault();
-                    handleAddDone();
-                }
-            };
-
-            const toggleSchedule = () => {
-                setShowSchedule(prev => !prev);
-            };
-
-            return (
-                <div className="set">
-                    <div className="set-header">
-                        <input 
-                            type="text" 
-                            value={set.name} 
-                            onChange={handleRename} 
-                            title="Rename this set" 
-                        />
-                        <button onClick={onRemove} title="Remove Set">
-                            <i className="fas fa-trash"></i>
-                        </button>
-                    </div>
-                    <div className="set-details">
-                        <div><strong>Total:</strong> {total}</div>
-                        <div><strong>Done:</strong> {done}</div>
-                        <div><strong>Left:</strong> {testsLeft}</div>
-                        <div><strong>Tests/Day:</strong> {testsPerDay.toFixed(1)}</div>
-                        <div><strong>Finish by:</strong> {formatDate(finishDate)}</div>
-                        <progress value={done} max={total}></progress>
-                    </div>
-                    {futureSchedule.length > 0 && (
-                        <>
-                            <button className="toggle-schedule-btn" onClick={toggleSchedule}>
-                                <i className="fas fa-calendar-alt"></i> {showSchedule ? 'Hide Schedule' : 'Show Schedule'}
-                            </button>
-                            {showSchedule && (
-                                <div className="schedule">
-                                    {futureSchedule.map((count, i) => (
-                                        <div className="schedule-day" key={i}>
-                                            <div>{formatDate(addDaysToDate(now, i + 1))}:</div>
-                                            <div>{count} test{count !== 1 ? 's' : ''}</div>
-                                        </div>
-                                    ))}
-                                </div>
-                            )}
-                        </>
-                    )}
-                    <div className="update-progress-form">
-                        <input 
-                            type="number" 
-                            min="0" 
-                            placeholder="Add done" 
-                            value={addDone}
-                            onChange={(e) => setAddDone(e.target.value)}
-                            onKeyPress={handleKeyPress}
-                            required 
-                        />
-                        <button type="button" onClick={handleAddDone}>
-                            <i className="fas fa-plus"></i>
-                        </button>
-                    </div>
-                </div>
-            );
-        }
-
-        // ConfirmModal Component
-        function ConfirmModal({ onConfirm, onCancel }) {
-            useEffect(() => {
-                const handleOutsideClick = (e) => {
-                    if (e.target.className === 'confirm-modal') {
-                        onCancel();
-                    }
-                };
-                window.addEventListener('click', handleOutsideClick);
-                return () => window.removeEventListener('click', handleOutsideClick);
-            }, [onCancel]);
-
-            return (
-                <div className="confirm-modal" style={{ display: 'flex' }}>
-                    <div className="modal-content">
-                        <p>Are you sure you want to remove this set?</p>
-                        <button onClick={onConfirm}>
-                            <i className="fas fa-trash"></i> Yes
-                        </button>
-                        <button onClick={onCancel}>
-                            <i className="fas fa-times"></i> No
-                        </button>
-                    </div>
-                </div>
-            );
-        }
-
-        // Render the App
-        ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+            // Initial Render
+            renderSets();
+        })();
     </script>
 </body>
 </html>
