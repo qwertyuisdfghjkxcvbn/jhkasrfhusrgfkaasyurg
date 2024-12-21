@@ -3,26 +3,26 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no"/>
-<title>Exam Preparator</title>
+<title>Study Planner</title>
 <style>
 :root {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Helvetica, Arial, sans-serif;
   margin:0; padding:0;
   color-scheme: light dark;
-  --accent-color: #e60000; /* Swiss-inspired red */
+  --accent-color: #007aff; /* iOS-inspired blue */
 }
 
 /* Light Mode */
 @media (prefers-color-scheme: light) {
-  body { background:#fafafa; color:#111; }
+  body { background:#f9f9f9; color:#111; }
   header, footer, .set, .new-set-form, .confirm-modal .modal-content {
     background:#fff;
     border:1px solid #ddd;
   }
   input, button.action, .increment-button, .toggle-schedule, .burger-menu-btn {
-    background:#f9f9f9; color:#111; border:1px solid #ccc;
+    background:#f1f1f1; color:#111; border:1px solid #ccc;
   }
-  progress { background:#ddd; border:1px solid #ccc; }
+  progress { background:#e0e0e0; border:1px solid #ccc; }
   progress::-webkit-progress-value { background:var(--accent-color); }
   header button, .set-header button, .increment-button, button.action, .toggle-schedule {
     color:var(--accent-color); border:none;
@@ -37,13 +37,13 @@
 
 /* Dark Mode */
 @media (prefers-color-scheme: dark) {
-  body { background:#121212; color:#e0e0e0; }
+  body { background:#1c1c1c; color:#e0e0e0; }
   header, footer, .set, .new-set-form, .confirm-modal .modal-content {
-    background:#1c1c1c;
+    background:#2c2c2c;
     border:1px solid #444;
   }
   input, button.action, .increment-button, .toggle-schedule, .burger-menu-btn {
-    background:#2a2a2a; color:#e0e0e0; border:1px solid #444;
+    background:#3a3a3a; color:#e0e0e0; border:1px solid #555;
   }
   progress { background:#333; border:1px solid #444; }
   progress::-webkit-progress-value { background:var(--accent-color); }
@@ -51,10 +51,10 @@
     color:var(--accent-color); border:none;
   }
   .burger-menu {
-    background:#1c1c1c; border:1px solid #444; 
+    background:#2c2c2c; border:1px solid #444; 
   }
   footer {
-    background:#1c1c1c; border-top:1px solid #444;
+    background:#2c2c2c; border-top:1px solid #444;
   }
 }
 
@@ -68,17 +68,15 @@ body, html {
 
 header {
   display:flex; align-items:center; justify-content:space-between;
-  padding:1rem; box-sizing:border-box;
+  padding:0.5rem 1rem; box-sizing:border-box;
   position:relative;
-}
-header h1 {
-  margin:0; font-size:1.2rem; font-weight:600;
-  letter-spacing:0.05rem;
-  text-align:center; flex:1;
 }
 header .header-left, header .header-right {
   flex:0 0 auto;
   display:flex; align-items:center;
+}
+header .header-center {
+  flex:1; display:flex; align-items:center; justify-content:center;
 }
 .burger-menu-btn {
   background:none; border:none; font-size:1.5rem; cursor:pointer; padding:0.3rem;
@@ -88,6 +86,11 @@ header .header-left, header .header-right {
 header button#addSetBtn {
   font-size:1.5rem; cursor:pointer; padding:0;
   background:none; border:none;
+}
+
+/* Icon instead of text */
+header .app-icon {
+  width:24px; height:24px; display:block;
 }
 
 /* Burger Menu */
@@ -124,6 +127,8 @@ main {
 }
 .new-set-form button.action {
   font-weight:600; padding:0.5rem; border-radius:0.3rem; cursor:pointer;
+  text-transform:uppercase;
+  letter-spacing:0.05rem;
 }
 
 .sets {
@@ -178,6 +183,7 @@ progress {
   border-radius:0.3rem; cursor:pointer;
   font-size:1rem; line-height:1.5rem; font-weight:600;
   text-transform:uppercase;
+  letter-spacing:0.05rem;
 }
 
 .confirm-modal {
@@ -213,7 +219,6 @@ footer {
   left:50%;
   transform:translateX(-50%);
 }
-
 </style>
 </head>
 <body>
@@ -221,14 +226,17 @@ footer {
   <div class="header-left">
     <button class="burger-menu-btn" id="burgerBtn">&#9776;</button>
   </div>
-  <h1>Exam Preparator</h1>
+  <div class="header-center">
+    <!-- Icon from Internet (Generic Check Icon). Replace with any appropriate icon URL -->
+    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/35/Check_green_icon.svg/1024px-Check_green_icon.svg.png" alt="App Icon" class="app-icon">
+  </div>
   <div class="header-right">
     <button id="addSetBtn">+</button>
   </div>
   <div class="burger-menu" id="burgerMenu">
     <ul>
       <li>Dashboard</li>
-      <li>All Sets</li>
+      <li>Sets</li>
       <li>Statistics</li>
       <li>Settings</li>
     </ul>
@@ -251,7 +259,7 @@ footer {
   </div>
 </div>
 <footer>
-  <div>© 2023 Exam Preparator. All rights reserved.</div>
+  <div>© 2023 Study Planner. All rights reserved.</div>
 </footer>
 <script>
 (function(){
@@ -323,7 +331,6 @@ footer {
       if (remainingDays < 0) remainingDays = 0;
 
       const testsPerDay = (remainingDays > 0) ? (testsLeft / remainingDays) : 0;
-      const progress = (done / total) * 100;
 
       const futureSchedule = distributeTests(testsLeft, remainingDays);
       const finishDate = addDaysToDate(startDate, s.days);
