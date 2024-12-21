@@ -2,479 +2,174 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no"/>
-<title>Study Planner</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Simplest Study Planner</title>
 <style>
-:root {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
-  margin:0; padding:0;
-  color-scheme: light dark;
-  --accent-color: #007aff;
-}
-
-/* Light Mode */
-@media (prefers-color-scheme: light) {
-  body { background:#f9f9f9; color:#111; }
-  header, footer, .set, .new-set-form, .confirm-modal .modal-content {
-    background:#fff;
-    border:1px solid #ddd;
-  }
-  input, button.action, .increment-button, .toggle-schedule {
-    background:#f1f1f1; color:#111; border:1px solid #ccc;
-  }
-  progress { background:#e0e0e0; border:1px solid #ccc; }
-  progress::-webkit-progress-value { background:var(--accent-color); }
-  header button, .set-header button, .increment-button, button.action, .toggle-schedule {
-    color:var(--accent-color);
-    border:none;
-  }
-  .burger-menu {
-    background:#fff; border-right:1px solid #ddd;
-  }
-  footer {
-    background:#fff; border-top:1px solid #ddd;
-  }
-  .menu-overlay {
-    background:rgba(0,0,0,0.4);
-  }
-}
-
-/* Dark Mode */
-@media (prefers-color-scheme: dark) {
-  body { background:#1c1c1c; color:#e0e0e0; }
-  header, footer, .set, .new-set-form, .confirm-modal .modal-content {
-    background:#2c2c2c;
-    border:1px solid #444;
-  }
-  input, button.action, .increment-button, .toggle-schedule {
-    background:#3a3a3a; color:#e0e0e0; border:1px solid #555;
-  }
-  progress { background:#333; border:1px solid #444; }
-  progress::-webkit-progress-value { background:var(--accent-color); }
-  header button, .set-header button, .increment-button, button.action, .toggle-schedule {
-    color:var(--accent-color);
-    border:none;
-  }
-  .burger-menu {
-    background:#2c2c2c; border-right:1px solid #444;
-  }
-  footer {
-    background:#2c2c2c; border-top:1px solid #444;
-  }
-  .menu-overlay {
-    background:rgba(0,0,0,0.6);
-  }
-}
-
-body, html {
-  margin:0; padding:0;
-  overflow-x:hidden;
-  line-height:1.5;
-  position:relative;
-  min-height:100%;
+body {
+  margin: 0; padding: 0;
+  font-family: sans-serif;
+  background: #fff; color: #000;
 }
 
 header {
-  display:flex; align-items:center; justify-content:space-between;
-  padding:0.5rem 1rem; box-sizing:border-box;
-  position:relative;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 1rem; background: #eee;
 }
-.header-left, .header-right {
-  flex:0 0 auto; display:flex; align-items:center;
+header h1 {
+  margin: 0; font-size:1rem; font-weight:600;
 }
-.header-center {
-  flex:1; display:flex; align-items:center; justify-content:center;
-}
-header .burger-menu-btn {
-  background:none; border:none; font-size:1.5rem; cursor:pointer; padding:0.5rem;
-  width:2rem; height:2rem; display:flex; align-items:center; justify-content:center;
-  border-radius:0.3rem;
-}
-header button#addSetBtn {
-  font-size:1.5rem; cursor:pointer; padding:0.5rem;
-  background:none; border:none; border-radius:0.3rem;
+header button {
+  font-size:1.2rem; padding:0.3rem; background:none; border: none; cursor:pointer;
 }
 
-/* Icon instead of text */
-.app-icon {
-  width:24px; height:24px; display:block;
-}
-
-/* Burger Menu and Overlay */
-.menu-overlay {
-  position:fixed; top:0; left:0; width:100%; height:100%; display:none; z-index:9998; 
-}
-.burger-menu {
-  position:fixed; top:0; left:-250px; width:250px; height:100%; z-index:9999;
-  box-sizing:border-box; padding:1rem;
-  display:flex; flex-direction:column;
-  transition:left 0.3s ease;
-}
-.burger-menu ul {
-  list-style:none; padding:0; margin:0; flex:1;
-  display:flex; flex-direction:column; gap:1rem;
-  margin-top:2rem;
-}
-.burger-menu li {
-  font-weight:600; letter-spacing:0.02rem; 
-}
-.close-menu-btn {
-  background:none; border:none; cursor:pointer; font-size:1.5rem; padding:0.5rem;
-  align-self:flex-end;
-}
-
-/* Main */
 main {
-  padding:1rem; max-width:600px; margin:0 auto; box-sizing:border-box; width:100%;
-  padding-bottom:4rem; /* space for footer */
+  padding:1rem;
 }
 
-.new-set-form {
-  display:none; flex-direction:column; gap:0.5rem; margin-bottom:1rem; align-items:stretch;
-  border-radius:0.3rem; padding:1rem;
+#newSetForm {
+  display:none; margin-bottom:1rem; 
 }
-.new-set-form input {
-  padding:0.5rem; font-size:1rem; border-radius:0.3rem;
+#newSetForm input {
+  margin:0.2rem;
 }
-.new-set-form button.action {
-  font-weight:600; padding:0.5rem; border-radius:0.3rem; cursor:pointer;
-  text-transform:uppercase;
-  letter-spacing:0.05rem;
+#newSetForm button {
+  margin:0.2rem; padding:0.3rem; cursor:pointer;
 }
 
 .sets {
-  display:flex; flex-direction:column; gap:1rem; margin-top:1rem;
+  display:flex; flex-direction:column; gap:1rem; 
 }
 
 .set {
-  border-radius:0.3rem; padding:1rem; display:flex; flex-direction:column; gap:0.5rem;
+  border: 1px solid #ccc;
+  padding: 0.5rem;
 }
 
 .set-header {
-  display:flex; justify-content:space-between; align-items:center; gap:0.5rem;
+  display:flex; justify-content:space-between; align-items:center;
+  margin-bottom:0.3rem;
 }
 .set-header input {
-  border-radius:0.3rem; padding:0.3rem; flex:1;
-  font-size:1rem; background:none;
-}
-
-.set-details {
-  font-size:0.9rem; display:flex; flex-direction:column; gap:0.2rem;
-}
-progress {
-  width:100%; height:1rem; border-radius:0.3rem;
-}
-
-.schedule {
-  margin-top:0.5rem; font-size:0.9rem; display:none;
-}
-.schedule-day {
-  display:flex; justify-content:space-between; margin-bottom:0.2rem;
-}
-.schedule strong {
-  display:block; margin-bottom:0.5rem; font-weight:600;
-  letter-spacing:0.02rem;
-}
-
-.toggle-schedule {
-  display:inline-block; margin-top:0.5rem; padding:0.3rem 0.7rem; border-radius:0.3rem; cursor:pointer;
-  font-size:0.9rem; font-weight:600;
-  text-transform:uppercase;
-  letter-spacing:0.05rem;
+  flex:1; margin-right:0.5rem;
 }
 
 .update-progress-form {
-  display:flex; gap:0.5rem; align-items:center; flex-wrap:wrap;
   margin-top:0.5rem;
+  display:flex; gap:0.3rem; align-items:center;
 }
-.update-progress-form input[type="number"] {
-  width:4rem; border-radius:0.3rem; padding:0.3rem;
+.update-progress-form input {
+  width:3rem;
 }
-.update-progress-form button.action, .update-progress-form .increment-button {
-  border-radius:0.3rem; cursor:pointer;
-  font-size:1rem; line-height:1.5rem; font-weight:600;
-  text-transform:uppercase;
-  letter-spacing:0.05rem;
-}
-
-.confirm-modal {
-  position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5);
-  display:none; align-items:center; justify-content:center; z-index:10000;
-}
-.confirm-modal .modal-content {
-  padding:1rem; border-radius:0.3rem; text-align:center; max-width:300px; margin:0 auto;
-}
-.confirm-modal .modal-content p {
-  margin-bottom:1rem; font-size:1rem; font-weight:500;
-}
-.confirm-modal .modal-content button {
-  margin:0 0.5rem; padding:0.5rem 1rem; border-radius:0.3rem; cursor:pointer; border:none;
-  font-weight:600; background:var(--accent-color); color:#fff;
-  text-transform:uppercase; letter-spacing:0.05rem;
-}
-.confirm-modal .modal-content button:active {
-  opacity:0.8;
-}
-
-/* Footer */
-footer {
-  border-top:1px solid #ddd;
-  padding:1rem;
-  text-align:center;
-  font-size:0.9rem;
-  letter-spacing:0.02rem;
-  position:fixed;
-  bottom:0;
-  width:100%;
-  max-width:600px;
-  left:50%;
-  transform:translateX(-50%);
+.update-progress-form button {
+  padding:0.3rem; cursor:pointer;
 }
 </style>
 </head>
 <body>
-<div class="menu-overlay" id="menuOverlay"></div>
-<div class="burger-menu" id="burgerMenu">
-  <button class="close-menu-btn" id="closeMenuBtn">&times;</button>
-  <ul>
-    <li>Dashboard</li>
-    <li>Sets</li>
-    <li>Statistics</li>
-    <li>Settings</li>
-  </ul>
-</div>
 <header>
-  <div class="header-left">
-    <button class="burger-menu-btn" id="burgerBtn">&#9776;</button>
-  </div>
-  <div class="header-center">
-    <!-- Replace with an appropriate icon -->
-    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/35/Check_green_icon.svg/1024px-Check_green_icon.svg.png" alt="App Icon" class="app-icon">
-  </div>
-  <div class="header-right">
-    <button id="addSetBtn">+</button>
-  </div>
+  <h1>Study Planner</h1>
+  <button id="addSetBtn">+</button>
 </header>
+
 <main>
-  <form class="new-set-form" id="newSetForm">
-    <input type="text" id="setName" placeholder="Set Name" required>
-    <input type="number" id="totalTests" placeholder="Total Tests" min="1" required>
-    <input type="number" id="totalDays" placeholder="Days" min="1" required>
-    <button class="action" type="submit">Create</button>
+  <form id="newSetForm">
+    <input type="text" id="setName" placeholder="Set Name" required />
+    <input type="number" id="totalTests" placeholder="Total" min="1" required />
+    <input type="number" id="totalDays" placeholder="Days" min="1" required />
+    <button type="submit">Create</button>
   </form>
   <div class="sets" id="setsContainer"></div>
 </main>
-<div class="confirm-modal" id="confirmModal">
-  <div class="modal-content">
-    <p>Remove this set?</p>
-    <button id="confirmRemoveYes">Yes</button>
-    <button id="confirmRemoveNo">No</button>
-  </div>
-</div>
-<footer>
-  <div>© 2023 Study Planner. All rights reserved.</div>
-</footer>
+
 <script>
 (function(){
-  let sets = JSON.parse(localStorage.getItem('examPreparatorSets') || '[]');
-  let removeIndex = null;
+  let sets = JSON.parse(localStorage.getItem('studyPlannerSets') || '[]');
 
-  const newSetForm = document.getElementById('newSetForm');
-  const setsContainer = document.getElementById('setsContainer');
   const addSetBtn = document.getElementById('addSetBtn');
-  const confirmModal = document.getElementById('confirmModal');
-  const confirmRemoveYes = document.getElementById('confirmRemoveYes');
-  const confirmRemoveNo = document.getElementById('confirmRemoveNo');
-  
-  const burgerBtn = document.getElementById('burgerBtn');
-  const burgerMenu = document.getElementById('burgerMenu');
-  const closeMenuBtn = document.getElementById('closeMenuBtn');
-  const menuOverlay = document.getElementById('menuOverlay');
-
-  // Menu functionality
-  function openMenu() {
-    burgerMenu.style.left = '0';
-    menuOverlay.style.display = 'block';
-  }
-  function closeMenu() {
-    burgerMenu.style.left = '-250px';
-    menuOverlay.style.display = 'none';
-  }
-
-  burgerBtn.addEventListener('click', openMenu);
-  closeMenuBtn.addEventListener('click', closeMenu);
-  menuOverlay.addEventListener('click', closeMenu);
+  const newSetForm = document.getElementById('newSetForm');
+  const setNameInput = document.getElementById('setName');
+  const totalTestsInput = document.getElementById('totalTests');
+  const totalDaysInput = document.getElementById('totalDays');
+  const setsContainer = document.getElementById('setsContainer');
 
   function saveSets() {
-    localStorage.setItem('examPreparatorSets', JSON.stringify(sets));
-  }
-
-  function daysBetween(d1, d2) {
-    const oneDay = 24*60*60*1000;
-    return Math.floor((d2.getTime()-d1.getTime())/oneDay);
-  }
-
-  function addDaysToDate(date, days) {
-    let result = new Date(date);
-    result.setDate(result.getDate() + days);
-    return result;
-  }
-
-  function formatDate(date) {
-    return date.toDateString();
-  }
-
-  // Distribute tests evenly across remaining days
-  function distributeTests(testsLeft, remainingDays) {
-    if (remainingDays <= 0 || testsLeft <= 0) return [];
-    const base = Math.floor(testsLeft / remainingDays);
-    let remainder = testsLeft % remainingDays;
-    let schedule = [];
-    for (let i=0; i<remainingDays; i++) {
-      let val = base + (remainder > 0 ? 1 : 0);
-      remainder--;
-      if (remainder < 0) remainder = 0;
-      schedule.push(val);
-    }
-    return schedule;
+    localStorage.setItem('studyPlannerSets', JSON.stringify(sets));
   }
 
   function renderSets() {
     setsContainer.innerHTML = '';
-    const now = new Date();
-    sets.forEach((s, index) => {
-      const startDate = new Date(s.startDate);
-      const daysPassed = daysBetween(startDate, now);
-      const total = s.total;
+    sets.forEach((s, idx) => {
       const done = s.done || 0;
-      const testsLeft = Math.max(total - done, 0);
-      const totalDays = s.days;
-      let remainingDays = totalDays - daysPassed;
-      if (remainingDays < 0) remainingDays = 0;
-
-      const testsPerDay = (remainingDays > 0) ? (testsLeft / remainingDays) : 0;
-      const futureSchedule = distributeTests(testsLeft, remainingDays);
-      const finishDate = addDaysToDate(startDate, s.days);
+      const total = s.total;
+      const days = s.days;
 
       const setEl = document.createElement('div');
       setEl.className = 'set';
 
       setEl.innerHTML = `
         <div class="set-header">
-          <input type="text" value="${s.name}" data-index="${index}" title="Rename this set"/>
-          <button title="Remove Set">&times;</button>
+          <input type="text" value="${s.name}" />
+          <button>&times;</button>
         </div>
-        <div class="set-details">
-          <div>Total: ${total}</div>
-          <div>Done: ${done}</div>
-          <div>Left: ${testsLeft}</div>
-          <div>Tests/Day: ${testsPerDay.toFixed(1)}</div>
-          <div>Finish by: ${formatDate(finishDate)}</div>
-          <progress value="${done}" max="${total}"></progress>
-        </div>
-        ${futureSchedule.length > 0 ? `
-          <button class="toggle-schedule" type="button">Show Schedule</button>
-          <div class="schedule">
-            <strong>Upcoming Schedule:</strong>
-            ${futureSchedule.map((testsCount, i) => {
-              const dayDate = addDaysToDate(now, i);
-              return `
-                <div class="schedule-day">
-                  <div>${formatDate(dayDate)}:</div>
-                  <div>${testsCount} test${testsCount!==1?'s':''}</div>
-                </div>
-              `;
-            }).join('')}
-          </div>
-        ` : ''}
+        <div>Total: ${total}</div>
+        <div>Done: ${done}</div>
+        <div>Days: ${days}</div>
         <form class="update-progress-form">
-          <input type="number" min="0" value="0" required>
-          <button type="button" class="increment-button">+</button>
-          <button type="submit" class="action">Update</button>
+          <input type="number" min="1" value="1"/>
+          <button type="submit">Add</button>
         </form>
       `;
 
-      const removeBtn = setEl.querySelector('.set-header button');
-      removeBtn.addEventListener('click', () => {
-        removeIndex = index;
-        confirmModal.style.display = 'flex';
-      });
-
+      // Rename set
       const nameInput = setEl.querySelector('.set-header input');
       nameInput.addEventListener('change', () => {
         s.name = nameInput.value.trim();
         saveSets();
       });
 
-      const updateForm = setEl.querySelector('.update-progress-form');
-      const updateInput = updateForm.querySelector('input[type="number"]');
-      const incrementBtn = updateForm.querySelector('.increment-button');
-      incrementBtn.addEventListener('click', () => {
-        let val = parseInt(updateInput.value, 10) || 0;
-        updateInput.value = val + 1;
-      });
-
-      updateForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-        const val = parseInt(updateInput.value,10);
-        if(isNaN(val) || val < 0) return;
-        s.done += val;
-        if(s.done > s.total) s.done = s.total;
+      // Remove set
+      const removeBtn = setEl.querySelector('.set-header button');
+      removeBtn.addEventListener('click', () => {
+        sets.splice(idx,1);
         saveSets();
         renderSets();
       });
 
-      const toggleBtn = setEl.querySelector('.toggle-schedule');
-      const scheduleDiv = setEl.querySelector('.schedule');
-      if (toggleBtn && scheduleDiv) {
-        toggleBtn.addEventListener('click', () => {
-          if (scheduleDiv.style.display === 'none' || scheduleDiv.style.display === '') {
-            scheduleDiv.style.display = 'block';
-            toggleBtn.textContent = 'Hide Schedule';
-          } else {
-            scheduleDiv.style.display = 'none';
-            toggleBtn.textContent = 'Show Schedule';
-          }
-        });
-      }
+      // Update progress
+      const updateForm = setEl.querySelector('.update-progress-form');
+      const updateInput = updateForm.querySelector('input[type="number"]');
+      updateForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const val = parseInt(updateInput.value,10);
+        if(isNaN(val) || val<=0) return;
+        s.done += val;
+        if(s.done> s.total) s.done= s.total;
+        saveSets();
+        renderSets();
+      });
 
       setsContainer.appendChild(setEl);
     });
   }
 
   addSetBtn.addEventListener('click', () => {
-    newSetForm.style.display = (newSetForm.style.display === 'none' || newSetForm.style.display === '') ? 'flex' : 'none';
+    newSetForm.style.display = newSetForm.style.display === 'none' || !newSetForm.style.display 
+                              ? 'block' : 'none';
   });
 
   newSetForm.addEventListener('submit', (e) => {
     e.preventDefault();
-    const name = document.getElementById('setName').value.trim();
-    const totalTests = parseInt(document.getElementById('totalTests').value,10);
-    const totalDays = parseInt(document.getElementById('totalDays').value,10);
-    if(!name || isNaN(totalTests) || isNaN(totalDays) || totalTests <=0 || totalDays <=0) return;
-    const now = new Date();
-    sets.push({name, total: totalTests, days: totalDays, done:0, startDate: now.toISOString()});
+    const name = setNameInput.value.trim();
+    const total = parseInt(totalTestsInput.value,10);
+    const days = parseInt(totalDaysInput.value,10);
+    if(!name || isNaN(total) || isNaN(days) || total<=0 || days<=0) return;
+    sets.push({name, total, days, done:0});
     saveSets();
     renderSets();
-    document.getElementById('setName').value = '';
-    document.getElementById('totalTests').value = '';
-    document.getElementById('totalDays').value = '';
-    newSetForm.style.display = 'none';
-  });
-
-  confirmRemoveYes.addEventListener('click', () => {
-    if(removeIndex !== null) {
-      sets.splice(removeIndex,1);
-      saveSets();
-      renderSets();
-      removeIndex = null;
-    }
-    confirmModal.style.display='none';
-  });
-
-  confirmRemoveNo.addEventListener('click', () => {
-    confirmModal.style.display='none';
-    removeIndex=null;
+    setNameInput.value='';
+    totalTestsInput.value='';
+    totalDaysInput.value='';
+    newSetForm.style.display='none';
   });
 
   // Initialize
