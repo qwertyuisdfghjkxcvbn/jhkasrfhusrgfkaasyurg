@@ -4,11 +4,8 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Exam Preparator</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" integrity="sha512-PR6nUJPNA7VSORRdv27BfxyJ5+MQ/3BpF1um9HUYkuFGbVmb9E/x/zdXdXn4yPF3AA9Frde6angH1HsmJyCQJQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 <style>
-  /* 
-    Using Apple's system fonts and relying on SF Symbols (private Unicode) for icons.
-    On iOS Safari, these should render as SF Symbols. On other platforms, fallbacks may not appear properly.
-  */
   body, input, button {
     font-family: -apple-system, BlinkMacSystemFont, "SF Pro", "SF Pro Icons", "Helvetica Neue", "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
   }
@@ -24,7 +21,6 @@
     overscroll-behavior: none;
   }
 
-  /* Subtle iOS-like styling */
   header {
     display: flex; 
     align-items: center; 
@@ -46,17 +42,16 @@
     gap: 0.3rem;
   }
 
-  /* SF Symbol for graduation cap: "􀅉" (Private use, may only show on Apple platforms) */
   header h1::before {
-    content: "􀅉";
+    content: "\f19d"; /* Font Awesome: graduation-cap */
+    font-family: "Font Awesome 5 Free";
+    font-weight: 900;
     display: inline-block;
     font-size: 1.3rem;
-    line-height: 1;
     vertical-align: middle;
+    color: #0af;
   }
 
-  /* Add new set button with SF Symbol plus.circle */
-  /* "􀅼" is plus.circle SF Symbol in private unicode area */
   #addSetBtn {
     background: none; 
     border: none; 
@@ -72,8 +67,9 @@
   }
 
   #addSetBtn::before {
-    content: "􀅼";
-    font-size: 1.5rem;
+    content: "\f067"; /* Font Awesome: plus-circle */
+    font-family: "Font Awesome 5 Free";
+    font-weight: 900;
   }
 
   #addSetBtn:active {
@@ -89,7 +85,6 @@
     margin: 0 auto;
   }
 
-  /* Global Stats Card */
   .global-stats {
     background: #111; 
     border: 1px solid #222;
@@ -111,9 +106,10 @@
     gap: 0.3rem;
   }
 
-  /* SF Symbol for chart.bar: "􀙊" */
   .global-stats h2::before {
-    content: "􀙊";
+    content: "\f201"; /* Font Awesome: chart-bar */
+    font-family: "Font Awesome 5 Free";
+    font-weight: 900;
     font-size: 1rem;
     color: #0af;
   }
@@ -125,10 +121,6 @@
     gap: 0.3rem 1rem;
   }
 
-  /* 
-    New set form styling 
-    We'll show/hide by adding/removing a class 
-  */
   .new-set-form, .update-progress-form {
     display: flex; 
     gap: 0.5rem; 
@@ -198,7 +190,6 @@
     font-size: 1rem;
   }
 
-  /* SF Symbol for trash: "􀈑" */
   .set-header button {
     background: none; 
     border: none; 
@@ -214,7 +205,9 @@
   }
 
   .set-header button::before {
-    content: "􀈑";
+    content: "\f2ed"; /* Font Awesome: trash-alt */
+    font-family: "Font Awesome 5 Free";
+    font-weight: 900;
     font-size: 1.2rem;
   }
 
@@ -304,6 +297,25 @@
     pointer-events: none;
     top: calc(50% - 0.5rem);
   }
+
+  /* Set-level line chart */
+  .set-chart-container {
+    width: 100%;
+    height: 150px;
+    background: #000;
+    border: 1px solid #222;
+    border-radius: 0.5rem;
+    position: relative;
+    overflow: hidden;
+    margin-top: 0.5rem;
+  }
+
+  .set-chart-container canvas {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+
 </style>
 </head>
 <body>
@@ -353,6 +365,11 @@
   const chartCanvas = document.getElementById('overviewChart');
   const ctx = chartCanvas.getContext('2d');
 
+  // Ensure each set has logs array for daily progress
+  sets.forEach(s => {
+    if(!s.logs) s.logs = [];
+  });
+
   function saveSets() {
     localStorage.setItem('examPreparatorSets', JSON.stringify(sets));
   }
@@ -399,6 +416,115 @@
     chartLabel.textContent = stats.progress.toFixed(0) + '%';
   }
 
+  function drawSetChart(s, canvas) {
+    const ctx = canvas.getContext('2d');
+    const width = canvas.width;
+    const height = canvas.height;
+
+    ctx.clearRect(0,0,width,height);
+
+    // If no logs, no chart
+    if(!s.logs || s.logs.length === 0) {
+      ctx.fillStyle = '#fff';
+      ctx.font = '14px sans-serif';
+      ctx.fillText('No data yet', 10,20);
+      return;
+    }
+
+    // We have logs as daily increments. Let's map them by days.
+    // logs: {dayIndex, doneThatDay}
+    // We'll reconstruct cumulative done each day.
+    // Also we have a target line: each day i expected = (i+1)* total/days
+    const total = s.total;
+    const days = s.days;
+
+    // Determine start dayIndex
+    // logs might start at dayIndex=0. Recalculate from startDate
+    const dayCount = Math.max(days, s.logs[s.logs.length-1].dayIndex+1);
+
+    // For each day from 0 to max dayIndex in logs:
+    const dailyData = [];
+    for(let d=0; d<dayCount; d++){
+      const logEntry = s.logs.find(l => l.dayIndex === d);
+      dailyData[d] = logEntry ? logEntry.cumulativeDone : (d>0?dailyData[d-1]:0);
+    }
+
+    // Scale
+    const maxTests = Math.max(total, Math.max(...dailyData));
+    const leftPadding = 30;
+    const rightPadding = 10;
+    const topPadding = 10;
+    const bottomPadding = 20;
+
+    const chartW = width - leftPadding - rightPadding;
+    const chartH = height - topPadding - bottomPadding;
+
+    // Draw axes
+    ctx.strokeStyle = '#444';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    // Y axis
+    ctx.moveTo(leftPadding, topPadding);
+    ctx.lineTo(leftPadding, height - bottomPadding);
+    // X axis
+    ctx.lineTo(width - rightPadding, height - bottomPadding);
+    ctx.stroke();
+
+    ctx.fillStyle = '#888';
+    ctx.font = '10px sans-serif';
+    ctx.textAlign = 'right';
+    ctx.fillText(maxTests.toFixed(0), leftPadding - 5, topPadding+5);
+    ctx.fillText('0', leftPadding - 5, height - bottomPadding);
+
+    // Plot cumulative done line
+    function xForDay(d){return leftPadding + (d/(dayCount-1))*chartW;}
+    function yForValue(v){return (height - bottomPadding) - (v/maxTests)*chartH;}
+
+    // Expected line (min tests per day): a linear progression = (dayIndex+1)*total/days
+    ctx.strokeStyle = '#f66';
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    for(let d=0; d<dayCount; d++){
+      const expected = (d+1)*total/days;
+      const x = xForDay(d);
+      const y = yForValue(expected);
+      if(d===0) ctx.moveTo(x,y);
+      else ctx.lineTo(x,y);
+    }
+    ctx.stroke();
+
+    // Actual line
+    ctx.strokeStyle = '#0af';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    for(let d=0; d<dayCount; d++){
+      const v = dailyData[d];
+      const x = xForDay(d);
+      const y = yForValue(v);
+      if(d===0) ctx.moveTo(x,y);
+      else ctx.lineTo(x,y);
+    }
+    ctx.stroke();
+
+    // Draw markers
+    ctx.fillStyle = '#0af';
+    for(let d=0; d<dayCount; d++){
+      const v = dailyData[d];
+      const x = xForDay(d);
+      const y = yForValue(v);
+      ctx.beginPath();
+      ctx.arc(x,y,3,0,2*Math.PI);
+      ctx.fill();
+    }
+
+    // Labels
+    ctx.fillStyle = '#888';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'top';
+    ctx.font = '10px sans-serif';
+    ctx.fillText('Days', leftPadding+chartW/2, height - bottomPadding + 5);
+  }
+
   function renderSets() {
     setsContainer.innerHTML = '';
     sets.forEach((s, index) => {
@@ -436,6 +562,9 @@
           <button type="submit">Update</button>
         </form>
         <div class="side-note">Track daily to stay on pace.</div>
+        <div class="set-chart-container">
+          <canvas></canvas>
+        </div>
       `;
 
       const removeBtn = setEl.querySelector('.set-header button');
@@ -452,15 +581,40 @@
         const val = parseInt(updateForm.querySelector('input').value,10);
         if(isNaN(val) || val <= 0) return;
         s.done += val;
-        if(s.done > s.total) {
-          s.done = s.total; 
+        if(s.done > s.total) s.done = s.total; 
+
+        // Log the daily progress
+        const dayIndex = Math.floor((Date.now() - s.startDate)/(1000*60*60*24));
+        // Find if we have a log for this dayIndex
+        let log = s.logs.find(l=>l.dayIndex===dayIndex);
+        if(log) {
+          // Add to doneThatDay
+          log.doneThatDay += val;
+          log.cumulativeDone = s.done;
+        } else {
+          s.logs.push({
+            dayIndex: dayIndex,
+            doneThatDay: val,
+            cumulativeDone: s.done
+          });
         }
+
         saveSets();
         renderSets();
         updateGlobalStats();
       });
 
       setsContainer.appendChild(setEl);
+
+      // Draw the chart for this set
+      const chartCanvas = setEl.querySelector('.set-chart-container canvas');
+      // For crisp drawing, set the canvas internal size
+      const rect = chartCanvas.getBoundingClientRect();
+      chartCanvas.width = rect.width * devicePixelRatio;
+      chartCanvas.height = rect.height * devicePixelRatio;
+      chartCanvas.style.width = rect.width + 'px';
+      chartCanvas.style.height = rect.height + 'px';
+      drawSetChart(s, chartCanvas);
     });
   }
 
@@ -473,7 +627,7 @@
     const totalTests = parseInt(totalTestsInput.value,10);
     const totalDays = parseInt(totalDaysInput.value,10);
     if (isNaN(totalTests) || isNaN(totalDays) || totalTests <= 0 || totalDays <= 0) return;
-    sets.push({total: totalTests, days: totalDays, done: 0, startDate: Date.now()});
+    sets.push({total: totalTests, days: totalDays, done: 0, startDate: Date.now(), logs:[]});
     saveSets();
     renderSets();
     updateGlobalStats();
