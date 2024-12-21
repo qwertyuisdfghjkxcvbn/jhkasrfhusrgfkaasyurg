@@ -11,6 +11,12 @@
   margin:0; padding:0;
   color-scheme: light dark;
   --accent-color: #007aff;
+  --primary-color: #007aff;
+  --secondary-color: #555;
+  --danger-color: #ff3b30;
+  --success-color: #34c759;
+  --background-light: #f9f9f9;
+  --background-dark: #1c1c1c;
 }
 
 /* Light Mode */
@@ -20,18 +26,11 @@
     background:#fff;
     border:1px solid #ddd;
   }
-  input, button.action, .increment-button, .toggle-schedule {
+  input, .btn, .increment-button, .toggle-schedule {
     background:#f1f1f1; color:#111; border:1px solid #ccc;
   }
   progress { background:#e0e0e0; border:1px solid #ccc; }
   progress::-webkit-progress-value { background:var(--accent-color); }
-  header button, .set-header button, .increment-button, button.action, .toggle-schedule {
-    color:var(--accent-color);
-    border:none;
-  }
-  .burger-menu {
-    background:#fff; border-right:1px solid #ddd;
-  }
   .menu-overlay {
     background:rgba(0,0,0,0.4);
   }
@@ -44,18 +43,11 @@
     background:#2c2c2c;
     border:1px solid #444;
   }
-  input, button.action, .increment-button, .toggle-schedule {
+  input, .btn, .increment-button, .toggle-schedule {
     background:#3a3a3a; color:#e0e0e0; border:1px solid #555;
   }
   progress { background:#333; border:1px solid #444; }
   progress::-webkit-progress-value { background:var(--accent-color); }
-  header button, .set-header button, .increment-button, button.action, .toggle-schedule {
-    color:var(--accent-color);
-    border:none;
-  }
-  .burger-menu {
-    background:#2c2c2c; border-right:1px solid #444;
-  }
   .menu-overlay {
     background:rgba(0,0,0,0.6);
   }
@@ -82,15 +74,163 @@ header {
   flex:1; display:flex; align-items:center; justify-content:center;
 }
 header .burger-menu-btn {
-  background:none; border:none; font-size:1.5rem; cursor:pointer; padding:0.5rem;
-  width:2rem; height:2rem; display:flex; align-items:center; justify-content:center;
-  border-radius:0.3rem;
+  background:none; border:none; cursor:pointer; padding:0.5rem;
+  width:2.5rem; height:2.5rem; display:flex; align-items:center; justify-content:center;
+  border-radius:0.5rem;
 }
 header button#addSetBtn {
-  font-size:1.5rem; cursor:pointer; padding:0.5rem;
-  background:none; border:none; border-radius:0.3rem;
-  color: var(--accent-color);
-  font-weight:600;
+  cursor:pointer; padding:0.5rem 1rem; border:none; border-radius:0.5rem;
+  color: #fff; background-color: var(--primary-color);
+  font-weight:600; font-size:1rem;
+  display: flex; align-items: center; justify-content: center;
+}
+header button#addSetBtn:hover {
+  background-color: darken(var(--primary-color), 10%);
+}
+header button#addSetBtn:active {
+  background-color: darken(var(--primary-color), 20%);
+}
+
+/* Button Styles */
+.btn {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.9rem;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+.btn-primary {
+  background-color: var(--primary-color);
+  color: #fff;
+}
+
+.btn-primary:hover {
+  background-color: darken(var(--primary-color), 10%);
+}
+
+.btn-primary:active {
+  background-color: darken(var(--primary-color), 20%);
+  transform: scale(0.98);
+}
+
+.btn-secondary {
+  background-color: var(--secondary-color);
+  color: #fff;
+}
+
+.btn-secondary:hover {
+  background-color: darken(var(--secondary-color), 10%);
+}
+
+.btn-secondary:active {
+  background-color: darken(var(--secondary-color), 20%);
+  transform: scale(0.98);
+}
+
+.btn-danger {
+  background-color: var(--danger-color);
+  color: #fff;
+}
+
+.btn-danger:hover {
+  background-color: darken(var(--danger-color), 10%);
+}
+
+.btn-danger:active {
+  background-color: darken(var(--danger-color), 20%);
+  transform: scale(0.98);
+}
+
+.btn-success {
+  background-color: var(--success-color);
+  color: #fff;
+}
+
+.btn-success:hover {
+  background-color: darken(var(--success-color), 10%);
+}
+
+.btn-success:active {
+  background-color: darken(var(--success-color), 20%);
+  transform: scale(0.98);
+}
+
+.btn-icon {
+  background-color: transparent;
+  color: inherit;
+  font-size: 1.5rem;
+  padding: 0.3rem;
+}
+
+.btn-icon:hover {
+  background-color: rgba(0, 0, 0, 0.1);
+  border-radius: 0.5rem;
+}
+
+.btn-small {
+  padding: 0.3rem 0.6rem;
+  font-size: 0.8rem;
+  border-radius: 0.3rem;
+}
+
+.btn-small.btn-primary {
+  background-color: var(--primary-color);
+  color: #fff;
+}
+
+.btn-small.btn-primary:hover {
+  background-color: darken(var(--primary-color), 10%);
+}
+
+.btn-small.btn-primary:active {
+  background-color: darken(var(--primary-color), 20%);
+}
+
+.btn-small.btn-secondary {
+  background-color: var(--secondary-color);
+  color: #fff;
+}
+
+.btn-small.btn-secondary:hover {
+  background-color: darken(var(--secondary-color), 10%);
+}
+
+.btn-small.btn-secondary:active {
+  background-color: darken(var(--secondary-color), 20%);
+}
+
+.btn-small.btn-danger {
+  background-color: var(--danger-color);
+  color: #fff;
+}
+
+.btn-small.btn-danger:hover {
+  background-color: darken(var(--danger-color), 10%);
+}
+
+.btn-small.btn-danger:active {
+  background-color: darken(var(--danger-color), 20%);
+}
+
+.btn-small.btn-success {
+  background-color: var(--success-color);
+  color: #fff;
+}
+
+.btn-small.btn-success:hover {
+  background-color: darken(var(--success-color), 10%);
+}
+
+.btn-small.btn-success:active {
+  background-color: darken(var(--success-color), 20%);
+}
+
+/* Utility Functions */
+@function darken($color, $percent) {
+  @return mix(black, $color, $percent);
 }
 
 /* Burger Menu and Overlay */
@@ -119,22 +259,21 @@ header button#addSetBtn {
 /* Main */
 main {
   padding:1rem; max-width:600px; margin:0 auto; box-sizing:border-box; width:100%;
-  /* Removed bottom padding since footer is gone */
 }
 
+/* Forms */
 .new-set-form {
   display:none; flex-direction:column; gap:0.5rem; margin-bottom:1rem; align-items:stretch;
   border-radius:0.3rem; padding:1rem;
 }
 .new-set-form input {
-  padding:0.5rem; font-size:1rem; border-radius:0.3rem;
+  padding:0.5rem; font-size:1rem; border-radius:0.3rem; border:1px solid #ccc;
 }
 .new-set-form button.action {
-  font-weight:600; padding:0.5rem; border-radius:0.3rem; cursor:pointer;
-  text-transform:uppercase;
-  letter-spacing:0.05rem;
+  /* Replaced with btn-primary class */
 }
 
+/* Sets */
 .sets {
   display:flex; flex-direction:column; gap:1rem; margin-top:1rem;
 }
@@ -147,8 +286,8 @@ main {
   display:flex; justify-content:space-between; align-items:center; gap:0.5rem;
 }
 .set-header input {
-  border-radius:0.3rem; padding:0.3rem; flex:1;
-  font-size:1rem; background:none;
+  border-radius:0.3rem; padding:0.5rem; flex:1;
+  font-size:1rem; background:none; border:1px solid #ccc;
 }
 
 .set-details {
@@ -158,6 +297,7 @@ progress {
   width:100%; height:1rem; border-radius:0.3rem;
 }
 
+/* Schedule */
 .schedule {
   margin-top:0.5rem; font-size:0.9rem; display:none;
 }
@@ -170,24 +310,26 @@ progress {
 }
 
 .toggle-schedule {
+  /* Replaced with btn-secondary class */
   display:inline-block; margin-top:0.5rem; padding:0.3rem 0.7rem; border-radius:0.3rem; cursor:pointer;
   font-size:0.9rem; font-weight:600;
   text-transform:uppercase;
   letter-spacing:0.05rem;
 }
 
+/* Update Progress Form */
 .update-progress-form {
   display:flex; gap:0.5rem; align-items:center; flex-wrap:wrap;
   margin-top:0.5rem;
 }
 .update-progress-form input[type="number"] {
-  width:4rem; border-radius:0.3rem; padding:0.3rem;
+  width:4rem; border-radius:0.3rem; padding:0.3rem; border:1px solid #ccc;
 }
-.update-progress-form button.action, .update-progress-form .increment-button {
-  border-radius:0.3rem; cursor:pointer;
-  font-size:1rem; line-height:1.5rem; font-weight:600;
-  text-transform:uppercase;
-  letter-spacing:0.05rem;
+.update-progress-form .increment-button {
+  /* Replaced with btn-small and btn-success */
+}
+.update-progress-form button.action {
+  /* Replaced with btn-primary */
 }
 
 /* Confirmation Modal */
@@ -202,12 +344,13 @@ progress {
   margin-bottom:1rem; font-size:1rem; font-weight:500;
 }
 .confirm-modal .modal-content button {
-  margin:0 0.5rem; padding:0.5rem 1rem; border-radius:0.3rem; cursor:pointer; border:none;
-  font-weight:600; background:var(--accent-color); color:#fff;
-  text-transform:uppercase; letter-spacing:0.05rem;
+  /* Use btn-primary and btn-secondary */
 }
-.confirm-modal .modal-content button:active {
-  opacity:0.8;
+.confirm-modal .modal-content #confirmRemoveYes {
+  /* btn-danger */
+}
+.confirm-modal .modal-content #confirmRemoveNo {
+  /* btn-secondary */
 }
 
 </style>
@@ -218,25 +361,25 @@ progress {
 
 <!-- Burger menu container -->
 <div class="burger-menu" id="burgerMenu">
-  <button class="close-menu-btn" id="closeMenuBtn">&times;</button>
+  <button class="btn btn-icon close-menu-btn" id="closeMenuBtn">&times;</button>
   <ul>
-    <li>Dashboard</li>
-    <li>Sets</li>
-    <li>Statistics</li>
-    <li>Settings</li>
+    <li><button class="btn btn-secondary" type="button">Dashboard</button></li>
+    <li><button class="btn btn-secondary" type="button">Sets</button></li>
+    <li><button class="btn btn-secondary" type="button">Statistics</button></li>
+    <li><button class="btn btn-secondary" type="button">Settings</button></li>
   </ul>
 </div>
 
 <header>
   <div class="header-left">
-    <button class="burger-menu-btn" id="burgerBtn">&#9776;</button>
+    <button class="btn btn-icon burger-menu-btn" id="burgerBtn">&#9776;</button>
   </div>
   <div class="header-center">
     <!-- Replaced icon with "EP" text -->
-    <strong style="font-size: 1.2rem; letter-spacing: 0.05rem;">EP</strong>
+    <strong style="font-size: 1.5rem; letter-spacing: 0.1rem;">EP</strong>
   </div>
   <div class="header-right">
-    <button id="addSetBtn">+</button>
+    <button id="addSetBtn" class="btn btn-primary">+ Add Set</button>
   </div>
 </header>
 
@@ -245,7 +388,7 @@ progress {
     <input type="text" id="setName" placeholder="Set Name" required>
     <input type="number" id="totalTests" placeholder="Total Tests" min="1" required>
     <input type="number" id="totalDays" placeholder="Days" min="1" required>
-    <button class="action" type="submit">Create</button>
+    <button class="btn btn-primary action" type="submit">Create</button>
   </form>
   <div class="sets" id="setsContainer"></div>
 </main>
@@ -254,8 +397,8 @@ progress {
 <div class="confirm-modal" id="confirmModal">
   <div class="modal-content">
     <p>Remove this set?</p>
-    <button id="confirmRemoveYes">Yes</button>
-    <button id="confirmRemoveNo">No</button>
+    <button id="confirmRemoveYes" class="btn btn-danger">Yes</button>
+    <button id="confirmRemoveNo" class="btn btn-secondary">No</button>
   </div>
 </div>
 
@@ -289,6 +432,16 @@ progress {
   burgerBtn.addEventListener('click', openMenu);
   closeMenuBtn.addEventListener('click', closeMenu);
   menuOverlay.addEventListener('click', closeMenu);
+
+  // Button actions within the burger menu
+  const menuButtons = burgerMenu.querySelectorAll('ul li button');
+  menuButtons.forEach(button => {
+    button.addEventListener('click', () => {
+      // Placeholder for actual navigation
+      alert(`Navigating to ${button.textContent}`);
+      closeMenu();
+    });
+  });
 
   function saveSets() {
     localStorage.setItem('examPreparatorSets', JSON.stringify(sets));
@@ -347,7 +500,7 @@ progress {
       setEl.innerHTML = `
         <div class="set-header">
           <input type="text" value="${s.name}" data-index="${index}" title="Rename this set"/>
-          <button title="Remove Set">&times;</button>
+          <button class="btn btn-danger remove-set-btn" title="Remove Set">&times;</button>
         </div>
         <div class="set-details">
           <div>Total: ${total}</div>
@@ -358,11 +511,11 @@ progress {
           <progress value="${done}" max="${total}"></progress>
         </div>
         ${futureSchedule.length > 0 ? `
-          <button class="toggle-schedule" type="button">Show Schedule</button>
+          <button class="btn btn-secondary toggle-schedule-btn" type="button">Show Schedule</button>
           <div class="schedule">
             <strong>Upcoming Schedule:</strong>
             ${futureSchedule.map((testsCount, i) => {
-              const dayDate = addDaysToDate(now, i);
+              const dayDate = addDaysToDate(now, i + 1);
               return `
                 <div class="schedule-day">
                   <div>${formatDate(dayDate)}:</div>
@@ -374,23 +527,26 @@ progress {
         ` : ''}
         <form class="update-progress-form">
           <input type="number" min="0" value="0" required>
-          <button type="button" class="increment-button">+</button>
-          <button type="submit" class="action">Update</button>
+          <button type="button" class="btn btn-small btn-success increment-button">+</button>
+          <button type="submit" class="btn btn-primary action">Update</button>
         </form>
       `;
 
-      const removeBtn = setEl.querySelector('.set-header button');
+      // Remove Set Button
+      const removeBtn = setEl.querySelector('.remove-set-btn');
       removeBtn.addEventListener('click', () => {
         removeIndex = index;
         confirmModal.style.display = 'flex';
       });
 
+      // Rename Set
       const nameInput = setEl.querySelector('.set-header input');
       nameInput.addEventListener('change', () => {
         s.name = nameInput.value.trim();
         saveSets();
       });
 
+      // Update Progress Form
       const updateForm = setEl.querySelector('.update-progress-form');
       const updateInput = updateForm.querySelector('input[type="number"]');
       const incrementBtn = updateForm.querySelector('.increment-button');
@@ -409,7 +565,8 @@ progress {
         renderSets();
       });
 
-      const toggleBtn = setEl.querySelector('.toggle-schedule');
+      // Toggle Schedule
+      const toggleBtn = setEl.querySelector('.toggle-schedule-btn');
       const scheduleDiv = setEl.querySelector('.schedule');
       if (toggleBtn && scheduleDiv) {
         toggleBtn.addEventListener('click', () => {
@@ -427,10 +584,12 @@ progress {
     });
   }
 
+  // Add Set Button
   addSetBtn.addEventListener('click', () => {
     newSetForm.style.display = (newSetForm.style.display === 'none' || newSetForm.style.display === '') ? 'flex' : 'none';
   });
 
+  // New Set Form Submission
   newSetForm.addEventListener('submit', (e) => {
     e.preventDefault();
     const name = document.getElementById('setName').value.trim();
@@ -447,6 +606,7 @@ progress {
     newSetForm.style.display = 'none';
   });
 
+  // Confirmation Modal Buttons
   confirmRemoveYes.addEventListener('click', () => {
     if(removeIndex !== null) {
       sets.splice(removeIndex,1);
