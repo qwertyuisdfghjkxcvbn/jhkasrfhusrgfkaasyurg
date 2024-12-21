@@ -1,2 +1,759 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no"/><title>Study Planner</title><style>:root{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",sans-serif;margin:0;padding:0;color-scheme:dark;--accent-color:#007aff;--primary-color:#007aff;--secondary-color:#555;--danger-color:#ff3b30;--success-color:#34c759;--background-dark:#1c1c1c}@media (prefers-color-scheme: dark){body{background:#1c1c1c;color:#e0e0e0}header,.set,.new-set-form,.confirm-modal .modal-content{background:#2c2c2c;border:1px solid #444}input,.btn,.increment-button,.toggle-schedule{background:#3a3a3a;color:#e0e0e0;border:1px solid #555}progress{background:#333;border:1px solid #444}progress::-webkit-progress-value{background:var(--accent-color)}}body,html{margin:0;padding:0;overflow-x:hidden;line-height:1.5;position:relative;min-height:100%}header{display:flex;align-items:center;justify-content:space-between;padding:0.5rem 1rem;box-sizing:border-box}header .header-center{flex:1;display:flex;align-items:center;justify-content:center}header button#addSetBtn{cursor:pointer;padding:0.5rem 1rem;border:none;border-radius:0.5rem;color:#fff;background:var(--primary-color);font-weight:600;font-size:1rem;display:flex;align-items:center;justify-content:center}header button#addSetBtn:hover{background:#006ae6}header button#addSetBtn:active{background:#0055cc} .btn{padding:0.5rem 1rem;border:none;border-radius:0.5rem;cursor:pointer;font-weight:600;font-size:0.9rem;transition:background-color 0.2s ease,transform 0.1s ease}.btn-primary{background:var(--primary-color);color:#fff}.btn-primary:hover{background:#006ae6}.btn-primary:active{background:#0055cc;transform:scale(0.98)}.btn-secondary{background:var(--secondary-color);color:#fff}.btn-secondary:hover{background:#444}.btn-secondary:active{background:#333;transform:scale(0.98)}.btn-danger{background:var(--danger-color);color:#fff}.btn-danger:hover{background:#e32d24}.btn-danger:active{background:#c6231f;transform:scale(0.98)}.btn-success{background:var(--success-color);color:#fff}.btn-success:hover{background:#2fa749}.btn-success:active{background:#25843d;transform:scale(0.98)}.btn-small{padding:0.3rem 0.6rem;font-size:0.8rem;border-radius:0.3rem}.btn-small.btn-primary{background:var(--primary-color);color:#fff}.btn-small.btn-primary:hover{background:#006ae6}.btn-small.btn-primary:active{background:#0055cc}.btn-small.btn-secondary{background:var(--secondary-color);color:#fff}.btn-small.btn-secondary:hover{background:#444}.btn-small.btn-secondary:active{background:#333}.btn-small.btn-danger{background:var(--danger-color);color:#fff}.btn-small.btn-danger:hover{background:#e32d24}.btn-small.btn-danger:active{background:#c6231f}.btn-small.btn-success{background:var(--success-color);color:#fff}.btn-small.btn-success:hover{background:#2fa749}.btn-small.btn-success:active{background:#25843d}.main{padding:1rem;max-width:600px;margin:0 auto;box-sizing:border-box;width:100%}.new-set-form{display:none;flex-direction:column;gap:0.5rem;margin-bottom:1rem;align-items:stretch;border-radius:0.3rem;padding:1rem} .new-set-form input{padding:0.5rem;font-size:1rem;border-radius:0.3rem;border:1px solid #ccc}.sets{display:flex;flex-direction:column;gap:1rem;margin-top:1rem}.set{border-radius:0.3rem;padding:1rem;display:flex;flex-direction:column;gap:0.5rem}.set-header{display:flex;justify-content:space-between;align-items:center;gap:0.5rem}.set-header input{border-radius:0.3rem;padding:0.5rem;flex:1;font-size:1rem;background:none;border:1px solid #ccc}.set-details{font-size:0.9rem;display:flex;flex-direction:column;gap:0.2rem}progress{width:100%;height:1rem;border-radius:0.3rem}.schedule{margin-top:0.5rem;font-size:0.9rem;display:none}.schedule-day{display:flex;justify-content:space-between;margin-bottom:0.2rem}.schedule strong{display:block;margin-bottom:0.5rem;font-weight:600;letter-spacing:0.02rem}.update-progress-form{display:flex;gap:0.5rem;align-items:center;flex-wrap:wrap;margin-top:0.5rem} .update-progress-form input[type="number"]{width:4rem;border-radius:0.3rem;padding:0.3rem;border:1px solid #ccc}.confirm-modal{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);display:none;align-items:center;justify-content:center;z-index:10000}.confirm-modal .modal-content{padding:1rem;border-radius:0.3rem;text-align:center;max-width:300px;margin:0 auto} .confirm-modal .modal-content p{margin-bottom:1rem;font-size:1rem;font-weight:500}.confirm-modal .modal-content #confirmRemoveYes{background:var(--danger-color);color:#fff;padding:0.5rem 1rem;border:none;border-radius:0.3rem;cursor:pointer}.confirm-modal .modal-content #confirmRemoveNo{background:var(--secondary-color);color:#fff;padding:0.5rem 1rem;border:none;border-radius:0.3rem;cursor:pointer}</style></head><body><header><div class="header-center"><strong style="font-size:1.5rem;letter-spacing:0.1rem;">EP</strong></div><div class="header-right"><button id="addSetBtn" class="btn btn-primary">+ Add Set</button></div></header><main><form class="new-set-form" id="newSetForm"><input type="text" id="setName" placeholder="Set Name" required><input type="number" id="totalTests" placeholder="Total Tests" min="1" required><input type="number" id="totalDays" placeholder="Days" min="1" required><button class="btn btn-primary" type="submit">Create</button></form><div class="sets" id="setsContainer"></div></main><div class="confirm-modal" id="confirmModal"><div class="modal-content"><p>Remove this set?</p><button id="confirmRemoveYes" class="btn btn-danger">Yes</button><button id="confirmRemoveNo" class="btn btn-secondary">No</button></div></div><script>(function(){let sets=JSON.parse(localStorage.getItem('examPreparatorSets')||'[]'),removeIndex=null;const newSetForm=document.getElementById('newSetForm'),setsContainer=document.getElementById('setsContainer'),addSetBtn=document.getElementById('addSetBtn'),confirmModal=document.getElementById('confirmModal'),confirmRemoveYes=document.getElementById('confirmRemoveYes'),confirmRemoveNo=document.getElementById('confirmRemoveNo');function saveSets(){localStorage.setItem('examPreparatorSets',JSON.stringify(sets))}function daysBetween(d1,d2){const oneDay=24*60*60*1000;return Math.floor((d2.getTime()-d1.getTime())/oneDay)}function addDaysToDate(date,days){let result=new Date(date);result.setDate(result.getDate()+days);return result}function formatDate(date){return date.toDateString()}function distributeTests(testsLeft,remainingDays){if(remainingDays<=0||testsLeft<=0)return[];const base=Math.floor(testsLeft/remainingDays),remainder=testsLeft%remainingDays;let schedule=[],rem=remainder;for(let i=0;i<remainingDays;i++){let val=base+(rem>0?1:0);rem--;schedule.push(val)}return schedule}function renderSets(){setsContainer.innerHTML='';const now=new Date();sets.forEach((s,index)=>{const startDate=new Date(s.startDate),daysPassed=daysBetween(startDate,now),total=s.total,done=s.done||0,testsLeft=Math.max(total-done,0),totalDays=s.days,remainingDays=Math.max(totalDays-daysPassed,0),testsPerDay=remainingDays>0?(testsLeft/remainingDays):0,futureSchedule=distributeTests(testsLeft,remainingDays),finishDate=addDaysToDate(startDate,s.days);const setEl=document.createElement('div');setEl.className='set';setEl.innerHTML=`<div class="set-header"><input type="text" value="${s.name}" data-index="${index}" title="Rename this set"/><button class="btn btn-danger remove-set-btn" title="Remove Set">&times;</button></div><div class="set-details"><div>Total: ${total}</div><div>Done: ${done}</div><div>Left: ${testsLeft}</div><div>Tests/Day: ${testsPerDay.toFixed(1)}</div><div>Finish by: ${formatDate(finishDate)}</div><progress value="${done}" max="${total}"></progress></div>${futureSchedule.length>0?`<button class="btn btn-secondary toggle-schedule-btn" type="button">Show Schedule</button><div class="schedule"><strong>Upcoming Schedule:</strong>${futureSchedule.map((testsCount,i)=>`<div class="schedule-day"><div>${formatDate(addDaysToDate(now,i+1))}:</div><div>${testsCount} test${testsCount!==1?'s':''}</div></div>`).join('')}</div>`:''}<div class="update-progress-form"><input type="number" min="0" value="0" required><button type="button" class="btn btn-small btn-success increment-button">+</button></div>`;const removeBtn=setEl.querySelector('.remove-set-btn');removeBtn.addEventListener('click',()=>{removeIndex=index;confirmModal.style.display='flex'});const nameInput=setEl.querySelector('.set-header input');nameInput.addEventListener('change',()=>{s.name=nameInput.value.trim();saveSets()});const updateDiv=setEl.querySelector('.update-progress-form'),updateInput=updateDiv.querySelector('input[type="number"]'),incrementBtn=updateDiv.querySelector('.increment-button');incrementBtn.addEventListener('click',()=>{let val=parseInt(updateInput.value,10)||0;val+=1;updateInput.value=val;updateProgress(val)});updateInput.addEventListener('change',()=>{let val=parseInt(updateInput.value,10)||0;val<0&&(updateInput.value=0);updateProgress(val)});function updateProgress(val){s.done+=val,s.done>total&&(s.done=total),saveSets(),renderSets()}const toggleBtn=setEl.querySelector('.toggle-schedule-btn'),scheduleDiv=setEl.querySelector('.schedule');toggleBtn&&scheduleDiv&&(toggleBtn.addEventListener('click',()=>{scheduleDiv.style.display=(scheduleDiv.style.display==='block')?'none':'block',toggleBtn.textContent=(scheduleDiv.style.display==='block')?'Hide Schedule':'Show Schedule'}));setsContainer.appendChild(setEl)})}addSetBtn.addEventListener('click',()=>{newSetForm.style.display=(newSetForm.style.display==='flex')?'none':'flex'});newSetForm.addEventListener('submit',e=>{e.preventDefault();const name=document.getElementById('setName').value.trim(),totalTests=parseInt(document.getElementById('totalTests').value,10),totalDays=parseInt(document.getElementById('totalDays').value,10);if(!name||isNaN(totalTests)||isNaN(totalDays)||totalTests<=0||totalDays<=0)return;sets.push({name, total:totalTests, days:totalDays, done:0, startDate:new Date().toISOString()}),saveSets(),renderSets(),document.getElementById('setName').value='',document.getElementById('totalTests').value='',document.getElementById('totalDays').value='',newSetForm.style.display='none'});confirmRemoveYes.addEventListener('click',()=>{removeIndex!==null&&(sets.splice(removeIndex,1),saveSets(),renderSets(),removeIndex=null),confirmModal.style.display='none'});confirmRemoveNo.addEventListener('click',()=>{confirmModal.style.display='none',removeIndex=null});renderSets()})();
-    </script></body></html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Study Planner</title>
+    <!-- Font Awesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+          integrity="sha512-p8H6NwhSjk1YqWUM9ZkCphVjwN4R+0v2xevXjT+Z0X8VJ+l9x3H9uE3DvqJi7A9j6jSf2N3O5qK5f5lV6XvB3g=="
+          crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <!-- React and ReactDOM CDN -->
+    <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+    <!-- Babel CDN for JSX support -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <style>
+        :root {
+            --primary-color: #ffffff;
+            --secondary-color: #f0f0f0;
+            --accent-color: #4a90e2;
+            --danger-color: #e74c3c;
+            --success-color: #2ecc71;
+            --text-color: #333333;
+            --border-color: #dddddd;
+            --background-color: #fafafa;
+            --modal-background: rgba(0, 0, 0, 0.5);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        /* Dark Mode Variables */
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --primary-color: #1f1f1f;
+                --secondary-color: #2c2c2c;
+                --accent-color: #4a90e2;
+                --danger-color: #e74c3c;
+                --success-color: #2ecc71;
+                --text-color: #e0e0e0;
+                --border-color: #444444;
+                --background-color: #121212;
+                --modal-background: rgba(255, 255, 255, 0.1);
+            }
+        }
+
+        /* Light Mode Variables */
+        @media (prefers-color-scheme: light) {
+            :root {
+                --primary-color: #ffffff;
+                --secondary-color: #f0f0f0;
+                --accent-color: #4a90e2;
+                --danger-color: #e74c3c;
+                --success-color: #2ecc71;
+                --text-color: #333333;
+                --border-color: #dddddd;
+                --background-color: #fafafa;
+                --modal-background: rgba(0, 0, 0, 0.5);
+            }
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body, html {
+            margin: 0;
+            padding: 0;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            min-height: 100vh;
+            font-size: 16px;
+        }
+
+        header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem 2rem;
+            background-color: var(--primary-color);
+            border-bottom: 1px solid var(--border-color);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        header .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--accent-color);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        header .logo i {
+            font-size: 1.2rem;
+        }
+
+        header .header-right {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        header button {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 0.4rem;
+            background-color: var(--accent-color);
+            color: var(--primary-color);
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        header button:hover {
+            background-color: #357ab8;
+        }
+
+        main {
+            padding: 2rem;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .new-set-form {
+            display: none;
+            background-color: var(--secondary-color);
+            padding: 1.5rem;
+            border: 1px solid var(--border-color);
+            border-radius: 0.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+
+        .new-set-form input {
+            width: 100%;
+            padding: 0.75rem;
+            margin-bottom: 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: 0.4rem;
+            font-size: 1rem;
+            background-color: var(--primary-color);
+            color: var(--text-color);
+        }
+
+        .new-set-form button {
+            width: 100%;
+            padding: 0.75rem;
+            border: none;
+            border-radius: 0.4rem;
+            background-color: var(--accent-color);
+            color: var(--primary-color);
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .new-set-form button:hover {
+            background-color: #357ab8;
+        }
+
+        .sets {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .set {
+            background-color: var(--primary-color);
+            padding: 1.5rem;
+            border: 1px solid var(--border-color);
+            border-radius: 0.5rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            transition: background-color 0.3s ease;
+        }
+
+        .set-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            gap: 0.5rem;
+        }
+
+        .set-header input {
+            flex: 1;
+            padding: 0.5rem;
+            border: 1px solid var(--border-color);
+            border-radius: 0.4rem;
+            font-size: 1rem;
+            margin-right: 1rem;
+            background-color: var(--primary-color);
+            color: var(--text-color);
+        }
+
+        .set-header button {
+            padding: 0.5rem 0.75rem;
+            border: none;
+            border-radius: 0.4rem;
+            background-color: var(--danger-color);
+            color: var(--primary-color);
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: background-color 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .set-header button:hover {
+            background-color: #c0392b;
+        }
+
+        .set-details {
+            font-size: 0.95rem;
+            margin-bottom: 1rem;
+        }
+
+        .set-details div {
+            margin-bottom: 0.5rem;
+        }
+
+        progress {
+            width: 100%;
+            height: 20px;
+            border-radius: 10px;
+            appearance: none;
+            -webkit-appearance: none;
+            background-color: var(--border-color);
+        }
+
+        progress::-webkit-progress-bar {
+            background-color: var(--border-color);
+            border-radius: 10px;
+        }
+
+        progress::-webkit-progress-value {
+            background-color: var(--accent-color);
+            border-radius: 10px;
+        }
+
+        .schedule {
+            margin-top: 1rem;
+            display: none;
+        }
+
+        .schedule-day {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .schedule-day:last-child {
+            border-bottom: none;
+        }
+
+        .toggle-schedule-btn {
+            margin-top: 1rem;
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 0.4rem;
+            background-color: var(--secondary-color);
+            color: var(--text-color);
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: background-color 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .toggle-schedule-btn:hover {
+            background-color: var(--border-color);
+        }
+
+        .update-progress-form {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .update-progress-form input[type="number"] {
+            flex: 1;
+            padding: 0.5rem;
+            border: 1px solid var(--border-color);
+            border-radius: 0.4rem;
+            font-size: 1rem;
+            background-color: var(--primary-color);
+            color: var(--text-color);
+        }
+
+        .update-progress-form button {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 0.4rem;
+            background-color: var(--success-color);
+            color: var(--primary-color);
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .update-progress-form button:hover {
+            background-color: #27ae60;
+        }
+
+        .confirm-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--modal-background);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .confirm-modal .modal-content {
+            background-color: var(--primary-color);
+            padding: 2rem;
+            border-radius: 0.5rem;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            max-width: 400px;
+            width: 90%;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .confirm-modal .modal-content p {
+            margin-bottom: 1.5rem;
+            font-size: 1.1rem;
+            color: var(--text-color);
+        }
+
+        .confirm-modal .modal-content button {
+            padding: 0.5rem 1.5rem;
+            border: none;
+            border-radius: 0.4rem;
+            cursor: pointer;
+            font-size: 1rem;
+            margin: 0 0.5rem;
+            transition: background-color 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        #confirmRemoveYes {
+            background-color: var(--danger-color);
+            color: var(--primary-color);
+        }
+
+        #confirmRemoveYes:hover {
+            background-color: #c0392b;
+        }
+
+        #confirmRemoveNo {
+            background-color: var(--secondary-color);
+            color: var(--text-color);
+        }
+
+        #confirmRemoveNo:hover {
+            background-color: var(--border-color);
+        }
+
+        /* Toggle Theme Button */
+        .theme-toggle-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--text-color);
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .theme-toggle-btn:hover {
+            color: var(--accent-color);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 600px) {
+            header, main {
+                padding: 1rem;
+            }
+
+            .schedule-day {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .schedule-day div {
+                margin-bottom: 0.3rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <!-- React Application Script -->
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        // Helper Functions
+        const daysBetween = (d1, d2) => {
+            const oneDay = 24 * 60 * 60 * 1000;
+            return Math.floor((d2 - d1) / oneDay);
+        };
+
+        const addDaysToDate = (date, days) => {
+            const result = new Date(date);
+            result.setDate(result.getDate() + days);
+            return result;
+        };
+
+        const formatDate = (date) => {
+            return date.toDateString();
+        };
+
+        const distributeTests = (testsLeft, remainingDays) => {
+            if (remainingDays <= 0 || testsLeft <= 0) return [];
+            const base = Math.floor(testsLeft / remainingDays);
+            const remainder = testsLeft % remainingDays;
+            let schedule = [];
+            for (let i = 0; i < remainingDays; i++) {
+                schedule.push(base + (i < remainder ? 1 : 0));
+            }
+            return schedule;
+        };
+
+        // Main App Component
+        function App() {
+            const [sets, setSets] = useState([]);
+            const [showNewSetForm, setShowNewSetForm] = useState(false);
+            const [removeIndex, setRemoveIndex] = useState(null);
+            const [theme, setTheme] = useState('light');
+
+            // Load sets from localStorage on mount
+            useEffect(() => {
+                const storedSets = JSON.parse(localStorage.getItem('studyPlannerSets') || '[]');
+                setSets(storedSets);
+            }, []);
+
+            // Load theme from localStorage or system preference on mount
+            useEffect(() => {
+                const savedTheme = localStorage.getItem('preferredTheme');
+                if (savedTheme) {
+                    setTheme(savedTheme);
+                } else {
+                    const systemPreference = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+                    setTheme(systemPreference);
+                }
+            }, []);
+
+            // Update CSS variables based on theme
+            useEffect(() => {
+                if (theme === 'dark') {
+                    document.documentElement.setAttribute('data-theme', 'dark');
+                } else {
+                    document.documentElement.setAttribute('data-theme', 'light');
+                }
+                localStorage.setItem('preferredTheme', theme);
+            }, [theme]);
+
+            // Save sets to localStorage whenever they change
+            useEffect(() => {
+                localStorage.setItem('studyPlannerSets', JSON.stringify(sets));
+            }, [sets]);
+
+            const toggleTheme = () => {
+                setTheme(prev => prev === 'dark' ? 'light' : 'dark');
+            };
+
+            const addSet = (newSet) => {
+                setSets(prev => [...prev, newSet]);
+            };
+
+            const removeSet = (index) => {
+                setSets(prev => prev.filter((_, i) => i !== index));
+            };
+
+            const updateSet = (index, updatedSet) => {
+                setSets(prev => prev.map((set, i) => i === index ? updatedSet : set));
+            };
+
+            return (
+                <div>
+                    <Header 
+                        toggleTheme={toggleTheme} 
+                        currentTheme={theme} 
+                        onAddSet={() => setShowNewSetForm(prev => !prev)} 
+                    />
+                    <main>
+                        {showNewSetForm && <NewSetForm onAddSet={addSet} onClose={() => setShowNewSetForm(false)} />}
+                        <SetsList 
+                            sets={sets} 
+                            onRemoveSet={(index) => setRemoveIndex(index)} 
+                            onUpdateSet={updateSet} 
+                        />
+                    </main>
+                    {removeIndex !== null && 
+                        <ConfirmModal 
+                            onConfirm={() => { removeSet(removeIndex); setRemoveIndex(null); }} 
+                            onCancel={() => setRemoveIndex(null)} 
+                        />
+                    }
+                </div>
+            );
+        }
+
+        // Header Component
+        function Header({ toggleTheme, currentTheme, onAddSet }) {
+            return (
+                <header>
+                    <div className="logo">
+                        <i className="fas fa-book-open"></i>
+                        Study Planner
+                    </div>
+                    <div className="header-right">
+                        <button className="theme-toggle-btn" onClick={toggleTheme} aria-label="Toggle Theme">
+                            <i className={currentTheme === 'dark' ? 'fas fa-sun' : 'fas fa-moon'}></i>
+                        </button>
+                        <button onClick={onAddSet}>
+                            <i className="fas fa-plus"></i> Add Set
+                        </button>
+                    </div>
+                </header>
+            );
+        }
+
+        // NewSetForm Component
+        function NewSetForm({ onAddSet, onClose }) {
+            const [name, setName] = useState('');
+            const [totalTests, setTotalTests] = useState('');
+            const [totalDays, setTotalDays] = useState('');
+
+            const handleSubmit = (e) => {
+                e.preventDefault();
+                if (!name.trim() || isNaN(totalTests) || isNaN(totalDays) || totalTests <= 0 || totalDays <= 0) {
+                    alert('Please fill in all fields correctly.');
+                    return;
+                }
+                const newSet = {
+                    name: name.trim(),
+                    total: parseInt(totalTests, 10),
+                    days: parseInt(totalDays, 10),
+                    done: 0,
+                    startDate: new Date().toISOString()
+                };
+                onAddSet(newSet);
+                setName('');
+                setTotalTests('');
+                setTotalDays('');
+                onClose();
+            };
+
+            return (
+                <form className="new-set-form" onSubmit={handleSubmit}>
+                    <input 
+                        type="text" 
+                        value={name} 
+                        onChange={(e) => setName(e.target.value)} 
+                        placeholder="Set Name" 
+                        required 
+                    />
+                    <input 
+                        type="number" 
+                        value={totalTests} 
+                        onChange={(e) => setTotalTests(e.target.value)} 
+                        placeholder="Total Tests" 
+                        min="1" 
+                        required 
+                    />
+                    <input 
+                        type="number" 
+                        value={totalDays} 
+                        onChange={(e) => setTotalDays(e.target.value)} 
+                        placeholder="Days" 
+                        min="1" 
+                        required 
+                    />
+                    <button type="submit">
+                        <i className="fas fa-check"></i> Create Set
+                    </button>
+                </form>
+            );
+        }
+
+        // SetsList Component
+        function SetsList({ sets, onRemoveSet, onUpdateSet }) {
+            return (
+                <div className="sets">
+                    {sets.length === 0 ? (
+                        <p>No study sets added yet. Click "Add Set" to get started!</p>
+                    ) : (
+                        sets.map((set, index) => (
+                            <Set 
+                                key={index} 
+                                set={set} 
+                                index={index} 
+                                onRemove={() => onRemoveSet(index)} 
+                                onUpdate={(updatedSet) => onUpdateSet(index, updatedSet)} 
+                            />
+                        ))
+                    )}
+                </div>
+            );
+        }
+
+        // Set Component
+        function Set({ set, index, onRemove, onUpdate }) {
+            const [showSchedule, setShowSchedule] = useState(false);
+            const [addDone, setAddDone] = useState('');
+
+            const now = new Date();
+            const startDate = new Date(set.startDate);
+            const daysPassed = daysBetween(startDate, now);
+            const total = set.total;
+            const done = set.done || 0;
+            const testsLeft = Math.max(total - done, 0);
+            const totalDays = set.days;
+            const remainingDays = Math.max(totalDays - daysPassed, 0);
+            const testsPerDay = remainingDays > 0 ? (testsLeft / remainingDays) : 0;
+            const futureSchedule = distributeTests(testsLeft, remainingDays);
+            const finishDate = addDaysToDate(startDate, totalDays);
+
+            const handleRename = (e) => {
+                const newName = e.target.value.trim();
+                if (newName) {
+                    onUpdate({ ...set, name: newName });
+                }
+            };
+
+            const handleAddDone = () => {
+                const value = parseInt(addDone, 10) || 0;
+                if (value > 0) {
+                    const updatedDone = Math.min(done + value, total);
+                    onUpdate({ ...set, done: updatedDone });
+                    setAddDone('');
+                }
+            };
+
+            const handleKeyPress = (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    handleAddDone();
+                }
+            };
+
+            const toggleSchedule = () => {
+                setShowSchedule(prev => !prev);
+            };
+
+            return (
+                <div className="set">
+                    <div className="set-header">
+                        <input 
+                            type="text" 
+                            value={set.name} 
+                            onChange={handleRename} 
+                            title="Rename this set" 
+                        />
+                        <button onClick={onRemove} title="Remove Set">
+                            <i className="fas fa-trash"></i>
+                        </button>
+                    </div>
+                    <div className="set-details">
+                        <div><strong>Total:</strong> {total}</div>
+                        <div><strong>Done:</strong> {done}</div>
+                        <div><strong>Left:</strong> {testsLeft}</div>
+                        <div><strong>Tests/Day:</strong> {testsPerDay.toFixed(1)}</div>
+                        <div><strong>Finish by:</strong> {formatDate(finishDate)}</div>
+                        <progress value={done} max={total}></progress>
+                    </div>
+                    {futureSchedule.length > 0 && (
+                        <>
+                            <button className="toggle-schedule-btn" onClick={toggleSchedule}>
+                                <i className="fas fa-calendar-alt"></i> {showSchedule ? 'Hide Schedule' : 'Show Schedule'}
+                            </button>
+                            {showSchedule && (
+                                <div className="schedule">
+                                    {futureSchedule.map((count, i) => (
+                                        <div className="schedule-day" key={i}>
+                                            <div>{formatDate(addDaysToDate(now, i + 1))}:</div>
+                                            <div>{count} test{count !== 1 ? 's' : ''}</div>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                        </>
+                    )}
+                    <div className="update-progress-form">
+                        <input 
+                            type="number" 
+                            min="0" 
+                            placeholder="Add done" 
+                            value={addDone}
+                            onChange={(e) => setAddDone(e.target.value)}
+                            onKeyPress={handleKeyPress}
+                            required 
+                        />
+                        <button type="button" onClick={handleAddDone}>
+                            <i className="fas fa-plus"></i>
+                        </button>
+                    </div>
+                </div>
+            );
+        }
+
+        // ConfirmModal Component
+        function ConfirmModal({ onConfirm, onCancel }) {
+            useEffect(() => {
+                const handleOutsideClick = (e) => {
+                    if (e.target.className === 'confirm-modal') {
+                        onCancel();
+                    }
+                };
+                window.addEventListener('click', handleOutsideClick);
+                return () => window.removeEventListener('click', handleOutsideClick);
+            }, [onCancel]);
+
+            return (
+                <div className="confirm-modal" style={{ display: 'flex' }}>
+                    <div className="modal-content">
+                        <p>Are you sure you want to remove this set?</p>
+                        <button onClick={onConfirm}>
+                            <i className="fas fa-trash"></i> Yes
+                        </button>
+                        <button onClick={onCancel}>
+                            <i className="fas fa-times"></i> No
+                        </button>
+                    </div>
+                </div>
+            );
+        }
+
+        // Render the App
+        ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+    </script>
+</body>
+</html>
