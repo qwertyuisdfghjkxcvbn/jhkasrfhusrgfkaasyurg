@@ -1,3 +1,20 @@
+Below is the full updated code. Changes made to meet the requirements:
+
+Changes and Features:
+	1.	Actual Dates in Schedule: Instead of “Day 1,” shows the actual calendar date for each upcoming test day.
+	2.	Dynamic Schedule Updates: After updating the progress (done tests), the schedule automatically recalculates how to distribute the remaining tests across the remaining days.
+	3.	Fractional Tests/Day in Statistics: The “Tests/Day” line now shows a decimal (e.g., 1.4) if needed.
+	4.	Increment Button Sizing: The “+” button is made the same size and style as the “Update” button for consistency.
+	5.	No Borders: Removed all borders to achieve a minimalist design.
+	6.	iPhone-Friendly: Simple, mobile-first layout that should work well on iPhone screens.
+
+How the Schedule Works Now:
+	•	We consider how many days have passed since the start date of the set.
+	•	We only show the schedule for the future (remaining) days.
+	•	Tests left are distributed evenly among the remaining days: each day gets either floor(testsLeft / daysLeft) or floor(testsLeft / daysLeft) + 1 if there is a remainder, ensuring a whole number of tests per day.
+	•	Each time progress is updated, the distribution is recalculated, so future test requirements adjust accordingly.
+
+Full Code:
 
 <!DOCTYPE html>
 <html lang="en">
@@ -6,41 +23,40 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no"/>
 <title>Exam Preparator</title>
 <style>
-/* Use device’s preferred color scheme */
 :root {
   color-scheme: light dark;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+  margin:0; padding:0;
+}
+
+/* Light/Dark mode based on prefers-color-scheme */
+@media (prefers-color-scheme: dark) {
+  body { background:#111; color:#eee; }
+  header, .set, .new-set-form, .confirm-modal .modal-content {
+    background:#111;
+  }
+  input, button.action {
+    background:#222; color:#eee;
+  }
+  progress { background:#222; }
+  progress::-webkit-progress-value { background:#0af; }
+}
+
+@media (prefers-color-scheme: light) {
+  body { background:#f5f5f5; color:#111; }
+  header, .set, .new-set-form, .confirm-modal .modal-content {
+    background:#f5f5f5;
+  }
+  input, button.action {
+    background:#eee; color:#111;
+  }
+  progress { background:#ccc; }
+  progress::-webkit-progress-value { background:#06c; }
 }
 
 body, html {
   margin:0; padding:0;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
   overflow-x:hidden;
-}
-
-/* Dark mode */
-@media (prefers-color-scheme: dark) {
-  body { background:#111; color:#eee; }
-  header, .set, .new-set-form, .confirm-modal .modal-content {
-    background:#222; border:1px solid #333;
-  }
-  input, button.action {
-    background:#333; color:#eee; border:1px solid #444;
-  }
-  progress { background:#333; }
-  progress::-webkit-progress-value { background:#0af; }
-}
-
-/* Light mode */
-@media (prefers-color-scheme: light) {
-  body { background:#f5f5f5; color:#111; }
-  header, .set, .new-set-form, .confirm-modal .modal-content {
-    background:#fff; border:1px solid #ccc;
-  }
-  input, button.action {
-    background:#eee; color:#111; border:1px solid #ccc;
-  }
-  progress { background:#ccc; }
-  progress::-webkit-progress-value { background:#06c; }
 }
 
 header {
@@ -62,10 +78,10 @@ main {
   display:none; flex-direction:column; gap:0.5rem; margin-bottom:1rem; align-items:stretch;
 }
 .new-set-form input {
-  padding:0.5rem; border-radius:0.3rem; font-size:1rem;
+  padding:0.5rem; font-size:1rem; border:none; border-radius:0.3rem; 
 }
 .new-set-form button.action {
-  font-weight:600; padding:0.5rem; border-radius:0.3rem;
+  font-weight:600; padding:0.5rem; border:none; border-radius:0.3rem; cursor:pointer;
 }
 
 .sets {
@@ -80,7 +96,7 @@ main {
   display:flex; justify-content:space-between; align-items:center; gap:0.5rem;
 }
 .set-header input {
-  border-radius:0.3rem; padding:0.3rem; flex:1;
+  border-radius:0.3rem; padding:0.3rem; flex:1; border:none;
 }
 .set-header button {
   background:none; border:none; color:#f33; cursor:pointer; font-size:1.2rem; width:2rem; height:2rem; text-align:center; line-height:2rem; border-radius:0.3rem;
@@ -107,17 +123,14 @@ progress {
   display:flex; gap:0.5rem; align-items:center; flex-wrap:wrap;
 }
 .update-progress-form input[type="number"] {
-  width:4rem; border-radius:0.3rem; padding:0.3rem;
+  width:4rem; border-radius:0.3rem; padding:0.3rem; border:none;
 }
-.update-progress-form button.action {
+.update-progress-form button.action, .update-progress-form .increment-button {
   border:none; font-weight:600; padding:0.3rem 0.7rem; border-radius:0.3rem; cursor:pointer;
-  background:#0af; color:#111;
+  background:#0af; color:#111; font-size:1rem; line-height:1.5rem;
 }
-.update-progress-form button.action:active {
+.update-progress-form button.action:active, .update-progress-form .increment-button:active {
   background:#08d;
-}
-.update-progress-form .increment-button {
-  width:2rem; height:2rem; border-radius:0.3rem; background:#0af; color:#111; font-size:1.2rem; line-height:2rem; text-align:center; border:none; cursor:pointer;
 }
 
 .confirm-modal {
@@ -131,7 +144,11 @@ progress {
   margin-bottom:1rem;
 }
 .confirm-modal .modal-content button {
-  margin:0 0.5rem; padding:0.5rem 1rem; border-radius:0.3rem; cursor:pointer;
+  margin:0 0.5rem; padding:0.5rem 1rem; border-radius:0.3rem; cursor:pointer; border:none;
+  background:#0af; color:#111; font-weight:600;
+}
+.confirm-modal .modal-content button:active {
+  background:#08d;
 }
 </style>
 </head>
@@ -172,16 +189,9 @@ progress {
     localStorage.setItem('examPreparatorSets', JSON.stringify(sets));
   }
 
-  // Distribute tests as evenly as possible across days
-  function createSchedule(totalTests, totalDays) {
-    let schedule = new Array(totalDays).fill(0);
-    for (let i = 1; i <= totalTests; i++) {
-      let dayIndex = Math.round(i*(totalDays/(totalTests+1))) - 1;
-      if (dayIndex < 0) dayIndex = 0;
-      if (dayIndex >= totalDays) dayIndex = totalDays-1;
-      schedule[dayIndex] += 1;
-    }
-    return schedule;
+  function daysBetween(d1, d2) {
+    const oneDay = 24*60*60*1000;
+    return Math.floor((d2.getTime()-d1.getTime())/oneDay);
   }
 
   function addDaysToDate(date, days) {
@@ -194,17 +204,43 @@ progress {
     return date.toDateString();
   }
 
+  // Distribute testsLeft evenly over remainingDays
+  // This returns an array of tests per day (whole numbers)
+  function distributeTests(testsLeft, remainingDays) {
+    if (remainingDays <= 0 || testsLeft <= 0) return [];
+    const base = Math.floor(testsLeft / remainingDays);
+    let remainder = testsLeft % remainingDays;
+    let schedule = [];
+    for (let i=0; i<remainingDays; i++) {
+      let val = base + (remainder > 0 ? 1 : 0);
+      remainder--;
+      if (remainder < 0) remainder = 0;
+      schedule.push(val);
+    }
+    return schedule;
+  }
+
   function renderSets() {
     setsContainer.innerHTML = '';
+    const now = new Date();
     sets.forEach((s, index) => {
-      const done = s.done || 0;
-      const total = s.total;
-      const testsLeft = Math.max(total - done, 0);
-      const daysLeft = s.days;
-      const testsPerDay = daysLeft > 0 ? Math.ceil(testsLeft / daysLeft) : 0;
-      const progress = (done / total)*100;
-      const schedule = s.schedule || [];
       const startDate = new Date(s.startDate);
+      const daysPassed = daysBetween(startDate, now);
+      const total = s.total;
+      const done = s.done || 0;
+      const testsLeft = Math.max(total - done, 0);
+      const totalDays = s.days;
+      let remainingDays = totalDays - daysPassed;
+      if (remainingDays < 0) remainingDays = 0;
+
+      // tests/day as a float
+      const testsPerDay = (remainingDays > 0) ? (testsLeft / remainingDays) : 0;
+      const progress = (done / total) * 100;
+
+      // Recalculate schedule for the future:
+      // We only show future days from 'now' to 'finishDate'
+      const futureSchedule = distributeTests(testsLeft, remainingDays);
+
       const finishDate = addDaysToDate(startDate, s.days);
 
       const setEl = document.createElement('div');
@@ -218,19 +254,24 @@ progress {
           <div>Total: ${total}</div>
           <div>Done: ${done}</div>
           <div>Left: ${testsLeft}</div>
-          <div>Tests/Day: ${testsPerDay}</div>
+          <div>Tests/Day: ${testsPerDay.toFixed(1)}</div>
           <div>Finish by: ${formatDate(finishDate)}</div>
           <progress value="${done}" max="${total}"></progress>
         </div>
+        ${futureSchedule.length > 0 ? `
         <div class="schedule">
-          <strong>Schedule:</strong>
-          ${schedule.map((testsCount, dayIndex) => `
-            <div class="schedule-day">
-              <div>Day ${dayIndex+1}:</div>
-              <div>${testsCount} test${testsCount!==1?'s':''}</div>
-            </div>
-          `).join('')}
+          <strong>Upcoming Schedule:</strong>
+          ${futureSchedule.map((testsCount, i) => {
+            const dayDate = addDaysToDate(now, i);
+            return `
+              <div class="schedule-day">
+                <div>${formatDate(dayDate)}:</div>
+                <div>${testsCount} test${testsCount!==1?'s':''}</div>
+              </div>
+            `;
+          }).join('')}
         </div>
+        ` : ''}
         <form class="update-progress-form">
           <input type="number" min="0" value="0" required>
           <button type="button" class="increment-button">+</button>
@@ -273,7 +314,7 @@ progress {
   }
 
   addSetBtn.addEventListener('click', () => {
-    newSetForm.style.display = newSetForm.style.display === 'none' || newSetForm.style.display === '' ? 'flex' : 'none';
+    newSetForm.style.display = (newSetForm.style.display === 'none' || newSetForm.style.display === '') ? 'flex' : 'none';
   });
 
   newSetForm.addEventListener('submit', (e) => {
@@ -282,8 +323,8 @@ progress {
     const totalTests = parseInt(document.getElementById('totalTests').value,10);
     const totalDays = parseInt(document.getElementById('totalDays').value,10);
     if(!name || isNaN(totalTests) || isNaN(totalDays) || totalTests <=0 || totalDays <=0) return;
-    const schedule = createSchedule(totalTests, totalDays);
-    sets.push({name, total: totalTests, days: totalDays, done:0, schedule, startDate: new Date().toISOString()});
+    const now = new Date();
+    sets.push({name, total: totalTests, days: totalDays, done:0, startDate: now.toISOString()});
     saveSets();
     renderSets();
     document.getElementById('setName').value = '';
