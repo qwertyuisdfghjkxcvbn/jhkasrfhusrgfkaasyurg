@@ -3,49 +3,126 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-<title>Exam Preparation Tracker</title>
+<title>Exam Preparator</title>
 <style>
-*{box-sizing:border-box;margin:0;padding:0}
-html,body{height:100%;font-family:'Helvetica','Arial',sans-serif;background:#111;color:#eee}
-body{display:flex;flex-direction:column}
-header,main,footer{padding:20px}
-header{background:#222;position:sticky;top:0;z-index:100}
-main{flex:1}
-.container{max-width:1200px;margin:0 auto}
-.global-stats{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between}
-.global-progress{flex:1 1 300px;min-width:300px;text-align:center;margin-right:20px;margin-bottom:20px}
-.global-progress canvas{display:block;margin:0 auto 10px auto}
-.global-stats-info{flex:2;display:flex;flex-wrap:wrap;align-items:center;justify-content:flex-start}
-.global-stats-info .stat{margin-right:30px;margin-bottom:10px}
-.global-stats-info .stat h3{font-size:1.2rem;margin-bottom:5px}
-.global-stats-info .stat p{font-size:1rem;opacity:0.8}
-.add-set-container{margin:20px 0;position:relative}
-.add-set-btn{display:inline-flex;align-items:center;background:#0af;color:#111;padding:8px 12px;border-radius:4px;cursor:pointer;font-weight:bold;text-decoration:none;transition:background 0.3s}
-.add-set-btn:hover{background:#08d}
-.add-set-form{background:#222;border-radius:4px;padding:20px;margin-top:10px;display:none;opacity:0;transform:translateY(-10px);transition:all 0.3s}
-.add-set-form.visible{display:block;opacity:1;transform:translateY(0)}
-.add-set-form label{display:block;margin-bottom:10px;font-weight:bold}
-.add-set-form input[type="text"],.add-set-form input[type="number"]{width:100%;padding:8px;margin-bottom:20px;background:#333;border:none;color:#eee;border-radius:4px}
-.add-set-form button{display:inline-block;background:#0af;color:#111;padding:8px 12px;border-radius:4px;cursor:pointer;font-weight:bold;text-decoration:none;transition:background 0.3s;border:none}
-.add-set-form button:hover{background:#08d}
-.sets-list{display:flex;flex-wrap:wrap;gap:20px}
-.set-card{background:#222;border-radius:6px;padding:20px;flex:1 1 300px;max-width:350px;position:relative;overflow:hidden;display:flex;flex-direction:column;justify-content:space-between}
-.set-card h2{font-size:1.4rem;margin-bottom:10px}
-.set-card .stats{display:flex;flex-wrap:wrap;margin-bottom:20px}
-.set-card .stat-item{flex:1 1 50%;margin-bottom:10px}
-.set-card .stat-item strong{display:block;font-size:1.1rem;margin-bottom:5px}
-.set-card .progress-wrapper{text-align:center;margin-bottom:20px}
-.set-card canvas{display:block;margin:0 auto}
-.set-card .actions{display:flex;align-items:center;justify-content:space-between}
-.set-card .actions .increment-btn,.set-card .actions .delete-btn{background:none;border:none;color:#0af;cursor:pointer;font-size:1.2rem;transition:color 0.3s}
-.set-card .actions .increment-btn:hover,.set-card .actions .delete-btn:hover{color:#08d}
-.set-card .actions .increment-btn i,.set-card .actions .delete-btn i{pointer-events:none}
-.sort-container{margin-bottom:20px}
-.sort-container select{padding:8px;background:#333;color:#eee;border:none;border-radius:4px}
-.toast{position:fixed;bottom:20px;right:20px;background:#0af;color:#111;padding:10px 20px;border-radius:4px;opacity:0;transform:translateY(20px);transition:all 0.3s}
-.toast.show{opacity:1;transform:translateY(0)}
-@media (max-width:768px){.global-stats-info{justify-content:center}}
-.overlay-message{position:fixed;top:0;left:0;width:100%;height:100%;background:#111;display:flex;align-items:center;justify-content:center;z-index:9999;flex-direction:column;text-align:center;color:#fff; padding:20px; font-size:1.2rem}
+body {
+  margin: 0; padding: 0; 
+  background: #111; 
+  color: #eee;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+}
+header {
+  display: flex; 
+  align-items: center; 
+  justify-content: space-between;
+  padding: 1rem; 
+  border-bottom: 1px solid #333;
+}
+header h1 {
+  font-size: 1.2rem; 
+  margin: 0; 
+  font-weight: 600;
+}
+header button {
+  background: none; 
+  border: none; 
+  cursor: pointer; 
+  color: #0af;
+  font-size: 1.5rem;
+}
+main {
+  padding: 1rem; 
+  max-width: 600px; 
+  margin: 0 auto;
+}
+.new-set-form, .update-progress-form {
+  display: flex; 
+  gap: 0.5rem; 
+  margin-bottom: 1rem; 
+  align-items: center;
+}
+input[type="number"], input[type="text"] {
+  background: #222; 
+  border: 1px solid #333; 
+  color: #eee; 
+  padding: 0.5rem; 
+  border-radius: 0.3rem; 
+  width: 5rem;
+}
+input[type="number"]::-webkit-inner-spin-button, input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none; 
+  margin: 0;
+}
+button.action {
+  background: #0af; 
+  border: none; 
+  color: #111; 
+  font-weight: 600; 
+  padding: 0.5rem 0.7rem; 
+  border-radius: 0.3rem; 
+  cursor: pointer;
+}
+button.action:active {
+  background: #08d;
+}
+.sets {
+  display: flex; 
+  flex-direction: column; 
+  gap: 1rem;
+}
+.set {
+  border: 1px solid #333; 
+  border-radius: 0.3rem; 
+  padding: 1rem; 
+  background: #222;
+}
+.set-header {
+  display: flex; 
+  justify-content: space-between; 
+  align-items: center;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+}
+.set-header button {
+  background: none; 
+  border: none; 
+  color: #f33; 
+  cursor: pointer; 
+  font-size: 1rem;
+}
+.set-details {
+  font-size: 0.9rem; 
+  margin-bottom: 0.5rem;
+}
+.set-details div {
+  margin: 0.2rem 0;
+}
+progress {
+  width: 100%; 
+  height: 1rem; 
+  border: none; 
+  border-radius: 0.3rem; 
+  background: #333;
+}
+progress::-webkit-progress-value {
+  background: #0af;
+  border-radius: 0.3rem;
+}
+.update-progress-form button {
+  background: #0a8; 
+  border: none; 
+  color: #111; 
+  font-weight: 600; 
+  padding: 0.3rem 0.7rem; 
+  border-radius: 0.3rem; 
+  cursor: pointer;
+}
+.update-progress-form button:active {
+  background: #07a;
+}
+.overlay-message {
+  position:fixed;top:0;left:0;width:100%;height:100%;background:#111;display:flex;align-items:center;justify-content:center;z-index:9999;flex-direction:column;text-align:center;color:#fff;padding:20px;font-size:1.2rem
+}
 .overlay-message p{margin-bottom:10px}
 </style>
 </head>
@@ -54,223 +131,115 @@ main{flex:1}
 <p>Please open this on iPhone</p>
 </div>
 <header>
-<div class="container">
-<div class="global-stats">
-<div class="global-progress">
-<canvas id="globalProgressCanvas" width="150" height="150"></canvas>
-<h1>Total Progress</h1>
-</div>
-<div class="global-stats-info">
-<div class="stat">
-<h3>Total Tests</h3>
-<p id="globalTotalTests">0</p>
-</div>
-<div class="stat">
-<h3>Total Done</h3>
-<p id="globalDoneTests">0</p>
-</div>
-<div class="stat">
-<h3>Total Left</h3>
-<p id="globalLeftTests">0</p>
-</div>
-<div class="stat">
-<h3>Avg Tests/Day Needed</h3>
-<p id="globalTestsPerDay">0</p>
-</div>
-</div>
-</div>
-</div>
+  <h1>Exam Preparator</h1>
+  <button id="addSetBtn" title="Add New Preparation Set">+</button>
 </header>
 <main>
-<div class="container">
-<div class="add-set-container">
-<button class="add-set-btn"><i class="fas fa-plus"></i> Add New Set</button>
-<form class="add-set-form" id="addSetForm">
-<label for="setName">Set Name</label>
-<input type="text" id="setName" required>
-<label for="totalTests">Total Tests</label>
-<input type="number" id="totalTests" min="1" required>
-<label for="totalDays">Total Days</label>
-<input type="number" id="totalDays" min="1" required>
-<button type="submit">Create Set</button>
-</form>
-</div>
-<div class="sort-container">
-<label for="sortSelect">Sort By: </label>
-<select id="sortSelect">
-<option value="none">None</option>
-<option value="progress">Progress (Descending)</option>
-<option value="testsLeft">Tests Left (Ascending)</option>
-<option value="daysLeft">Days Left (Ascending)</option>
-</select>
-</div>
-<div class="sets-list" id="setsList"></div>
-</div>
+  <form class="new-set-form" id="newSetForm" style="display:none;">
+    <input type="number" id="totalTests" placeholder="Tests" min="1" required>
+    <input type="number" id="totalDays" placeholder="Days" min="1" required>
+    <button class="action" type="submit">Create</button>
+  </form>
+  <div class="sets" id="setsContainer"></div>
 </main>
-<footer>
-<div class="container">
-<p style="text-align: center; font-size:0.9rem; opacity:0.7;">
-&copy; 2024 Exam Prep Tracker
-</p>
-</div>
-</footer>
-<div class="toast" id="toast">Action done!</div>
-<script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
 <script>
-document.addEventListener('DOMContentLoaded',()=>{
-const addSetBtn=document.querySelector('.add-set-btn')
-const addSetForm=document.getElementById('addSetForm')
-const setsList=document.getElementById('setsList')
-const sortSelect=document.getElementById('sortSelect')
-const toast=document.getElementById('toast')
-const overlayMessage=document.getElementById('overlayMessage')
-let sets=JSON.parse(localStorage.getItem('examSets'))||[]
-function isiOS(){return/iphone|ipad|ipod/i.test(navigator.userAgent)}
-function checkDevice(){
-if(!isiOS()||window.innerWidth>600){overlayMessage.style.display='flex'}else{overlayMessage.style.display='none'}}
-checkDevice()
-window.addEventListener('resize',checkDevice)
-addSetBtn.addEventListener('click',()=>{addSetForm.classList.toggle('visible')})
-addSetForm.addEventListener('submit',(e)=>{
-e.preventDefault()
-const setName=document.getElementById('setName').value.trim()
-const totalTests=parseInt(document.getElementById('totalTests').value.trim(),10)
-const totalDays=parseInt(document.getElementById('totalDays').value.trim(),10)
-if(setName&&totalTests>0&&totalDays>0){
-const newSet={id:Date.now(),name:setName,totalTests:totalTests,totalDays:totalDays,testsDone:0,startDate:Date.now()}
-sets.push(newSet)
-saveSets()
-renderSets()
-updateGlobalStats()
-showToast("Set created successfully!")
-addSetForm.reset()
-addSetForm.classList.remove('visible')
-}})
-sortSelect.addEventListener('change',()=>{renderSets()})
-setsList.addEventListener('click',(e)=>{
-const target=e.target
-const card=target.closest('.set-card')
-if(!card)return
-const setId=parseInt(card.dataset.id,10)
-const setIndex=sets.findIndex(s=>s.id===setId)
-if(target.matches('.increment-btn,.increment-btn *')){
-if(sets[setIndex].testsDone<sets[setIndex].totalTests){
-sets[setIndex].testsDone+=1
-saveSets()
-renderSets()
-updateGlobalStats()
-showToast("Tests done updated!")
-}}
-if(target.matches('.delete-btn,.delete-btn *')){
-sets.splice(setIndex,1)
-saveSets()
-renderSets()
-updateGlobalStats()
-showToast("Set removed!")
-}})
-function saveSets(){localStorage.setItem('examSets',JSON.stringify(sets))}
-function renderSets(){
-setsList.innerHTML=''
-let sortedSets=[...sets]
-const sortBy=sortSelect.value
-if(sortBy==='progress'){sortedSets.sort((a,b)=>(b.testsDone/b.totalTests)-(a.testsDone/a.totalTests))}
-else if(sortBy==='testsLeft'){sortedSets.sort((a,b)=>(a.totalTests - a.testsDone)-(b.totalTests - b.testsDone))}
-else if(sortBy==='daysLeft'){sortedSets.sort((a,b)=>(getDaysLeft(a)-getDaysLeft(b)))}
-sortedSets.forEach(set=>{
-const card=document.createElement('div')
-card.classList.add('set-card')
-card.dataset.id=set.id
-const daysLeft=getDaysLeft(set)
-const testsLeft=set.totalTests - set.testsDone
-const requiredPerDay=daysLeft>0?(testsLeft/daysLeft).toFixed(2):testsLeft
-const completion=set.testsDone/set.totalTests
-card.innerHTML=`
-<h2>${set.name}</h2>
-<div class="stats">
-<div class="stat-item"><strong>Tests Done</strong><span>${set.testsDone}</span></div>
-<div class="stat-item"><strong>Tests Left</strong><span>${testsLeft}</span></div>
-<div class="stat-item"><strong>Days Left</strong><span>${daysLeft}</span></div>
-<div class="stat-item"><strong>Tests/Day</strong><span>${requiredPerDay}</span></div>
-</div>
-<div class="progress-wrapper">
-<canvas width="100" height="100"></canvas>
-</div>
-<div class="actions">
-<button class="increment-btn"><i class="fas fa-plus-circle"></i></button>
-<button class="delete-btn"><i class="fas fa-trash"></i></button>
-</div>
-`
-setsList.appendChild(card)
-const canvas=card.querySelector('canvas')
-drawCircularChart(canvas,completion,"#0af")
-})
-}
-function drawCircularChart(canvas,completionRatio,color){
-const ctx=canvas.getContext('2d')
-const radius=40
-const lineWidth=8
-ctx.beginPath()
-ctx.arc(canvas.width/2,canvas.height/2,radius,0,2*Math.PI)
-ctx.strokeStyle='#333'
-ctx.lineWidth=lineWidth
-ctx.stroke()
-const startAngle=-Math.PI/2
-const endAngle=startAngle+(2*Math.PI*completionRatio)
-ctx.beginPath()
-ctx.arc(canvas.width/2,canvas.height/2,radius,startAngle,endAngle)
-ctx.strokeStyle=color
-ctx.lineWidth=lineWidth
-ctx.stroke()
-}
-function getDaysLeft(set){
-const startDate=set.startDate
-const elapsedDays=Math.floor((Date.now()-startDate)/(1000*60*60*24))
-const remaining=set.totalDays - elapsedDays
-return remaining<0?0:remaining
-}
-function updateGlobalStats(){
-const totalTests=sets.reduce((sum,s)=>sum+s.totalTests,0)
-const totalDone=sets.reduce((sum,s)=>sum+s.testsDone,0)
-const totalLeft=totalTests - totalDone
-let totalDaysLeft=0
-sets.forEach(s=>{totalDaysLeft+=getDaysLeft(s)})
-let globalTestsPerDay=totalDaysLeft>0?(totalLeft/totalDaysLeft):totalLeft
-document.getElementById('globalTotalTests').textContent=totalTests
-document.getElementById('globalDoneTests').textContent=totalDone
-document.getElementById('globalLeftTests').textContent=totalLeft
-document.getElementById('globalTestsPerDay').textContent=isNaN(globalTestsPerDay)?0:globalTestsPerDay.toFixed(2)
-drawGlobalChart(totalDone,totalTests)
-}
-function drawGlobalChart(done,total){
-const canvas=document.getElementById('globalProgressCanvas')
-const ctx=canvas.getContext('2d')
-const completionRatio=total>0?(done/total):0
-const radius=60
-const lineWidth=10
-ctx.clearRect(0,0,canvas.width,canvas.height)
-ctx.beginPath()
-ctx.arc(canvas.width/2,canvas.height/2,radius,0,2*Math.PI)
-ctx.strokeStyle='#333'
-ctx.lineWidth=lineWidth
-ctx.stroke()
-const startAngle=-Math.PI/2
-const endAngle=startAngle+(2*Math.PI*completionRatio)
-ctx.beginPath()
-ctx.arc(canvas.width/2,canvas.height/2,radius,startAngle,endAngle)
-ctx.strokeStyle='#0af'
-ctx.lineWidth=lineWidth
-ctx.stroke()
-}
-let toastTimeout
-function showToast(message){
-toast.textContent=message
-toast.classList.add('show')
-clearTimeout(toastTimeout)
-toastTimeout=setTimeout(()=>{toast.classList.remove('show')},2000)
-}
-renderSets()
-updateGlobalStats()
-})
+(function(){
+  let sets = JSON.parse(localStorage.getItem('examPreparatorSets') || '[]');
+  const setsContainer = document.getElementById('setsContainer');
+  const addSetBtn = document.getElementById('addSetBtn');
+  const newSetForm = document.getElementById('newSetForm');
+  const totalTestsInput = document.getElementById('totalTests');
+  const totalDaysInput = document.getElementById('totalDays');
+  const overlayMessage=document.getElementById('overlayMessage');
+
+  function isiOS(){return/iphone|ipad|ipod/i.test(navigator.userAgent)}
+  function checkDevice(){
+    if(!isiOS()||window.innerWidth>600){overlayMessage.style.display='flex'}else{overlayMessage.style.display='none'}
+  }
+  checkDevice();
+  window.addEventListener('resize',checkDevice);
+
+  function saveSets() {
+    localStorage.setItem('examPreparatorSets', JSON.stringify(sets));
+  }
+
+  function renderSets() {
+    setsContainer.innerHTML = '';
+    sets.forEach((s, index) => {
+      const done = s.done || 0;
+      const total = s.total;
+      const daysLeft = s.days;
+      const testsLeft = Math.max(total - done, 0);
+      const testsPerDay = daysLeft > 0 ? Math.ceil(testsLeft / daysLeft) : 0;
+      const progress = (done / total)*100;
+
+      const setEl = document.createElement('div');
+      setEl.className = 'set';
+      setEl.innerHTML = `
+        <div class="set-header">
+          <div>Set #${index+1}</div>
+          <button title="Remove Set">&times;</button>
+        </div>
+        <div class="set-details">
+          <div>Total tests: ${total}</div>
+          <div>Days: ${daysLeft}</div>
+          <div>Tests done: ${done}</div>
+          <div>Tests left: ${testsLeft}</div>
+          <div>Tests/day needed: ${testsPerDay}</div>
+          <div>Your Progress: ${progress.toFixed(1)}%</div>
+          <progress value="${done}" max="${total}"></progress>
+        </div>
+        <form class="update-progress-form">
+          <input type="number" min="1" placeholder="Tests done today" required>
+          <button type="submit">Update</button>
+        </form>
+      `;
+
+      const removeBtn = setEl.querySelector('.set-header button');
+      removeBtn.addEventListener('click', () => {
+        sets.splice(index,1);
+        saveSets();
+        renderSets();
+      });
+
+      const updateForm = setEl.querySelector('.update-progress-form');
+      updateForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const val = parseInt(updateForm.querySelector('input').value,10);
+        if(isNaN(val) || val <= 0) return;
+        s.done += val;
+        if(s.done > s.total) s.done = s.total;
+        saveSets();
+        renderSets();
+      });
+
+      setsContainer.appendChild(setEl);
+    });
+  }
+
+  addSetBtn.addEventListener('click', () => {
+    if (newSetForm.style.display === 'none') {
+      newSetForm.style.display = 'flex';
+    } else {
+      newSetForm.style.display = 'none';
+    }
+  });
+
+  newSetForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const totalTests = parseInt(totalTestsInput.value,10);
+    const totalDays = parseInt(totalDaysInput.value,10);
+    if (isNaN(totalTests) || isNaN(totalDays) || totalTests <= 0 || totalDays <= 0) return;
+    sets.push({total: totalTests, days: totalDays, done: 0});
+    saveSets();
+    renderSets();
+    totalTestsInput.value = '';
+    totalDaysInput.value = '';
+    newSetForm.style.display = 'none';
+  });
+
+  renderSets();
+})();
 </script>
 </body>
 </html>
