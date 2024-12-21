@@ -8,13 +8,22 @@
 <style>
 :root {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
-  margin:0; padding:0;
+  margin: 0;
+  padding: 0;
   color-scheme: light dark;
   --accent-color: #007aff;
   --primary-color: #007aff;
+  --primary-color-hover: #006ae6; /* Darker shade for hover */
+  --primary-color-active: #005bb5; /* Even darker for active */
   --secondary-color: #555;
+  --secondary-color-hover: #444;
+  --secondary-color-active: #333;
   --danger-color: #ff3b30;
+  --danger-color-hover: #e02e24;
+  --danger-color-active: #c7271f;
   --success-color: #34c759;
+  --success-color-hover: #28a745;
+  --success-color-active: #1e7e34;
   --background-light: #f9f9f9;
   --background-dark: #1c1c1c;
 }
@@ -77,18 +86,21 @@ header .burger-menu-btn {
   background:none; border:none; cursor:pointer; padding:0.5rem;
   width:2.5rem; height:2.5rem; display:flex; align-items:center; justify-content:center;
   border-radius:0.5rem;
+  font-size:1.5rem;
 }
 header button#addSetBtn {
   cursor:pointer; padding:0.5rem 1rem; border:none; border-radius:0.5rem;
   color: #fff; background-color: var(--primary-color);
   font-weight:600; font-size:1rem;
   display: flex; align-items: center; justify-content: center;
+  transition: background-color 0.2s ease, transform 0.1s ease;
 }
 header button#addSetBtn:hover {
-  background-color: darken(var(--primary-color), 10%);
+  background-color: var(--primary-color-hover);
 }
 header button#addSetBtn:active {
-  background-color: darken(var(--primary-color), 20%);
+  background-color: var(--primary-color-active);
+  transform: scale(0.98);
 }
 
 /* Button Styles */
@@ -102,135 +114,119 @@ header button#addSetBtn:active {
   transition: background-color 0.2s ease, transform 0.1s ease;
 }
 
+/* Primary Buttons */
 .btn-primary {
   background-color: var(--primary-color);
   color: #fff;
 }
-
 .btn-primary:hover {
-  background-color: darken(var(--primary-color), 10%);
+  background-color: var(--primary-color-hover);
 }
-
 .btn-primary:active {
-  background-color: darken(var(--primary-color), 20%);
+  background-color: var(--primary-color-active);
   transform: scale(0.98);
 }
 
+/* Secondary Buttons */
 .btn-secondary {
   background-color: var(--secondary-color);
   color: #fff;
 }
-
 .btn-secondary:hover {
-  background-color: darken(var(--secondary-color), 10%);
+  background-color: var(--secondary-color-hover);
 }
-
 .btn-secondary:active {
-  background-color: darken(var(--secondary-color), 20%);
+  background-color: var(--secondary-color-active);
   transform: scale(0.98);
 }
 
+/* Danger Buttons */
 .btn-danger {
   background-color: var(--danger-color);
   color: #fff;
 }
-
 .btn-danger:hover {
-  background-color: darken(var(--danger-color), 10%);
+  background-color: var(--danger-color-hover);
 }
-
 .btn-danger:active {
-  background-color: darken(var(--danger-color), 20%);
+  background-color: var(--danger-color-active);
   transform: scale(0.98);
 }
 
+/* Success Buttons */
 .btn-success {
   background-color: var(--success-color);
   color: #fff;
 }
-
 .btn-success:hover {
-  background-color: darken(var(--success-color), 10%);
+  background-color: var(--success-color-hover);
 }
-
 .btn-success:active {
-  background-color: darken(var(--success-color), 20%);
+  background-color: var(--success-color-active);
   transform: scale(0.98);
 }
 
+/* Icon Buttons */
 .btn-icon {
   background-color: transparent;
   color: inherit;
   font-size: 1.5rem;
   padding: 0.3rem;
-}
-
-.btn-icon:hover {
-  background-color: rgba(0, 0, 0, 0.1);
   border-radius: 0.5rem;
 }
+.btn-icon:hover {
+  background-color: rgba(0, 0, 0, 0.1);
+}
+.btn-icon:active {
+  background-color: rgba(0, 0, 0, 0.2);
+  transform: scale(0.95);
+}
 
+/* Small Buttons */
 .btn-small {
   padding: 0.3rem 0.6rem;
   font-size: 0.8rem;
   border-radius: 0.3rem;
 }
-
 .btn-small.btn-primary {
   background-color: var(--primary-color);
   color: #fff;
 }
-
 .btn-small.btn-primary:hover {
-  background-color: darken(var(--primary-color), 10%);
+  background-color: var(--primary-color-hover);
 }
-
 .btn-small.btn-primary:active {
-  background-color: darken(var(--primary-color), 20%);
+  background-color: var(--primary-color-active);
 }
-
 .btn-small.btn-secondary {
   background-color: var(--secondary-color);
   color: #fff;
 }
-
 .btn-small.btn-secondary:hover {
-  background-color: darken(var(--secondary-color), 10%);
+  background-color: var(--secondary-color-hover);
 }
-
 .btn-small.btn-secondary:active {
-  background-color: darken(var(--secondary-color), 20%);
+  background-color: var(--secondary-color-active);
 }
-
 .btn-small.btn-danger {
   background-color: var(--danger-color);
   color: #fff;
 }
-
 .btn-small.btn-danger:hover {
-  background-color: darken(var(--danger-color), 10%);
+  background-color: var(--danger-color-hover);
 }
-
 .btn-small.btn-danger:active {
-  background-color: darken(var(--danger-color), 20%);
+  background-color: var(--danger-color-active);
 }
-
 .btn-small.btn-success {
   background-color: var(--success-color);
   color: #fff;
 }
-
 .btn-small.btn-success:hover {
-  background-color: darken(var(--success-color), 10%);
+  background-color: var(--success-color-hover);
 }
-
 .btn-small.btn-success:active {
-  background-color: darken(var(--success-color), 20%);
-}
-
-/* Utility Functions */
-@function darken($color, $percent) {
-  @return mix(black, $color, $percent);
+  background-color: var(--success-color-active);
 }
 
 /* Burger Menu and Overlay */
@@ -252,8 +248,7 @@ header button#addSetBtn:active {
   font-weight:600; letter-spacing:0.02rem; 
 }
 .close-menu-btn {
-  background:none; border:none; cursor:pointer; font-size:1.5rem; padding:0.5rem;
-  align-self:flex-end;
+  /* btn-icon class already applied */
 }
 
 /* Main */
@@ -270,7 +265,8 @@ main {
   padding:0.5rem; font-size:1rem; border-radius:0.3rem; border:1px solid #ccc;
 }
 .new-set-form button.action {
-  /* Replaced with btn-primary class */
+  /* Will use btn-primary */
+  margin-top: 0.5rem;
 }
 
 /* Sets */
@@ -310,11 +306,22 @@ progress {
 }
 
 .toggle-schedule {
-  /* Replaced with btn-secondary class */
+  /* Use btn-secondary class */
   display:inline-block; margin-top:0.5rem; padding:0.3rem 0.7rem; border-radius:0.3rem; cursor:pointer;
   font-size:0.9rem; font-weight:600;
   text-transform:uppercase;
   letter-spacing:0.05rem;
+  background-color: var(--secondary-color);
+  color: #fff;
+  border: none;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+}
+.toggle-schedule:hover {
+  background-color: var(--secondary-color-hover);
+}
+.toggle-schedule:active {
+  background-color: var(--secondary-color-active);
+  transform: scale(0.98);
 }
 
 /* Update Progress Form */
@@ -326,10 +333,34 @@ progress {
   width:4rem; border-radius:0.3rem; padding:0.3rem; border:1px solid #ccc;
 }
 .update-progress-form .increment-button {
-  /* Replaced with btn-small and btn-success */
+  /* Use btn-small and btn-success */
+  padding:0.3rem 0.6rem; font-size:0.8rem; border-radius:0.3rem;
+  background-color: var(--success-color);
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+}
+.update-progress-form .increment-button:hover {
+  background-color: var(--success-color-hover);
+}
+.update-progress-form .increment-button:active {
+  background-color: var(--success-color-active);
+  transform: scale(0.98);
 }
 .update-progress-form button.action {
-  /* Replaced with btn-primary */
+  /* Use btn-primary */
+  padding:0.5rem 1rem; border:none; border-radius:0.5rem;
+  color: #fff; background-color: var(--primary-color);
+  font-weight:600; font-size:0.9rem;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+}
+.update-progress-form button.action:hover {
+  background-color: var(--primary-color-hover);
+}
+.update-progress-form button.action:active {
+  background-color: var(--primary-color-active);
+  transform: scale(0.98);
 }
 
 /* Confirmation Modal */
@@ -339,18 +370,37 @@ progress {
 }
 .confirm-modal .modal-content {
   padding:1rem; border-radius:0.3rem; text-align:center; max-width:300px; margin:0 auto;
+  background-color: inherit; /* Matches light/dark mode */
 }
 .confirm-modal .modal-content p {
   margin-bottom:1rem; font-size:1rem; font-weight:500;
 }
 .confirm-modal .modal-content button {
-  /* Use btn-primary and btn-secondary */
+  margin:0 0.5rem; padding:0.5rem 1rem; border-radius:0.3rem; cursor:pointer; border:none;
+  font-weight:600; text-transform:uppercase; letter-spacing:0.05rem;
+  transition: background-color 0.2s ease, transform 0.1s ease;
 }
 .confirm-modal .modal-content #confirmRemoveYes {
-  /* btn-danger */
+  background-color: var(--danger-color);
+  color: #fff;
+}
+.confirm-modal .modal-content #confirmRemoveYes:hover {
+  background-color: var(--danger-color-hover);
+}
+.confirm-modal .modal-content #confirmRemoveYes:active {
+  background-color: var(--danger-color-active);
+  transform: scale(0.98);
 }
 .confirm-modal .modal-content #confirmRemoveNo {
-  /* btn-secondary */
+  background-color: var(--secondary-color);
+  color: #fff;
+}
+.confirm-modal .modal-content #confirmRemoveNo:hover {
+  background-color: var(--secondary-color-hover);
+}
+.confirm-modal .modal-content #confirmRemoveNo:active {
+  background-color: var(--secondary-color-active);
+  transform: scale(0.98);
 }
 
 </style>
@@ -363,10 +413,10 @@ progress {
 <div class="burger-menu" id="burgerMenu">
   <button class="btn btn-icon close-menu-btn" id="closeMenuBtn">&times;</button>
   <ul>
-    <li><button class="btn btn-secondary" type="button">Dashboard</button></li>
-    <li><button class="btn btn-secondary" type="button">Sets</button></li>
-    <li><button class="btn btn-secondary" type="button">Statistics</button></li>
-    <li><button class="btn btn-secondary" type="button">Settings</button></li>
+    <li><button class="btn btn-secondary" type="button" data-page="Dashboard">Dashboard</button></li>
+    <li><button class="btn btn-secondary" type="button" data-page="Sets">Sets</button></li>
+    <li><button class="btn btn-secondary" type="button" data-page="Statistics">Statistics</button></li>
+    <li><button class="btn btn-secondary" type="button" data-page="Settings">Settings</button></li>
   </ul>
 </div>
 
