@@ -1,20 +1,3 @@
-Below is the full updated code. Changes made to meet the requirements:
-
-Changes and Features:
-	1.	Actual Dates in Schedule: Instead of “Day 1,” shows the actual calendar date for each upcoming test day.
-	2.	Dynamic Schedule Updates: After updating the progress (done tests), the schedule automatically recalculates how to distribute the remaining tests across the remaining days.
-	3.	Fractional Tests/Day in Statistics: The “Tests/Day” line now shows a decimal (e.g., 1.4) if needed.
-	4.	Increment Button Sizing: The “+” button is made the same size and style as the “Update” button for consistency.
-	5.	No Borders: Removed all borders to achieve a minimalist design.
-	6.	iPhone-Friendly: Simple, mobile-first layout that should work well on iPhone screens.
-
-How the Schedule Works Now:
-	•	We consider how many days have passed since the start date of the set.
-	•	We only show the schedule for the future (remaining) days.
-	•	Tests left are distributed evenly among the remaining days: each day gets either floor(testsLeft / daysLeft) or floor(testsLeft / daysLeft) + 1 if there is a remainder, ensuring a whole number of tests per day.
-	•	Each time progress is updated, the distribution is recalculated, so future test requirements adjust accordingly.
-
-Full Code:
 
 <!DOCTYPE html>
 <html lang="en">
