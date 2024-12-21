@@ -7,13 +7,13 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" integrity="sha512-PR6nUJPNA7VSORRdv27BfxyJ5+MQ/3BpF1um9HUYkuFGbVmb9E/x/zdXdXn4yPF3AA9Frde6angH1HsmJyCQJQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 <style>
   body, input, button {
-    font-family: -apple-system, BlinkMacSystemFont, "SF Pro", "SF Pro Icons", "Helvetica Neue", "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    font-family: "Helvetica Neue", "Segoe UI", Roboto, Arial, sans-serif;
   }
   body {
     margin: 0; 
     padding: 0;
-    background: #000; 
-    color: #fff;
+    background: #121212; 
+    color: #eee;
     display: flex; 
     flex-direction: column; 
     height: 100vh;
@@ -27,7 +27,7 @@
     justify-content: space-between;
     padding: 1rem; 
     border-bottom: 1px solid #222;
-    background: linear-gradient(to bottom, #111, #000);
+    background: #1e1e1e;
     position: sticky;
     top: 0;
     z-index: 10;
@@ -39,16 +39,14 @@
     font-weight: 600;
     display: flex; 
     align-items: center; 
-    gap: 0.3rem;
+    gap: 0.5rem;
   }
 
   header h1::before {
-    content: "\f19d"; /* Font Awesome: graduation-cap */
+    content: "\f19d"; /* fa-graduation-cap */
     font-family: "Font Awesome 5 Free";
     font-weight: 900;
-    display: inline-block;
     font-size: 1.3rem;
-    vertical-align: middle;
     color: #0af;
   }
 
@@ -57,7 +55,7 @@
     border: none; 
     cursor: pointer; 
     color: #0af;
-    font-size: 1.5rem;
+    font-size: 1.4rem;
     width: 2rem; 
     height: 2rem; 
     display: flex; 
@@ -67,13 +65,13 @@
   }
 
   #addSetBtn::before {
-    content: "\f067"; /* Font Awesome: plus-circle */
+    content: "\f067";
     font-family: "Font Awesome 5 Free";
     font-weight: 900;
   }
 
   #addSetBtn:active {
-    background: #111;
+    background: #333;
   }
 
   main {
@@ -86,20 +84,19 @@
   }
 
   .global-stats {
-    background: #111; 
+    background: #1e1e1e; 
     border: 1px solid #222;
-    border-radius: 1rem; 
+    border-radius: 0.7rem; 
     padding: 1rem; 
     margin-bottom: 1rem; 
     display: flex; 
     flex-direction: column; 
-    gap: 0.5rem;
-    backdrop-filter: blur(10px);
+    gap: 0.7rem;
   }
 
   .global-stats h2 {
     margin: 0; 
-    font-size: 1rem; 
+    font-size: 1.1rem; 
     font-weight: 600;
     display: flex;
     align-items: center;
@@ -107,7 +104,7 @@
   }
 
   .global-stats h2::before {
-    content: "\f201"; /* Font Awesome: chart-bar */
+    content: "\f201"; /* fa-chart-bar */
     font-family: "Font Awesome 5 Free";
     font-weight: 900;
     font-size: 1rem;
@@ -116,16 +113,56 @@
 
   .global-stats .summary {
     font-size: 0.9rem;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 0.3rem 1rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1rem;
   }
 
-  .new-set-form, .update-progress-form {
+  .global-stats .summary div {
+    display: flex; 
+    gap: 0.3rem;
+    align-items: center;
+  }
+
+  .global-stats .summary div span.label {
+    color: #aaa;
+  }
+
+  .chart-container {
+    width: 100%; 
+    display: flex; 
+    justify-content: center; 
+    align-items: center;
+    position: relative;
+    height: 120px;
+  }
+
+  .chart-container canvas {
+    width: 120px; 
+    height: 120px; 
+    margin: 0 auto;
+  }
+
+  .chart-label {
+    position: absolute; 
+    color: #eee; 
+    font-size: 1rem; 
+    font-weight: 600;
+    text-align: center;
+    width: 120px; 
+    pointer-events: none;
+    top: calc(50% - 0.5rem);
+  }
+
+  .new-set-form {
     display: flex; 
     gap: 0.5rem; 
     margin-bottom: 1rem; 
     align-items: center;
+    background: #1e1e1e; 
+    border: 1px solid #222;
+    border-radius: 0.5rem;
+    padding: 0.5rem;
   }
 
   .hidden {
@@ -133,13 +170,13 @@
   }
 
   input[type="number"], input[type="text"] {
-    background: #000; 
-    border: 1px solid #222; 
-    color: #fff; 
+    background: #121212; 
+    border: 1px solid #333; 
+    color: #eee; 
     padding: 0.5rem; 
     border-radius: 0.5rem; 
-    width: 5rem;
     font-size: 0.9rem;
+    width: 5rem;
   }
 
   input[type="number"]:focus, input[type="text"]:focus {
@@ -170,15 +207,13 @@
 
   .set {
     border: 1px solid #222; 
-    border-radius: 1rem; 
-    background: #111;
+    border-radius: 0.7rem; 
+    background: #1e1e1e;
     padding: 1rem; 
-    box-shadow: 0 0 10px rgba(0,0,0,0.3);
     position: relative;
     display: flex; 
     flex-direction: column; 
     gap: 0.5rem;
-    backdrop-filter: blur(10px);
   }
 
   .set-header {
@@ -190,7 +225,13 @@
     font-size: 1rem;
   }
 
-  .set-header button {
+  .set-header .set-name {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #fff;
+  }
+
+  .set-header button.remove-set {
     background: none; 
     border: none; 
     color: #f66; 
@@ -204,14 +245,14 @@
     justify-content: center;
   }
 
-  .set-header button::before {
-    content: "\f2ed"; /* Font Awesome: trash-alt */
+  .set-header button.remove-set::before {
+    content: "\f2ed"; /* fa-trash-alt */
     font-family: "Font Awesome 5 Free";
     font-weight: 900;
     font-size: 1.2rem;
   }
 
-  .set-header button:active {
+  .set-header button.remove-set:active {
     background: #400;
   }
 
@@ -251,6 +292,13 @@
     border-radius: 0.5rem;
   }
 
+  .update-progress-form {
+    display: flex; 
+    gap: 0.5rem; 
+    margin-bottom: 0.5rem;
+    align-items: center;
+  }
+
   .update-progress-form button {
     background: #0a8; 
     border: none; 
@@ -271,38 +319,10 @@
     color: #aaa;
   }
 
-  .chart-container {
-    width: 100%; 
-    display: flex; 
-    justify-content: center; 
-    align-items: center;
-    position: relative;
-    height: 120px;
-    margin-top: 0.5rem;
-  }
-
-  .chart-container canvas {
-    width: 120px; 
-    height: 120px; 
-    margin: 0 auto;
-  }
-
-  .chart-label {
-    position: absolute; 
-    color: #eee; 
-    font-size: 0.9rem; 
-    font-weight: 600;
-    text-align: center;
-    width: 120px; 
-    pointer-events: none;
-    top: calc(50% - 0.5rem);
-  }
-
-  /* Set-level line chart */
   .set-chart-container {
     width: 100%;
-    height: 150px;
-    background: #000;
+    height: 120px;
+    background: #121212;
     border: 1px solid #222;
     border-radius: 0.5rem;
     position: relative;
@@ -316,6 +336,23 @@
     display: block;
   }
 
+  .sort-options {
+    display:flex; 
+    gap:0.5rem; 
+    margin-bottom:1rem; 
+    align-items:center; 
+    font-size:0.9rem;
+    color: #ccc;
+  }
+
+  .sort-options select {
+    background:#121212; 
+    color:#eee; 
+    border:1px solid #333; 
+    border-radius:0.5rem; 
+    padding:0.3rem;
+  }
+
 </style>
 </head>
 <body>
@@ -327,10 +364,10 @@
   <div class="global-stats" id="globalStats">
     <h2>Global Overview</h2>
     <div class="summary">
-      <div>Total Sets: <span id="totalSets">0</span></div>
-      <div>Total Tests: <span id="totalTestsCount">0</span></div>
-      <div>Total Done: <span id="totalDoneCount">0</span></div>
-      <div>Overall Progress: <span id="overallProgress">0%</span></div>
+      <div><span class="label">Sets:</span><span id="totalSets">0</span></div>
+      <div><span class="label">Tests:</span><span id="totalTestsCount">0</span></div>
+      <div><span class="label">Done:</span><span id="totalDoneCount">0</span></div>
+      <div><span class="label">Progress:</span><span id="overallProgress">0%</span></div>
     </div>
     <div class="chart-container">
       <canvas id="overviewChart" width="120" height="120"></canvas>
@@ -339,22 +376,40 @@
   </div>
 
   <form class="new-set-form hidden" id="newSetForm">
+    <input type="text" id="setName" placeholder="Set name" required>
     <input type="number" id="totalTests" placeholder="Tests" min="1" required>
     <input type="number" id="totalDays" placeholder="Days" min="1" required>
     <button class="action" type="submit">Create</button>
   </form>
+
+  <div class="sort-options">
+    <span>Sort sets by:</span>
+    <select id="sortSelect">
+      <option value="index">Default</option>
+      <option value="progress">Progress</option>
+      <option value="daysleft">Days Left</option>
+      <option value="testsleft">Tests Left</option>
+    </select>
+  </div>
+
   <div class="sets" id="setsContainer"></div>
 </main>
 
 <script>
 (function(){
   let sets = JSON.parse(localStorage.getItem('examPreparatorSets') || '[]');
+  sets.forEach(s => {
+    if(!s.logs) s.logs = [];
+    if(!s.name) s.name = "Untitled";
+  });
 
   const setsContainer = document.getElementById('setsContainer');
   const addSetBtn = document.getElementById('addSetBtn');
   const newSetForm = document.getElementById('newSetForm');
+  const setNameInput = document.getElementById('setName');
   const totalTestsInput = document.getElementById('totalTests');
   const totalDaysInput = document.getElementById('totalDays');
+  const sortSelect = document.getElementById('sortSelect');
 
   const totalSetsEl = document.getElementById('totalSets');
   const totalTestsCountEl = document.getElementById('totalTestsCount');
@@ -364,11 +419,6 @@
 
   const chartCanvas = document.getElementById('overviewChart');
   const ctx = chartCanvas.getContext('2d');
-
-  // Ensure each set has logs array for daily progress
-  sets.forEach(s => {
-    if(!s.logs) s.logs = [];
-  });
 
   function saveSets() {
     localStorage.setItem('examPreparatorSets', JSON.stringify(sets));
@@ -417,39 +467,31 @@
   }
 
   function drawSetChart(s, canvas) {
-    const ctx = canvas.getContext('2d');
+    const cctx = canvas.getContext('2d');
     const width = canvas.width;
     const height = canvas.height;
 
-    ctx.clearRect(0,0,width,height);
+    cctx.clearRect(0,0,width,height);
 
-    // If no logs, no chart
     if(!s.logs || s.logs.length === 0) {
-      ctx.fillStyle = '#fff';
-      ctx.font = '14px sans-serif';
-      ctx.fillText('No data yet', 10,20);
+      cctx.fillStyle = '#fff';
+      cctx.font = '14px sans-serif';
+      cctx.fillText('No data yet', 10,20);
       return;
     }
 
-    // We have logs as daily increments. Let's map them by days.
-    // logs: {dayIndex, doneThatDay}
-    // We'll reconstruct cumulative done each day.
-    // Also we have a target line: each day i expected = (i+1)* total/days
     const total = s.total;
     const days = s.days;
+    let maxDayIndex = 0;
+    s.logs.forEach(l=>{if(l.dayIndex>maxDayIndex)maxDayIndex=l.dayIndex;});
+    const dayCount = Math.max(days, maxDayIndex+1);
 
-    // Determine start dayIndex
-    // logs might start at dayIndex=0. Recalculate from startDate
-    const dayCount = Math.max(days, s.logs[s.logs.length-1].dayIndex+1);
-
-    // For each day from 0 to max dayIndex in logs:
     const dailyData = [];
     for(let d=0; d<dayCount; d++){
       const logEntry = s.logs.find(l => l.dayIndex === d);
       dailyData[d] = logEntry ? logEntry.cumulativeDone : (d>0?dailyData[d-1]:0);
     }
 
-    // Scale
     const maxTests = Math.max(total, Math.max(...dailyData));
     const leftPadding = 30;
     const rightPadding = 10;
@@ -459,73 +501,93 @@
     const chartW = width - leftPadding - rightPadding;
     const chartH = height - topPadding - bottomPadding;
 
-    // Draw axes
-    ctx.strokeStyle = '#444';
-    ctx.lineWidth = 1;
-    ctx.beginPath();
-    // Y axis
-    ctx.moveTo(leftPadding, topPadding);
-    ctx.lineTo(leftPadding, height - bottomPadding);
-    // X axis
-    ctx.lineTo(width - rightPadding, height - bottomPadding);
-    ctx.stroke();
+    cctx.strokeStyle = '#444';
+    cctx.lineWidth = 1;
+    cctx.beginPath();
+    cctx.moveTo(leftPadding, topPadding);
+    cctx.lineTo(leftPadding, height - bottomPadding);
+    cctx.lineTo(width - rightPadding, height - bottomPadding);
+    cctx.stroke();
 
-    ctx.fillStyle = '#888';
-    ctx.font = '10px sans-serif';
-    ctx.textAlign = 'right';
-    ctx.fillText(maxTests.toFixed(0), leftPadding - 5, topPadding+5);
-    ctx.fillText('0', leftPadding - 5, height - bottomPadding);
+    cctx.fillStyle = '#888';
+    cctx.font = '10px sans-serif';
+    cctx.textAlign = 'right';
+    cctx.fillText(maxTests.toFixed(0), leftPadding - 5, topPadding+5);
+    cctx.fillText('0', leftPadding - 5, height - bottomPadding);
 
-    // Plot cumulative done line
     function xForDay(d){return leftPadding + (d/(dayCount-1))*chartW;}
     function yForValue(v){return (height - bottomPadding) - (v/maxTests)*chartH;}
 
-    // Expected line (min tests per day): a linear progression = (dayIndex+1)*total/days
-    ctx.strokeStyle = '#f66';
-    ctx.lineWidth = 1.5;
-    ctx.beginPath();
+    // Expected line
+    cctx.strokeStyle = '#f66';
+    cctx.lineWidth = 1.5;
+    cctx.beginPath();
     for(let d=0; d<dayCount; d++){
       const expected = (d+1)*total/days;
       const x = xForDay(d);
       const y = yForValue(expected);
-      if(d===0) ctx.moveTo(x,y);
-      else ctx.lineTo(x,y);
+      if(d===0) cctx.moveTo(x,y);
+      else cctx.lineTo(x,y);
     }
-    ctx.stroke();
+    cctx.stroke();
 
     // Actual line
-    ctx.strokeStyle = '#0af';
-    ctx.lineWidth = 2;
-    ctx.beginPath();
+    cctx.strokeStyle = '#0af';
+    cctx.lineWidth = 2;
+    cctx.beginPath();
     for(let d=0; d<dayCount; d++){
       const v = dailyData[d];
       const x = xForDay(d);
       const y = yForValue(v);
-      if(d===0) ctx.moveTo(x,y);
-      else ctx.lineTo(x,y);
+      if(d===0) cctx.moveTo(x,y);
+      else cctx.lineTo(x,y);
     }
-    ctx.stroke();
+    cctx.stroke();
 
-    // Draw markers
-    ctx.fillStyle = '#0af';
+    cctx.fillStyle = '#0af';
     for(let d=0; d<dayCount; d++){
       const v = dailyData[d];
       const x = xForDay(d);
       const y = yForValue(v);
-      ctx.beginPath();
-      ctx.arc(x,y,3,0,2*Math.PI);
-      ctx.fill();
+      cctx.beginPath();
+      cctx.arc(x,y,3,0,2*Math.PI);
+      cctx.fill();
     }
 
-    // Labels
-    ctx.fillStyle = '#888';
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'top';
-    ctx.font = '10px sans-serif';
-    ctx.fillText('Days', leftPadding+chartW/2, height - bottomPadding + 5);
+    cctx.fillStyle = '#888';
+    cctx.textAlign = 'center';
+    cctx.textBaseline = 'top';
+    cctx.font = '10px sans-serif';
+    cctx.fillText('Days', leftPadding+chartW/2, height - bottomPadding + 5);
+  }
+
+  function sortSets(criterion) {
+    if(criterion==='index') {
+      // no additional sorting needed, keep original order
+    } else if(criterion==='progress') {
+      sets.sort((a,b)=>{
+        let pa = a.done/a.total || 0; 
+        let pb = b.done/b.total || 0;
+        return pb - pa;
+      });
+    } else if(criterion==='daysleft') {
+      sets.sort((a,b)=>{
+        let da = Math.max(a.days - Math.floor((Date.now()-a.startDate)/(1000*60*60*24)),0);
+        let db = Math.max(b.days - Math.floor((Date.now()-b.startDate)/(1000*60*60*24)),0);
+        return da - db;
+      });
+    } else if(criterion==='testsleft') {
+      sets.sort((a,b)=>{
+        let ta = Math.max(a.total - a.done,0);
+        let tb = Math.max(b.total - b.done,0);
+        return ta - tb;
+      });
+    }
   }
 
   function renderSets() {
+    sortSets(sortSelect.value);
+
     setsContainer.innerHTML = '';
     sets.forEach((s, index) => {
       if(!s.startDate) {
@@ -544,16 +606,15 @@
 
       setEl.innerHTML = `
         <div class="set-header">
-          <div>Set #${index+1}</div>
-          <button title="Remove Set"></button>
+          <div class="set-name">${s.name}</div>
+          <button class="remove-set" title="Remove Set"></button>
         </div>
         <div class="set-details">
-          <div><span class="label">Total tests:</span><span>${total}</span></div>
-          <div><span class="label">Original days:</span><span>${s.days}</span></div>
+          <div><span class="label">Total:</span><span>${total}</span></div>
           <div><span class="label">Days left:</span><span>${daysLeft}</span></div>
-          <div><span class="label">Tests done:</span><span>${done}</span></div>
-          <div><span class="label">Tests left:</span><span>${testsLeft}</span></div>
-          <div><span class="label">Tests/day:</span><span>${testsPerDay}</span></div>
+          <div><span class="label">Done:</span><span>${done}</span></div>
+          <div><span class="label">Left:</span><span>${testsLeft}</span></div>
+          <div><span class="label">/day:</span><span>${testsPerDay}</span></div>
           <div><span class="label">Progress:</span><span>${progress.toFixed(1)}%</span></div>
           <progress value="${done}" max="${total}"></progress>
         </div>
@@ -561,15 +622,15 @@
           <input type="number" min="1" placeholder="Tests done today" required>
           <button type="submit">Update</button>
         </form>
-        <div class="side-note">Track daily to stay on pace.</div>
+        <div class="side-note">Update daily to stay on track.</div>
         <div class="set-chart-container">
           <canvas></canvas>
         </div>
       `;
 
-      const removeBtn = setEl.querySelector('.set-header button');
+      const removeBtn = setEl.querySelector('.remove-set');
       removeBtn.addEventListener('click', () => {
-        sets.splice(index,1);
+        sets.splice(sets.indexOf(s),1);
         saveSets();
         renderSets();
         updateGlobalStats();
@@ -583,12 +644,9 @@
         s.done += val;
         if(s.done > s.total) s.done = s.total; 
 
-        // Log the daily progress
         const dayIndex = Math.floor((Date.now() - s.startDate)/(1000*60*60*24));
-        // Find if we have a log for this dayIndex
         let log = s.logs.find(l=>l.dayIndex===dayIndex);
         if(log) {
-          // Add to doneThatDay
           log.doneThatDay += val;
           log.cumulativeDone = s.done;
         } else {
@@ -606,9 +664,7 @@
 
       setsContainer.appendChild(setEl);
 
-      // Draw the chart for this set
       const chartCanvas = setEl.querySelector('.set-chart-container canvas');
-      // For crisp drawing, set the canvas internal size
       const rect = chartCanvas.getBoundingClientRect();
       chartCanvas.width = rect.width * devicePixelRatio;
       chartCanvas.height = rect.height * devicePixelRatio;
@@ -624,16 +680,22 @@
 
   newSetForm.addEventListener('submit', (e) => {
     e.preventDefault();
-    const totalTests = parseInt(totalTestsInput.value,10);
-    const totalDays = parseInt(totalDaysInput.value,10);
-    if (isNaN(totalTests) || isNaN(totalDays) || totalTests <= 0 || totalDays <= 0) return;
-    sets.push({total: totalTests, days: totalDays, done: 0, startDate: Date.now(), logs:[]});
+    const setName = setNameInput.value.trim();
+    const totalTestsVal = parseInt(totalTestsInput.value,10);
+    const totalDaysVal = parseInt(totalDaysInput.value,10);
+    if (!setName || isNaN(totalTestsVal) || isNaN(totalDaysVal) || totalTestsVal <= 0 || totalDaysVal <= 0) return;
+    sets.push({name: setName, total: totalTestsVal, days: totalDaysVal, done: 0, startDate: Date.now(), logs:[]});
     saveSets();
     renderSets();
     updateGlobalStats();
+    setNameInput.value = '';
     totalTestsInput.value = '';
     totalDaysInput.value = '';
     newSetForm.classList.add('hidden');
+  });
+
+  sortSelect.addEventListener('change', ()=>{
+    renderSets();
   });
 
   // Initial render
